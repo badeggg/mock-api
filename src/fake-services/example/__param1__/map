@@ -1,0 +1,34 @@
+# This file is optional. If this map file does not exist, './response' will
+# be sent to client.
+# Lines starting with '#' will be ignored. Four ordered fields indicate
+# response matches in current path. Four fields are [
+#     METHOD       : required
+#                    capital
+#                    e.g. GET, POST
+#
+#     ?querys      : optional
+#                    starts with ?
+#                    urlencoded, braces to include a regular expression
+#                        to match value
+#                    e.g. ?qu1={.*}&qu2={.*}
+#
+#     _pathParams  : optional
+#                    starts with _
+#                    urlencoded, braces to include a regular expression
+#                        to match value
+#                    e.g. _pa1={.*}&pa2={.*}
+#
+#     responsePath : required
+#                    search response file by this field based on current
+#                        directory
+#                    always is the last field
+#                    e.g. ./response
+#
+# ], divided with space(s), e.g:
+# GET ?qu1={.*}&qu2={.*} _pa1={.*}&pa2={.*} ./response
+# @2019-5-29 created by @zhaoxuxu
+
+GET ?range={.*}&n={.*} _param1={.*} ./response
+GET _param1={.*} ./response
+GET ?range={.*}&n={.*} ./response
+GET ./response
