@@ -1,4 +1,4 @@
-const parseQueryStr = require('./parseQueryStr');
+const parseQueryStr = require('../parseQueryStr');
 
 console.log(parseQueryStr('sdsd=12'));
 console.log(parseQueryStr('sdsd=12&qq=99&2=0'));
