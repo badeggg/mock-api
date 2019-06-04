@@ -129,6 +129,8 @@ function match(req) {
             } else if (fs.existsSync(defaultResponsePath)) {
                 resolve(defaultResponsePath);
             }
+        } else {
+            resolve(null);
         }
     });
 }
