@@ -1,6 +1,5 @@
 const fs = require('fs');
 const pathUtil = require('path');
-const fakeServicesBasePath = require('../../utils/getFakeServicesBasePath')();
 const _ = require('lodash');
 
 /**
@@ -37,7 +36,7 @@ function cdOne(folder, current) {
 }
 
 function cd(path) {
-    let current = {path: fakeServicesBasePath, params: {}};
+    let current = {path: global.fakeServicesBasePath, params: {}};
     if (path[0] === '/')
         path = path.slice(1);
     if (path[path.length - 1] === '/')
