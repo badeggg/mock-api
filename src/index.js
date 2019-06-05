@@ -7,6 +7,7 @@ const checkPort = require('./utils/checkPort');
 const getFakeServicesBasePath = require('./getConfig/getFakeServicesBasePath');
 
 global.fakeServicesBasePath = getFakeServicesBasePath(__dirname);
+global.projectRootPath = pathUtil.resolve(global.fakeServicesBasePath, '../');
 const proxy404CfgFile = pathUtil.resolve(global.fakeServicesBasePath, 'proxy404');
 if (fs.existsSync(proxy404CfgFile)
     && fs.statSync(proxy404CfgFile).isFile()
@@ -17,10 +18,24 @@ if (fs.existsSync(proxy404CfgFile)
 app.use(mapToRes);
 
 function tillListen(tryPort) {
-    checkPort(tryPort)
+    return checkPort(tryPort)
         .then(
-            () => app.listen(tryPort, () => console.log(`listening on: ${tryPort}\n`)),
+            () => {
+                return new Promise(resolve => {
+                    app.listen(tryPort, () => {
+                        console.log(`mock-api listening on: ${tryPort}\n`);
+                        global.mockingLocation = `http://localhost:${tryPort}`;
+                        fs.writeFileSync(
+                            pathUtil.resolve(global.projectRootPath, './.mockingLocation'),
+                            global.mockingLocation,
+                            'utf-8',
+                        );
+                        resolve(global.mockingLocation);
+                    });
+                });
+            },
             () => tillListen(++tryPort),
         );
 }
-tillListen(3000);
+
+module.exports = tillListen(3000);
