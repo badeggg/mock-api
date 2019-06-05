@@ -1,1 +1,2 @@
 curl localhost:3000/example/sdfd?sdsd=223 -v
+curl localhost:3000/404/sdfd?sdsd=223 -v

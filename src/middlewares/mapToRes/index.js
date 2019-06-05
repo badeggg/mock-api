@@ -10,7 +10,7 @@ module.exports = function(req, res, next) {
                 if (!responseFilePath) {
                     if (global.proxy404) {
                         delete req.headers.host;
-                        proxy.web(req, res, {target: 'http://example.com'});
+                        proxy.web(req, res, {target: global.proxy404});
                     } else {
                         res.sendStatus(404);
                     }
