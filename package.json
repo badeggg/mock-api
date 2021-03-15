@@ -3,6 +3,9 @@
   "version": "0.9.5",
   "description": "mock api",
   "main": "./src/index.js",
+  "bin": {
+    "mock": "./src/index.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
