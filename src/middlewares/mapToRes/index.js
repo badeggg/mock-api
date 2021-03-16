@@ -1,5 +1,6 @@
 const fs = require('fs');
 const matchAResponse = require('./matchAResponse');
+const matchAProxy404 = require('./matchAProxy404');
 const httpProxy = require('http-proxy');
 const proxy = httpProxy.createProxyServer({});
 
@@ -8,9 +9,10 @@ module.exports = function(req, res, next) {
         .then(
             responseFilePath => {
                 if (!responseFilePath) {
-                    if (global.proxy404) {
+                    const proxy404 = matchAProxy404(req);
+                    if (proxy404) {
                         delete req.headers.host;
-                        proxy.web(req, res, {target: global.proxy404}, (err) => console.log(err));
+                        proxy.web(req, res, {target: proxy404}, (err) => console.log(err));
                     } else {
                         res.sendStatus(404);
                     }

@@ -12,7 +12,26 @@ const proxy404CfgFile = pathUtil.resolve(global.fakeServicesBasePath, 'proxy404'
 if (fs.existsSync(proxy404CfgFile)
     && fs.statSync(proxy404CfgFile).isFile()
 ) {
-    global.proxy404 = fs.readFileSync(proxy404CfgFile, 'utf-8').split('\n')[0];
+    let lines = fs.readFileSync(proxy404CfgFile, 'utf-8').split('\n');
+    lines = lines.filter(line => {
+        return line && line[0] !== '#';
+    });
+
+    global.proxy404 = {};
+    lines.forEach(line => {
+        line = line.trim();
+        const splited = line.split(' ');
+        let regStr = '';
+        let target = '';
+        if (splited.length === 1) {
+            regStr = '.*';
+            target = splited[0].trim();
+        } else if (splited.length >= 2) {
+            regStr = splited[0].trim();
+            target = splited[1].trim();
+        }
+        global.proxy404[regStr] = target;
+    });
 }
 
 app.use(mapToRes);
