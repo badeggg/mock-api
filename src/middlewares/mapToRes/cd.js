@@ -9,6 +9,14 @@ const _ = require('lodash');
  *  }
  */
 function cdOne(folder, current) {
+    const isOff = ( // turn off this fake service path
+        fs.existsSync(pathUtil.resolve(current.path, 'off'))
+        || fs.existsSync(pathUtil.resolve(current.path, 'OFF'))
+    );
+    if (isOff) {
+        return false;
+    }
+
     let testNext = pathUtil.resolve(current.path, folder);
     if (fs.existsSync(testNext) && fs.statSync(testNext).isDirectory()) {
         return _.merge({}, current, {
