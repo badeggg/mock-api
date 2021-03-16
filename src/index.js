@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const pathUtil = require('path');
 const fs = require('fs');
 const express = require('express');

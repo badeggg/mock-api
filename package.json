@@ -1,6 +1,6 @@
 {
   "name": "@badeggg/mock-api",
-  "version": "0.9.6",
+  "version": "0.10.0",
   "description": "mock api",
   "main": "./src/index.js",
   "bin": {
