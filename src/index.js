@@ -36,6 +36,8 @@ if (fs.existsSync(proxy404CfgFile)
     });
 }
 
+const REQUEST_MAX_SIZE = '10mb';
+app.use(express.json({limit: REQUEST_MAX_SIZE}));
 app.use(mapToRes);
 
 function tillListen(tryPort) {

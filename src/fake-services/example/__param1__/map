@@ -18,6 +18,12 @@
 #                        to match value
 #                    e.g. _pa1={.*}&pa2={.*}
 #
+#     +bodyArgs    : optional
+#                    starts with +
+#                    urlencoded, braces to include a regular expression
+#                        to match value
+#                    e.g. +arg1={.*}&arg2={.*}
+#
 #     responsePath : required
 #                    search response file by this field based on current
 #                        directory
@@ -27,8 +33,10 @@
 # ], divided with space(s), e.g:
 # GET ?qu1={.*}&qu2={.*} _pa1={.*}&pa2={.*} ./response
 # @2019-5-29 created by @zhaoxuxu
+# @2021-3-17 updated by @zhaoxuxu
 
 GET ?range={.*}&n={.*} _param1={.*} ./response
 GET _param1={.*} ./response
 GET ?range={.*}&n={.*} ./response
+POST +username={xyz}&password={.*} ./response
 GET ./response

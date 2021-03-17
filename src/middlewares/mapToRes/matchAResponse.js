@@ -39,6 +39,7 @@ function matchOneLine(line, req){
         method: fields[0],
         querys: parseQueryStr(fields.find(fld => fld[0] === '?')),
         pathParams: parseQueryStr(fields.find(fld => fld[0] === '_')),
+        bodyArgs: parseQueryStr(fields.find(fld => fld[0] === '+')),
         responsePath: fields[fields.length - 1],
     };
 
@@ -86,6 +87,26 @@ function matchOneLine(line, req){
     if (!pathParamsOk)
         return false;
 
+    let bodyArgsOk = false;
+    if (_.isObject(cfg.bodyArgs)) {
+        bodyArgsOk = true;
+        const keys = Object.keys(cfg.bodyArgs);
+        for (let i = 0; i < keys.length; i++) {
+            const key = keys[i];
+            const rule = cfg.bodyArgs[key];
+            if(!isRuleMatch(rule, req.body[key])) {
+                bodyArgsOk = false;
+                break;
+            }
+        }
+    } else if (cfg.bodyArgs === false){
+        bodyArgsOk = true;
+    } else {
+        return new Error('Abnormal condition.');
+    }
+    if (!bodyArgsOk)
+        return false;
+
     return cfg.responsePath;
 }
 
@@ -102,14 +123,18 @@ function walkMapFileLines(mapFilePath, req) {
                 const tmp = matchOneLine(line, req);
                 if (tmp) {
                    responsePath = tmp;
-                   lineReader.close();
                    resolve(responsePath);
+                   lineReader.close();
                 }
             }
             catch (err) {
                 err.message = `Bad rule for matching: ${line}. ${err.message}`;
                 reject(err.message);
             }
+        });
+        lineReader.on('close', () => {
+            // handle only EOF situation
+            reject('No match.');
         });
     });
 }
@@ -124,7 +149,10 @@ function match(req) {
             if (fs.existsSync(mapFilePath)) {
                 walkMapFileLines(mapFilePath, req).then(
                     responsePath => resolve(pathUtil.resolve(resource.path, responsePath)),
-                    reason => reject(reason),
+                    reason => {
+                        console.error(reason);
+                        resolve(null);
+                    },
                 );
             } else if (fs.existsSync(defaultResponsePath)) {
                 resolve(defaultResponsePath);
