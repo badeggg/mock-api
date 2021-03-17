@@ -4,15 +4,38 @@ const matchAProxy404 = require('./matchAProxy404');
 const httpProxy = require('http-proxy');
 const proxy = httpProxy.createProxyServer({});
 
+function doProxy(req, res, target) {
+    proxy.once('proxyReq', function (proxyReq, request, response) {
+        if (!request.body || !Object.keys(request.body).length) {
+          return;
+        }
+
+        const contentType = proxyReq.getHeader('Content-Type');
+        const writeBody = (bodyData) => {
+            proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+            proxyReq.write(bodyData);
+        };
+
+        if (contentType.includes('application/json')) {
+            writeBody(JSON.stringify(request.body));
+        }
+
+        if (contentType === 'application/x-www-form-urlencoded') {
+            writeBody(querystring.stringify(request.body));
+        }
+    });
+    delete req.headers.host;
+    proxy.web(req, res, {target}, (err) => console.log(err));
+}
+
 module.exports = function(req, res, next) {
     matchAResponse(req)
         .then(
             responseFilePath => {
                 if (!responseFilePath) {
-                    const proxy404 = matchAProxy404(req);
-                    if (proxy404) {
-                        delete req.headers.host;
-                        proxy.web(req, res, {target: proxy404}, (err) => console.log(err));
+                    const proxy404Target = matchAProxy404(req);
+                    if (proxy404Target) {
+                        doProxy(req, res, proxy404Target);
                     } else {
                         res.sendStatus(404);
                     }
