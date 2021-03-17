@@ -20,6 +20,7 @@ module.exports = function(req, res, next) {
                 else {
                     const fileStr = fs.readFileSync(responseFilePath, 'utf-8');
                     res.set('Access-Control-Allow-Origin', '*');
+                    res.set('From-Mocking-Fake-Service', 'true');
                     res.send(fileStr);
                 }
             },
