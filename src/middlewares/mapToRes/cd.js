@@ -2,6 +2,13 @@ const fs = require('fs');
 const pathUtil = require('path');
 const _ = require('lodash');
 
+function currentPathIsOff(currentPath) {
+    return isOff = ( // turn off this fake service path
+        fs.existsSync(pathUtil.resolve(currentPath, 'off'))
+        || fs.existsSync(pathUtil.resolve(currentPath, 'OFF'))
+    );
+}
+
 /**
  *  current = {
  *      path: @String,
@@ -9,14 +16,6 @@ const _ = require('lodash');
  *  }
  */
 function cdOne(folder, current) {
-    const isOff = ( // turn off this fake service path
-        fs.existsSync(pathUtil.resolve(current.path, 'off'))
-        || fs.existsSync(pathUtil.resolve(current.path, 'OFF'))
-    );
-    if (isOff) {
-        return false;
-    }
-
     let testNext = pathUtil.resolve(current.path, folder);
     if (fs.existsSync(testNext) && fs.statSync(testNext).isDirectory()) {
         return _.merge({}, current, {
@@ -54,7 +53,7 @@ function cd(path) {
     for (let i = 0; i < pathItems.length; i++) {
         const item = pathItems[i];
         const tmp = cdOne(item, current);
-        if (!!tmp) {
+        if (!!tmp && !currentPathIsOff(tmp.path)) {
             current = tmp;
         } else {
             fail = true;
