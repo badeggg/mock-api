@@ -7,7 +7,7 @@
     "mock": "./src/index.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "tap"
   },
   "author": "badeggg",
   "license": "ISC",
@@ -15,5 +15,8 @@
     "express": "^4.17.0",
     "http-proxy": "^1.17.0",
     "lodash": "^4.17.14"
+  },
+  "devDependencies": {
+    "tap": "^15.0.2"
   }
 }
