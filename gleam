@@ -36,3 +36,5 @@
 - validate response format?
 - check homepage and git repo url on npm page
 - language
+- allow specify a port to test from
+  + command and config file
