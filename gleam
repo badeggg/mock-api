@@ -25,6 +25,7 @@
 - need change_log doc
 - want see mock-api error logs? use [& fg]
 - standalone usage
+  + maybe a custom 'fake-services' folder name should be enabled
 
 ---- todo ----
 - prepublishOnly
