@@ -26,6 +26,9 @@
 - want see mock-api error logs? use [& fg]
 - standalone usage
   + maybe a custom 'fake-services' folder name should be enabled
+- some log may be useful
+  + such as I want to know why mock is not working while I have
+    write config files: log the off
 
 ---- todo ----
 - prepublishOnly
