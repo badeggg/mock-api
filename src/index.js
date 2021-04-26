@@ -5,8 +5,8 @@ const fs = require('fs');
 const express = require('express');
 const app = express();
 const mapToRes = require('./middlewares/mapToRes');
-const checkPort = require('./utils/checkPort');
 const getFakeServicesBasePath = require('./getConfig/getFakeServicesBasePath');
+const tcpPortUsed = require('tcp-port-used');
 
 global.fakeServicesBasePath = getFakeServicesBasePath(__dirname);
 global.projectRootPath = pathUtil.resolve(global.fakeServicesBasePath, '../');
@@ -41,23 +41,29 @@ app.use(express.json({limit: REQUEST_MAX_SIZE}));
 app.use(mapToRes);
 
 function tillListen(tryPort) {
-    return checkPort(tryPort)
+    return tcpPortUsed.check(tryPort, '127.0.0.1')
         .then(
-            () => {
-                return new Promise(resolve => {
-                    app.listen(tryPort, () => {
-                        console.log(`mock-api listening on: ${tryPort}\n`);
-                        global.mockingLocation = `http://localhost:${tryPort}`;
-                        fs.writeFileSync(
-                            pathUtil.resolve(global.projectRootPath, './.mockingLocation'),
-                            global.mockingLocation,
-                            'utf-8',
-                        );
-                        resolve(global.mockingLocation);
+            (isInUse) => {
+                if (!isInUse) {
+                    return new Promise(resolve => {
+                        app.listen(tryPort, () => {
+                            console.log(`mock-api listening on: ${tryPort}\n`);
+                            global.mockingLocation = `http://localhost:${tryPort}`;
+                            fs.writeFileSync(
+                                pathUtil.resolve(global.projectRootPath, './.mockingLocation'),
+                                global.mockingLocation,
+                                'utf-8',
+                            );
+                            resolve(global.mockingLocation);
+                        });
                     });
-                });
+                } else {
+                    tillListen(++tryPort);
+                }
             },
-            () => tillListen(++tryPort),
+            (err) => {
+                console.error('Error on check port', err.message);
+            },
         );
 }
 

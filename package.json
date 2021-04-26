@@ -22,7 +22,8 @@
     "dependencies": {
         "express": "^4.17.0",
         "http-proxy": "^1.17.0",
-        "lodash": "^4.17.14"
+        "lodash": "^4.17.14",
+        "tcp-port-used": "^1.0.2"
     },
     "devDependencies": {
         "eslint": "^7.24.0",
