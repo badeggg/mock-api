@@ -35,6 +35,7 @@ module.exports = function(req, res, next) {
                     if (proxy404Target) {
                         doProxy(req, res, proxy404Target);
                     } else {
+                        res.set('From-Mocking-Fake-Service', 'true');
                         res.sendStatus(404);
                     }
                 }
