@@ -9,6 +9,7 @@ A **least dependent**, **localized** and **with version control** mock tool for 
 - [Usage](#Usage)
   + [Basic usage, configure a api to mock](#Basic-usage-configure-a-api-to-mock)
   + [The map file](#The-map-file)
+  + [Url query](#Url-query)
   + [Path parameters](#Path-parameters)
   + [Body arguments](#Body-arguments)
   + [Proxy 404](#Proxy-404)
@@ -19,7 +20,7 @@ A **least dependent**, **localized** and **with version control** mock tool for 
 ## Why _this_ mock-api?
 - least dependent
   + least coordination with back-end developers in coding _all_ your front-end logic and styles
-  + the only information you need is the api defination: method, path, querys, reponse structure etc.
+  + the only information you need is the api defination: method, path, queries, reponse structure etc.
   + and of course you may mock any response as you want, such as an error response specifically
 - localized
   + no bother to start and maintain a mock service on a virtual machine
@@ -122,7 +123,7 @@ how to find the response in current path. Those fields are:
                    capital
                    e.g. GET, POST
 
-    ?querys      : optional
+    ?queries     : optional
                    starts with ?
                    urlencoded, braces to include a regular expression
                        to match value
@@ -159,24 +160,41 @@ GET ./response
 
 [Back To Top](#mock-api)
 
+### Url query
+The url query will be tested with the regular expression specified
+by `?queries` field in map file. e.g.:
+```
+GET ?range={.*}&n={.*} ./response
+```
+No url query field configured in a map rule means any query content of the request is ok with
+this map rule response.
+
+[Back To Top](#mock-api)
+
 ### Path parameters
 Of course we can handle parameters in api path. 
 Create a `__parameter_name__` folder in corresponding position on 'series of folders'.
 This specific folder name should start and end with double underscore while parameter name
 in the middle. Then in the map file, `_pathParams` will be `_parameter_name` and
-the actual corresponding path section will be test with the regular expression specified
-by `_pathParams` field. e.g.:
+the actual corresponding path section will be tested with the regular expression specified
+by `_pathParams` field in map file. e.g.:
 ```
 GET _parameter_name={.*} ./response
 ```
+No path parameter field configured in a map rule means any path parameter of the request
+is ok with this map rule response.
 
 [Back To Top](#mock-api)
 
 ### Body arguments
-// todo to continue
+For now, we only support `application/json` request 'Content-Type', and 10mb request max size.
+The first level fields of the parsed json will be tested with the regular expression specified
+by `_bodyArgs` field in map file. e.g.:
 ```
 POST +username={xyz}&password={.*} ./response
 ```
+No body argument field configured in a map rule means any body argument of the request
+is ok with this map rule response.
 
 [Back To Top](#mock-api)
 
@@ -244,6 +262,7 @@ Maybe this should be changed ;-).
 - '# text' after config line will be regarded as comment
 - proxy404 file change can take effect immediately
 - a vue-cli-service plugin can ease the coordination config on your project
+- support `application/x-www-form-urlencoded` and `multipart/form-data` request 'Content-Type'.
 - ...
 
 [Back To Top](#mock-api)
