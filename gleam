@@ -10,3 +10,4 @@
   + how to use it is not complete.
 - test
 - show error message in developing
+- implicit query match all
