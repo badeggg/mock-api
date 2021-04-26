@@ -86,7 +86,7 @@ $ npm install @badeggg/mock-api
     - Add a script in package.json, such that start the mock service first and then start the well-known
       webpack dev-server when run this script.
       + Of course the 'dev-server' part is dependent on your specific project.
-      + For example, if your project is constructed with vue-cli-service, `"serve-mock": "mock && vue-cli-service serve",`
+      + For example, if your project is constructed with vue-cli-service, `"serve-mock": "mock | vue-cli-service serve",`
         should be added
     - Modify the original development start script, so that .mockingLocation file is removed first and
       then start then well-known webpack dev-server when run this non-mocking start development script.
