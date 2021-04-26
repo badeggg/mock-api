@@ -3,8 +3,8 @@ A **least dependent**, **localized** and **with version control** mock tool for 
 
 ## Table of Contents
 - [mock-api](#mock-api)
-- [Why this mock-api?](#Why-this-mock-api?)
-- [How is it working?](#How-is-it-working?)
+- [Why this mock-api?](#Why-this-mock-api)
+- [How is it working?](#How-is-it-working)
 - [Installation](#Installation)
 - [Usage](#Usage)
   + [Basic usage, configure a api to mock](#Basic-usage-configure-a-api-to-mock)
