@@ -26,7 +26,8 @@
 - want see mock-api error logs? use [& fg]
 
 ---- todo ----
-prepublishOnly
-lint some file in root
-validate response format?
-check homepage and git repo url on npm page
+- prepublishOnly
+- lint some file in root
+- validate response format?
+- check homepage and git repo url on npm page
+- language
