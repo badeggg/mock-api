@@ -12,3 +12,13 @@
 - show error message in developing
 - implicit query match all
 - websocket
+- try best to remove .mockingLocation file when stoped
+- compliant with windows
+- comment util
+  + delete any '#' start line and text after '#'
+- config-change-effect-immediately area as large as possible
+  + e.g. proxy404
+- proxy404 file should be parsed line-by-line
+- multiple spaces should be regarded as a single space
+- allow to response non-json
+- response content-type
