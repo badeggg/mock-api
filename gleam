@@ -24,6 +24,7 @@
 - response content-type
 - need change_log doc
 - want see mock-api error logs? use [& fg]
+- standalone usage
 
 ---- todo ----
 - prepublishOnly
