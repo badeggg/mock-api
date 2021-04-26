@@ -11,3 +11,4 @@
 - test
 - show error message in developing
 - implicit query match all
+- websocket
