@@ -29,3 +29,4 @@
 prepublishOnly
 lint some file in root
 validate response format?
+check homepage and git repo url on npm page

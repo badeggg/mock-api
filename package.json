@@ -14,6 +14,11 @@
     },
     "author": "badeggg",
     "license": "ISC",
+    "homepage": "https://github.com/badeggg/mock-api#readme",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/badeggg/mock-api"
+    },
     "dependencies": {
         "express": "^4.17.0",
         "http-proxy": "^1.17.0",
