@@ -24,3 +24,8 @@
 - response content-type
 - need change_log doc
 - want see mock-api error logs? use [& fg]
+
+---- todo ----
+prepublishOnly
+lint some file in root
+validate response format?

@@ -10,13 +10,8 @@ function isRuleMatch(ruleStr, str) {
         && ruleStr[ruleStr.length - 1] === '}'
     ) {
         let reg = null;
-        try {
-            const regStr = ruleStr.slice(1, ruleStr.length - 1);
-            reg = new RegExp(regStr);
-        }
-        catch (err) {
-            throw err;
-        }
+        const regStr = ruleStr.slice(1, ruleStr.length - 1);
+        reg = new RegExp(regStr);
         if (reg.test(str))
             return true;
         else
@@ -122,9 +117,9 @@ function walkMapFileLines(mapFilePath, req) {
             try {
                 const tmp = matchOneLine(line, req);
                 if (tmp) {
-                   responsePath = tmp;
-                   resolve(responsePath);
-                   lineReader.close();
+                    responsePath = tmp;
+                    resolve(responsePath);
+                    lineReader.close();
                 }
             }
             catch (err) {
@@ -142,7 +137,7 @@ function walkMapFileLines(mapFilePath, req) {
 function match(req) {
     return new Promise((resolve, reject) => {
         const resource = cd(req.path);
-        if (!!resource) {
+        if (resource) {
             req.params = _.merge({}, req.params, resource.params);
             const mapFilePath = pathUtil.resolve(resource.path, 'map');
             const defaultResponsePath = pathUtil.resolve(resource.path, 'response');

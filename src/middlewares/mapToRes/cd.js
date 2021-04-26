@@ -3,7 +3,7 @@ const pathUtil = require('path');
 const _ = require('lodash');
 
 function currentPathIsOff(currentPath) {
-    return isOff = ( // turn off this fake service path
+    return ( // turn off this fake service path
         fs.existsSync(pathUtil.resolve(currentPath, 'off'))
         || fs.existsSync(pathUtil.resolve(currentPath, 'OFF'))
     );
@@ -32,7 +32,7 @@ function cdOne(folder, current) {
             }
             return false;
         }));
-        if (!!finded) {
+        if (finded) {
             return _.merge({}, current, {
                 path: pathUtil.resolve(current.path, finded),
                 params,
@@ -49,7 +49,7 @@ function cd(path) {
     if (path[path.length - 1] === '/')
         path = path.slice(0, path.length - 1);
     const pathItems = path.split('/');
-    let fail = false
+    let fail = false;
     for (let i = 0; i < pathItems.length; i++) {
         const item = pathItems[i];
         const tmp = cdOne(item, current);

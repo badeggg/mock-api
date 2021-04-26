@@ -1,22 +1,26 @@
 {
-  "name": "@badeggg/mock-api",
-  "version": "0.12.2",
-  "description": "mock api",
-  "main": "./src/index.js",
-  "bin": {
-    "mock": "./src/index.js"
-  },
-  "scripts": {
-    "test": "tap"
-  },
-  "author": "badeggg",
-  "license": "ISC",
-  "dependencies": {
-    "express": "^4.17.0",
-    "http-proxy": "^1.17.0",
-    "lodash": "^4.17.14"
-  },
-  "devDependencies": {
-    "tap": "^15.0.2"
-  }
+    "name": "@badeggg/mock-api",
+    "version": "0.12.2",
+    "description": "mock api",
+    "main": "./src/index.js",
+    "bin": {
+        "mock": "./src/index.js"
+    },
+    "scripts": {
+        "prepublishOnly": "npm run test && npm run lint",
+        "test": "tap",
+        "lint": "eslint -- test/ src/ .eslintrc.js",
+        "lintfix": "npm run lint -- --fix"
+    },
+    "author": "badeggg",
+    "license": "ISC",
+    "dependencies": {
+        "express": "^4.17.0",
+        "http-proxy": "^1.17.0",
+        "lodash": "^4.17.14"
+    },
+    "devDependencies": {
+        "eslint": "^7.24.0",
+        "tap": "^15.0.2"
+    }
 }
