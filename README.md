@@ -1,6 +1,21 @@
 # mock-api
 A **least dependent**, **localized** and **with version control** mock tool for front-end development.
 
+## Table of Contents
+- [mock-api](#mock-api)
+- [Why this mock-api?](#Why-this-mock-api?)
+- [How is it working?](#How-is-it-working?)
+- [Installation](#Installation)
+- [Usage](#Usage)
+  + [Basic usage, configure a api to mock](#Basic-usage-configure-a-api-to-mock)
+  + [The map file](#The-map-file)
+  + [Path parameters](#Path-parameters)
+  + [Body arguments](#Body-arguments)
+  + [Proxy 404](#Proxy-404)
+  + [Disable part of the mocking](#Disable-part-of-the-mocking)
+- [Tips](#Tips)
+- [Await features...](#Await-features)
+
 ## Why _this_ mock-api?
 - least dependent
   + least coordination with back-end developers in coding _all_ your front-end logic and styles
@@ -14,6 +29,8 @@ A **least dependent**, **localized** and **with version control** mock tool for 
   + all the mock configuration stay with your project source code version control, so that after half
     year, for example, you still can use the mock configuration configured now.
 
+[Back To Top](#mock-api)
+
 ## How is it working?
 The design is simple. 'mock-api' start a service on local computer, response to request according to
 mock configuration. Mock configuration should be placed on `fake-services` folder on project root
@@ -24,10 +41,14 @@ How to write a mock configuration is describe below.
 
 How to use .mockingLocation file properly is describe below.
 
+[Back To Top](#mock-api)
+
 ## Installation
 ```
 $ npm install @badeggg/mock-api
 ```
+
+[Back To Top](#mock-api)
 
 ## Usage
 ### Basic usage, configure a api to mock
@@ -89,6 +110,8 @@ $ npm install @badeggg/mock-api
         };
         ```
 
+[Back To Top](#mock-api)
+
 ### The map file
 This file is optional. If this map file does not exist, './response' will
 be sent to client.
@@ -134,6 +157,8 @@ POST +username={xyz}&password={.*} ./response
 GET ./response
 ```
 
+[Back To Top](#mock-api)
+
 ### Path parameters
 Of course we can handle parameters in api path. 
 Create a `__parameter_name__` folder in corresponding position on 'series of folders'.
@@ -144,6 +169,16 @@ by `_pathParams` field. e.g.:
 ```
 GET _parameter_name={.*} ./response
 ```
+
+[Back To Top](#mock-api)
+
+### Body arguments
+// todo to continue
+```
+POST +username={xyz}&password={.*} ./response
+```
+
+[Back To Top](#mock-api)
 
 ### Proxy 404
 You may not want all the api requsts goes to mocking. 
@@ -177,6 +212,8 @@ bing https://bing.com
 https://nodejs.org
 ```
 
+[Back To Top](#mock-api)
+
 ### Disable part of the mocking
 In some cases you may want to temporarily disable part of the mocking ---- try only two
 or three apis on test environment maybe while the other apis on test environment are not ok
@@ -193,8 +230,12 @@ will be considered as a non-mocking-match request and will be proxied as 'proxy4
 Notice that an 'off' file on the very fake-services folder will not disable all mocking for now.
 Maybe this should be changed ;-).
 
+[Back To Top](#mock-api)
+
 ## Tips
 - a response header 'From-Mocking-Fake-Service' was added if the response is from mocking
+
+[Back To Top](#mock-api)
 
 ## Await features...
 - websocket
@@ -204,3 +245,5 @@ Maybe this should be changed ;-).
 - proxy404 file change can take effect immediately
 - a vue-cli-service plugin can ease the coordination config on your project
 - ...
+
+[Back To Top](#mock-api)
