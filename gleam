@@ -22,3 +22,4 @@
 - multiple spaces should be regarded as a single space
 - allow to response non-json
 - response content-type
+- need change_log doc
