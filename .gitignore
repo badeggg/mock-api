@@ -1,9 +1,6 @@
 # node_modules
 /node_modules
 
-# mock-api mocking
-.mockingLocation
-
 # vim
 *.swp
 

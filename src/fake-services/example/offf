@@ -1,9 +1,0 @@
-# Created by @zhaoxuxu at @2021-3-16
-# Last updated by @zhaoxuxu at @2021-3-16
-
-When this file exists, the mocking on this path and all subpath
-are considered 404.
-
-'OFF' or 'off' naming is fine. Other case combinations are
-file-system dependent.
-
