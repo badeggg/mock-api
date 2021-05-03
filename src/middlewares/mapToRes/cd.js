@@ -1,6 +1,7 @@
 const fs = require('fs');
 const pathUtil = require('path');
 const _ = require('lodash');
+const config = require('../../../config');
 
 function currentPathIsOff(currentPath) {
     return ( // turn off this fake service path
@@ -43,7 +44,7 @@ function cdOne(folder, current) {
 }
 
 function cd(path) {
-    let current = {path: global.fakeServicesBasePath, params: {}};
+    let current = {path: config.fakeServicesBasePath, params: {}};
     if (path[0] === '/')
         path = path.slice(1);
     if (path[path.length - 1] === '/')

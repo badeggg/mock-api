@@ -1,3 +1,4 @@
 module.exports = {
-    getFakeServicesBasePath: require('./getFakeServicesBasePath.js'),
+    fakeServicesBasePath: require('./getFakeServicesBasePath.js')(),
+    proxy404: require('./getProxy404.js')(),
 };

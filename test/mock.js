@@ -1,5 +1,5 @@
 const tap = require('tap');
-const index = require('../../src/index');
+// const mock = require('../../src/mock');
 
 // todo to complete
 
@@ -11,4 +11,5 @@ tap.test('basic general function', { saveFixture: true }, async tap => {
             },
         },
     });
+    console.log(fakeServicesDir);
 });
