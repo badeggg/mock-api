@@ -1,7 +1,7 @@
 const fs = require('fs');
 const pathUtil = require('path');
 const fakeServicesBasePath = require('./getFakeServicesBasePath.js')();
-const semiParseConfigFile = require('./semiParseConfigFile.js');
+const semiParseConfigFile = require('../utils/semiParseConfigFile.js');
 
 module.exports = function() {
     let proxy404 = {};

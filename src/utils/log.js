@@ -1,5 +1,5 @@
 function log_func(level) {
-    console.log(new Date(), level, [...arguments].slice(1));
+    console.log(new Date(), level, ...[...arguments].slice(1));
 }
 
 const log = {};

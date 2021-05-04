@@ -3,6 +3,7 @@ const matchAResponse = require('./matchAResponse');
 const matchAProxy404 = require('./matchAProxy404');
 const httpProxy = require('http-proxy');
 const proxy = httpProxy.createProxyServer({});
+const log = require('../../utils/log.js');
 
 function doProxy(req, res, target) {
     proxy.once('proxyReq', function (proxyReq, request, response) {
@@ -23,7 +24,7 @@ function doProxy(req, res, target) {
         // todo to handle other types.
     });
     delete req.headers.host;
-    proxy.web(req, res, {target}, (err) => console.log(err));
+    proxy.web(req, res, {target}, (err) => log.error(err));
 }
 
 module.exports = function(req, res, next) {

@@ -2,7 +2,7 @@
     "name": "@badeggg/mock-api",
     "version": "1.0.1",
     "description": "mock api",
-    "main": "./src/index.js",
+    "main": "./src/mock.js",
     "bin": {
         "mock": "./src/index.js"
     },
@@ -20,12 +20,14 @@
         "url": "https://github.com/badeggg/mock-api"
     },
     "dependencies": {
+        "chalk": "^2.4.2",
         "express": "^4.17.0",
         "http-proxy": "^1.17.0",
         "lodash": "^4.17.14",
         "tcp-port-used": "^1.0.2"
     },
     "devDependencies": {
+        "axios": "^0.21.1",
         "eslint": "^7.24.0",
         "tap": "^15.0.2"
     }

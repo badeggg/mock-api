@@ -22,15 +22,12 @@
 - multiple spaces should be regarded as a single space
 - allow to response non-json
 - response content-type
-- need change_log doc
 - want see mock-api error logs? use [& fg]
 - standalone usage
   + maybe a custom 'fake-services' folder name should be enabled
 - some log may be useful
   + such as I want to know why mock is not working while I have
     write config files: log the off
-
----- todo ----
 - prepublishOnly
 - lint some file in root
 - validate response format?
@@ -38,3 +35,10 @@
 - language
 - allow specify a port to test from
   + command and config file
+- when required as a module, return mockingLocation
+- config
+    + require and run arguments
+    + command line arguments
+    + immutable config in fake-services folder
+- every change need doc
+- need change_log doc

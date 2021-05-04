@@ -59,6 +59,3 @@ module.exports = function(filePath) {
 
     return lines;
 };
-
-
-

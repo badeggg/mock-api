@@ -6,3 +6,6 @@
 
 # nyc
 /.nyc_output
+
+#.mockingLocation
+.mockingLocation
