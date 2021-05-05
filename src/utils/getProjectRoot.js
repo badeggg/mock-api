@@ -10,12 +10,17 @@ module.exports = function() {
          * If a directory has 'package.json' file and 'node_modules' folder, we assume it is
          * the project root directory. In most cases, this rule should work fine.
          */
-        const hasPackageJsonFile = fs.existsSync(pathUtil.resolve(tryPath, './package.json'));
-        const hasNodeModulesDir = fs.existsSync(pathUtil.resolve(tryPath, './node_modules'));
+        const packageJsonPath = pathUtil.resolve(tryPath, './package.json');
+        const nodeModulesPath = pathUtil.resolve(tryPath, './node_modules');
+        const hasPackageJsonFile = (fs.existsSync(packageJsonPath)
+            && fs.statSync(packageJsonPath).isFile());
+        const hasNodeModulesDir = (fs.existsSync(nodeModulesPath)
+            && fs.statSync(nodeModulesPath).isDirectory());
         if(hasPackageJsonFile && hasNodeModulesDir) {
             ret = tryPath;
             break;
         }
+        tryPath = pathUtil.resolve(tryPath, '../');;
     }
 
     if (!ret) {
