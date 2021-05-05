@@ -1,4 +1,3 @@
-const fs = require('fs');
 const pathUtil = require('path');
 const tap = require('tap');
 

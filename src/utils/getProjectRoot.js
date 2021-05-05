@@ -20,7 +20,7 @@ module.exports = function() {
             ret = tryPath;
             break;
         }
-        tryPath = pathUtil.resolve(tryPath, '../');;
+        tryPath = pathUtil.resolve(tryPath, '../');
     }
 
     if (!ret) {

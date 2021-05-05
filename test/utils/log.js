@@ -5,7 +5,7 @@ let output = [];
 
 // start hijack console.log function
 const originalStdoutWrite = process.stdout.write;
-process.stdout.write = (msg) => {output.push(msg)};
+process.stdout.write = (msg) => output.push(msg);
 
 log.debug('some debug message');
 log.info('some info');

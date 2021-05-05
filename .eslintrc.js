@@ -30,6 +30,7 @@ module.exports = {
             {
                 'args': 'none',
             }
-        ]
+        ],
+        'no-constant-condition': 'off',
     }
 };

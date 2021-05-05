@@ -19,9 +19,9 @@ tap.test('basic general function', async tap => {
 
     const mockServer = await mock(process);
     tap.type(mockServer, require('http').Server,
-        'mock function should return a nodejs http.Server')
+        'mock function should return a nodejs http.Server');
     tap.type(mockServer.address().port, 'number',
-        'mock function should return a nodejs http.Server with a port number')
+        'mock function should return a nodejs http.Server with a port number');
 
     const mockingLocationPath = pathUtil.resolve(fakeServicesDir, './.mockingLocation');
     tap.ok(fs.existsSync(mockingLocationPath),
@@ -35,10 +35,10 @@ tap.test('basic general function', async tap => {
     );
 
     const options = {
-        url: fs.readFileSync(mockingLocationPath, 'utf-8') + `/fake-api-path`,
+        url: fs.readFileSync(mockingLocationPath, 'utf-8') + '/fake-api-path',
         method: 'GET',
     };
-    const response = await axios.request(options)
+    const response = await axios.request(options);
     tap.equal(response.data, 'Some response content.');
 
     mockServer.close();
