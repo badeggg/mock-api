@@ -50,11 +50,12 @@ module.exports = function(filePath) {
     }
     let lines = fileContent.split('\n');
     lines = lines.map(trimPoundSignComment)
-        .filter(line => Boolean(line.length))
+        .filter(line => Boolean(line.trim().length))
         .map(line => {
             line = line.replace(/\s+/g, ' ');
-            return line.split(' ')
+            const parsedLine = line.split(' ')
                 .filter(item => Boolean(item.length));
+            return parsedLine;
         });
 
     return lines;
