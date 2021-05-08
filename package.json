@@ -8,6 +8,7 @@
     },
     "scripts": {
         "prepublishOnly": "npm run test && npm run lint",
+        "snap": "tap --snapshot",
         "test": "tap",
         "lint": "eslint -- test/ src/ .eslintrc.js",
         "lintfix": "npm run lint -- --fix"

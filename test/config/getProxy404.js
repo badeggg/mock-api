@@ -1,4 +1,3 @@
-const pathUtil = require('path');
 const tap = require('tap');
 
 tap.test('find proxy404 file, parse it and return result', tap => {

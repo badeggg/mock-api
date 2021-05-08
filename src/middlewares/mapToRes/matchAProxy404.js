@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const proxy404 = require('../../config/index.js').proxy404;
 
 function match(req) {
