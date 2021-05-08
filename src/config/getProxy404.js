@@ -22,6 +22,7 @@ module.exports = function() {
             /**
              * Why not just `else if`, cause tap will complain test coverage issue.
              * This is a bug of the test tool. Feel free report this bug and fix it.
+             * issue reported: https://github.com/tapjs/node-tap/issues/749
              * @zhaoxuxu @2021-5-8
              */
             if (cfgUnit.length >= 2) {
