@@ -17,7 +17,7 @@ exports[`test/middlewares/mapToRes/cd.js TAP basic normal cd function > path par
     "path": "/path/__name__/__email__",
     "params": {
         "name": "badeggg",
-        "email": "zhaoxuxujc@gmai.com"
+        "email": "zhaoxuxujc@gmail.com"
     }
 }
 `

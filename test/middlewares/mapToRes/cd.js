@@ -27,10 +27,10 @@ tap.test('basic normal cd function', tap => {
             fakeServicesBasePath,
         },
     });
-    tap.matchSnapshot(toNiceJson(removeCdResultPathPrefix(cd('/path/to/resource'),                fakeServicesBasePath)), 'basic cd');
-    tap.matchSnapshot(toNiceJson(removeCdResultPathPrefix(cd('/path/to/resource/'),               fakeServicesBasePath)), 'should trim prefix and postfix /');
-    tap.matchSnapshot(toNiceJson(removeCdResultPathPrefix(cd('path/badeggg/zhaoxuxujc@gmai.com'), fakeServicesBasePath)), 'path parameters');
-    tap.matchSnapshot(toNiceJson(removeCdResultPathPrefix(cd('/'),                                fakeServicesBasePath)), 'root service path');
+    tap.matchSnapshot(toNiceJson(removeCdResultPathPrefix(cd('/path/to/resource'),                 fakeServicesBasePath)), 'basic cd');
+    tap.matchSnapshot(toNiceJson(removeCdResultPathPrefix(cd('/path/to/resource/'),                fakeServicesBasePath)), 'should trim prefix and postfix /');
+    tap.matchSnapshot(toNiceJson(removeCdResultPathPrefix(cd('path/badeggg/zhaoxuxujc@gmail.com'), fakeServicesBasePath)), 'path parameters');
+    tap.matchSnapshot(toNiceJson(removeCdResultPathPrefix(cd('/'),                                 fakeServicesBasePath)), 'root service path');
     tap.equal(cd('/not/exist/path'), false);
     tap.equal(cd('/path/to/hiddenResource'), false, 'off one fake service');
     tap.end();
