@@ -138,7 +138,7 @@ function match(req) {
     return new Promise((resolve, reject) => {
         const resource = cd(req.path);
         if (resource) {
-            req.params = _.merge({}, req.params, resource.params);
+            req.params = _.merge({}, resource.params);
             const mapFilePath = pathUtil.resolve(resource.path, 'map');
             const defaultResponsePath = pathUtil.resolve(resource.path, 'response');
             if (fs.existsSync(mapFilePath)) {

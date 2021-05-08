@@ -45,6 +45,10 @@ function cdOne(folder, current) {
 
 function cd(path) {
     let current = {path: config.fakeServicesBasePath, params: {}};
+    if (currentPathIsOff(current.path)) {
+        return false;
+    }
+
     if (path[0] === '/')
         path = path.slice(1);
     if (path[path.length - 1] === '/')
@@ -54,7 +58,7 @@ function cd(path) {
     for (let i = 0; i < pathItems.length; i++) {
         const item = pathItems[i];
         const tmp = cdOne(item, current);
-        if (!!tmp && !currentPathIsOff(tmp.path)) {
+        if (tmp && !currentPathIsOff(tmp.path)) {
             current = tmp;
         } else {
             fail = true;

@@ -1,4 +1,5 @@
 const tap = require('tap');
+const toNiceJson = require('../../testUtils/toNiceJson.js');
 
 tap.test('find proxy404 file, parse it and return result', tap => {
     const proxy404Content = `
@@ -16,7 +17,7 @@ tap.test('find proxy404 file, parse it and return result', tap => {
     const getProxy404 = tap.mock('../../src/config/getProxy404.js', {
         '../../src/config/getFakeServicesBasePath.js': () => fakeServicesBasePath,
     });
-    tap.matchSnapshot(JSON.stringify(getProxy404(), null, 4), 'parsed proxy404 result');
+    tap.matchSnapshot(toNiceJson(getProxy404()), 'parsed proxy404 result');
     tap.end();
 });
 

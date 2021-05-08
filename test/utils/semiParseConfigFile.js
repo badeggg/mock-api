@@ -1,5 +1,6 @@
 const pathUtil = require('path');
 const tap = require('tap');
+const toNiceJson = require('../../testUtils/toNiceJson.js');
 
 tap.test('normal parse function', tap => {
     const configFileContent = `
@@ -19,7 +20,7 @@ tap.test('normal parse function', tap => {
 
     const semiParseConfigFile = require('../../src/utils/semiParseConfigFile.js');
     const semiParseResult = semiParseConfigFile(configFilePath);
-    tap.matchSnapshot(JSON.stringify(semiParseResult, null, 4), 'semi parse result');
+    tap.matchSnapshot(toNiceJson(semiParseResult), 'semi parse result');
     tap.end();
 });
 
