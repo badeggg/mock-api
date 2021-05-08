@@ -2,21 +2,16 @@ const _ = require('lodash');
 const proxy404 = require('../../config/index.js').proxy404;
 
 function match(req) {
-    if (typeof proxy404 === 'string') {
-        return proxy404;
-    } else if (_.isPlainObject(proxy404)) {
-        const regStrs = Object.keys(proxy404);
-        for (let i = 0; i < regStrs.length; i++) {
-            const regStr = regStrs[i];
-            const reg = new RegExp(regStr);
-            if (reg.test(req.path)) {
-                return proxy404[regStr];
-            }
+    for (let i = 0; i < proxy404.length; i++) {
+        const oneRule = proxy404[i];
+        const regStr = oneRule[0];
+        const target = oneRule[1];
+        const reg = new RegExp(regStr);
+        if (reg.test(req.path)) {
+            return target;
         }
-        return null;
-    } else {
-        return null;
     }
+    return null;
 }
 
 module.exports = match;

@@ -9,3 +9,6 @@
 
 #.mockingLocation
 .mockingLocation
+
+# tap coverage report
+/coverage

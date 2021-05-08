@@ -23,6 +23,27 @@ tap.test('normal parse function', tap => {
     tap.end();
 });
 
+tap.test('no effective config content', tap => {
+    const configFileContent = `
+
+    # some comment
+    # some comment
+	  # a tab and two spaces
+
+    `;
+
+    const configFolder = tap.testdir({
+        config: configFileContent
+    });
+    const configFilePath = pathUtil.resolve(configFolder, 'config');
+
+    const semiParseConfigFile = require('../../src/utils/semiParseConfigFile.js');
+    const semiParseResult = semiParseConfigFile(configFilePath);
+    tap.type(semiParseResult, Array);
+    tap.equal(semiParseResult.length, 0);
+    tap.end();
+});
+
 tap.test('config file path is not ok', tap => {
     const configFolder = tap.testdir({
         config: {},

@@ -4,7 +4,7 @@ const fakeServicesBasePath = require('./getFakeServicesBasePath.js')();
 const semiParseConfigFile = require('../utils/semiParseConfigFile.js');
 
 module.exports = function() {
-    let proxy404 = {};
+    let proxy404 = [];
 
     const proxy404CfgFile = pathUtil.resolve(fakeServicesBasePath, 'proxy404');
     if (fs.existsSync(proxy404CfgFile)
@@ -18,11 +18,17 @@ module.exports = function() {
             if (cfgUnit.length === 1) {
                 regStr = '.*';
                 target = cfgUnit[0];
-            } else if (cfgUnit.length >= 2) {
+            }
+            /**
+             * Why not just `else if`, cause tap will complain test coverage issue.
+             * This is a bug of the test tool. Feel free report this bug and fix it.
+             * @zhaoxuxu @2021-5-8
+             */
+            if (cfgUnit.length >= 2) {
                 regStr = cfgUnit[0];
                 target = cfgUnit[1];
             }
-            proxy404[regStr] = target;
+            proxy404.push([regStr, target]);
         });
     }
 
