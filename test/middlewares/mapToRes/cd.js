@@ -1,6 +1,11 @@
 const tap = require('tap');
 const toNiceJson = require('../../../testUtils/toNiceJson.js');
 
+function removeCdResultPathPrefix(result, prefix) {
+    result.path = result.path.replace(prefix, '');
+    return result;
+}
+
 tap.test('basic normal cd function', tap => {
     const fakeServicesBasePath = tap.testdir({
         path: {
@@ -22,10 +27,10 @@ tap.test('basic normal cd function', tap => {
             fakeServicesBasePath,
         },
     });
-    tap.matchSnapshot(toNiceJson(cd('/path/to/resource')), 'basic cd');
-    tap.matchSnapshot(toNiceJson(cd('/path/to/resource/')), 'should trim prefix and postfix /');
-    tap.matchSnapshot(toNiceJson(cd('path/badeggg/zhaoxuxujc@gmai.com')), 'path parameters');
-    tap.matchSnapshot(toNiceJson(cd('/')), 'root service path');
+    tap.matchSnapshot(toNiceJson(removeCdResultPathPrefix(cd('/path/to/resource'),                fakeServicesBasePath)), 'basic cd');
+    tap.matchSnapshot(toNiceJson(removeCdResultPathPrefix(cd('/path/to/resource/'),               fakeServicesBasePath)), 'should trim prefix and postfix /');
+    tap.matchSnapshot(toNiceJson(removeCdResultPathPrefix(cd('path/badeggg/zhaoxuxujc@gmai.com'), fakeServicesBasePath)), 'path parameters');
+    tap.matchSnapshot(toNiceJson(removeCdResultPathPrefix(cd('/'),                                fakeServicesBasePath)), 'root service path');
     tap.equal(cd('/not/exist/path'), false);
     tap.equal(cd('/path/to/hiddenResource'), false, 'off one fake service');
     tap.end();

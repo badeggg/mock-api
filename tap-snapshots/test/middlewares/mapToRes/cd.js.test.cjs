@@ -7,14 +7,14 @@
 'use strict'
 exports[`test/middlewares/mapToRes/cd.js TAP basic normal cd function > basic cd 1`] = `
 {
-    "path": "/Users/zhaoxuxu/my_repos/mock-api/test/middlewares/mapToRes/tap-testdir-cd-basic-normal-cd-function/path/to/resource",
+    "path": "/path/to/resource",
     "params": {}
 }
 `
 
 exports[`test/middlewares/mapToRes/cd.js TAP basic normal cd function > path parameters 1`] = `
 {
-    "path": "/Users/zhaoxuxu/my_repos/mock-api/test/middlewares/mapToRes/tap-testdir-cd-basic-normal-cd-function/path/__name__/__email__",
+    "path": "/path/__name__/__email__",
     "params": {
         "name": "badeggg",
         "email": "zhaoxuxujc@gmai.com"
@@ -24,14 +24,14 @@ exports[`test/middlewares/mapToRes/cd.js TAP basic normal cd function > path par
 
 exports[`test/middlewares/mapToRes/cd.js TAP basic normal cd function > root service path 1`] = `
 {
-    "path": "/Users/zhaoxuxu/my_repos/mock-api/test/middlewares/mapToRes/tap-testdir-cd-basic-normal-cd-function",
+    "path": "",
     "params": {}
 }
 `
 
 exports[`test/middlewares/mapToRes/cd.js TAP basic normal cd function > should trim prefix and postfix / 1`] = `
 {
-    "path": "/Users/zhaoxuxu/my_repos/mock-api/test/middlewares/mapToRes/tap-testdir-cd-basic-normal-cd-function/path/to/resource",
+    "path": "/path/to/resource",
     "params": {}
 }
 `
