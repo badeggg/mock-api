@@ -19,12 +19,6 @@ module.exports = function() {
                 regStr = '.*';
                 target = cfgUnit[0];
             }
-            /**
-             * Why not just `else if`, cause tap will complain test coverage issue.
-             * This is a bug of the test tool. Feel free report this bug and fix it.
-             * issue reported: https://github.com/tapjs/node-tap/issues/749
-             * @zhaoxuxu @2021-5-8
-             */
             if (cfgUnit.length >= 2) {
                 regStr = cfgUnit[0];
                 target = cfgUnit[1];

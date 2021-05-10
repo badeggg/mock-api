@@ -1,6 +1,7 @@
-const proxy404 = require('../../config/index.js').proxy404;
+const getProxy404 = require('../../config/index.js').getProxy404;
 
 function match(req) {
+    const proxy404 = getProxy404();
     for (let i = 0; i < proxy404.length; i++) {
         const oneRule = proxy404[i];
         const regStr = oneRule[0];
