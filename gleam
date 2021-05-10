@@ -1,4 +1,4 @@
----- gleam ----
+---- gleam ---- ✓ ✔ ✗ ✘ 🌠 ✵ ☆ ✦ ✧ ✭
 - easy use
 - should with reservation
 - how to tell a response is from a fake service or the real server
@@ -42,3 +42,9 @@
     + immutable config in fake-services folder
 - every change need doc
 - need change_log doc
+- 🌠 mock anything of http
+    + ✘ http2
+    + ✘ certificate
+- should has debug log, make log level configurable
+- map file format
+- proxy404 advanced config?
