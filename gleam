@@ -11,7 +11,6 @@
 - test
 - show error message in developing
 - implicit query match all
-- websocket
 - try best to remove .mockingLocation file when stoped
 - compliant with windows
 - comment util
@@ -42,9 +41,15 @@
     + immutable config in fake-services folder
 - every change need doc
 - need change_log doc
-- 🌠 mock anything of http
-    + ✘ http2
-    + ✘ certificate
 - should has debug log, make log level configurable
 - map file format
-- proxy404 advanced config?
+- proxy404 advance config?
+- 🌠 websocket
+    + interval auto response (multiple, cancelable)
+    + match rule to a message response
+    + close
+- 🌠 mock anything of http
+    + status code
+    + deplay
+    + ✘ http2
+    + ✘ certificate
