@@ -1,6 +1,8 @@
 /**
  * Most of the config files of mock-api have the convention:
  *   - the basic config unit is a line of text
+ *   - a backslash is the last character of a line will cause the next
+ *     line(if any) concated to current line.
  *   - items in a config unit(a line) is separated by one or more white
  *     space character(s), including space, tab, form feed, line feed, 
  *     and other Unicode spaces
@@ -24,7 +26,8 @@
  *   ]
  *   ```
  *
- * @zhaoxuxu @2021-5-3
+ * @zhaoxuxu @2021-5-3  created
+ * @zhaoxuxu @2021-5-12 last modified
  */
 
 const fs = require('fs');
@@ -47,6 +50,11 @@ module.exports = function(filePath) {
         log.error(err.message);
         log.error(`Failed to read file content of '${filePath}'.`);
         return null;
+    }
+    fileContent = fileContent.replace(/\\\n/g, ' ');
+    fileContent = fileContent.replace(/\\\r\n/g, ' ');
+    if (fileContent.length && fileContent[fileContent.length - 1] === '\\') {
+        fileContent = fileContent.slice(0, -1);
     }
     let lines = fileContent.split('\n');
     lines = lines.map(trimPoundSignComment)

@@ -5,6 +5,21 @@
  * Make sure to inspect the output below.  Do not ignore changes!
  */
 'use strict'
+exports[`test/utils/semiParseConfigFile.js TAP backslash is the last character of the file > semi parse result 1`] = `
+[
+    [
+        "backslash",
+        "is",
+        "the",
+        "last",
+        "character",
+        "of",
+        "the",
+        "file"
+    ]
+]
+`
+
 exports[`test/utils/semiParseConfigFile.js TAP normal parse function > semi parse result 1`] = `
 [
     [
@@ -22,6 +37,15 @@ exports[`test/utils/semiParseConfigFile.js TAP normal parse function > semi pars
         "a",
         "white",
         "space"
+    ],
+    [
+        "one",
+        "config",
+        "line",
+        "writen",
+        "in",
+        "multiple",
+        "lines"
     ]
 ]
 `

@@ -11,7 +11,26 @@ tap.test('normal parse function', tap => {
     basic general config
     multiple   spaces  # comment after line
         tab	as a white space
+    one config line \\
+    writen in \\
+    multiple lines
     `;
+
+    const configFolder = tap.testdir({
+        config: configFileContent
+    });
+    const configFilePath = pathUtil.resolve(configFolder, 'config');
+
+    const semiParseConfigFile = require('../../src/utils/semiParseConfigFile.js');
+    const semiParseResult = semiParseConfigFile(configFilePath);
+    tap.matchSnapshot(toNiceJson(semiParseResult), 'semi parse result');
+    tap.end();
+});
+
+tap.test('backslash is the last character of the file', tap => {
+    const configFileContent = `
+    backslash is the last character of the file
+    \\`;
 
     const configFolder = tap.testdir({
         config: configFileContent
