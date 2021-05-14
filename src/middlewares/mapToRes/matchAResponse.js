@@ -1,163 +1,309 @@
+/**
+ * A quick map rule is like:
+ * `GET ?query=rule ./response`.
+ * The formal syntax of map rule is:
+ * `[map] [options]`
+ *     e.g. map -q query1=someValue&query2=someValue \
+ *              -a arg1=someValue&[2].name=someValue&.detail=someValue \
+ *              -h 'http-response-header: header-value' \
+ *                 'another-header: another-value'
+ * The return object of this module function may contain fields:
+ * {
+ *      shouldUseExpressSendFile: true | false,
+ *      expressSendFileOptions: {}, // placeholder, not implemented by now
+ *      resHeaders: {},
+ *      resBody: '',
+ *      statusCode: 200 | 404 | 502 | ... ,
+ *      resFilePath: '',
+ *      delayTime: 500, // in milliseconds
+ * }
+ * @zhaoxuxu @2021-5-12
+ */
+
 const readline = require('readline');
 const pathUtil = require('path');
 const fs = require('fs');
 const _ = require('lodash');
+const { Command } = require('commander');
 const cd = require('./cd');
 const parseQueryStr = require('../../utils/parseQueryStr');
+const parseHttpHeader = require('../../utils/parseHttpHeader');
+const semiParseConfigFile = require('../../utils/semiParseConfigFile');
+const log = require('../../utils/log.js');
 
-function isRuleMatch(ruleStr, str) {
-    if (ruleStr[0] === '{'
-        && ruleStr[ruleStr.length - 1] === '}'
-    ) {
-        let reg = null;
-        const regStr = ruleStr.slice(1, ruleStr.length - 1);
-        reg = new RegExp(regStr);
-        if (reg.test(str))
-            return true;
-        else
-            return false;
-    } else if (ruleStr === str) {
-        return true;
+const IMPLICIT_RESPONSE_FILE_NAME = 'response'; // todo to make it configurable
+const RESPONSE_FILE_MAX_SIZE = 500 * 1024 * 1024;
+const RESPONSE_FILE_MAX_PARSE_SIZE = 10 * 1024 * 1024;
+const HTTP_METHODS = [
+    'GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH'
+];
+
+class ResponseFile {
+    constructor(filePath) {
+        if (!filePath) {
+            this.filePath = '';
+            return;
+        }
+        this.filePath = filePath;
+        this.ext = pathUtil.extname(filePath);
+        this.exists = fs.existsSync(filePath);
+        this.stats = fs.statsSync(filePath);
     }
-    return false;
-
+    generateResCfg() {
+        if (!this.exists || !this.stats.isFile()) {
+            log.error(`Response file '${this.filePath}' does not exist or is not a file.`);
+            return null;
+        }
+        if (this.stats.size > RESPONSE_FILE_MAX_SIZE) {
+            log.error(`Response file '${this.filePath}' is too big, `
+                + `max acceptable size is ${RESPONSE_FILE_MAX_SIZE},`
+                + `got ${this.stats.size}.`);
+            return null;
+        }
+        switch(this.ext.toLowerCase()) {
+            case '': // An empty-extname file is regarded as a json file.
+            case '.json':
+                return this.generateJsonResCfg();
+            default:
+                return this.generateExpressSendFileResCfg();
+        }
+    }
+    generateJsonResCfg() {
+        if (this.stats.size > RESPONSE_FILE_MAX_PARSE_SIZE) {
+            log.warn(`Refused to validate response json file '${this.filePath}', `
+                + `cause it is too big, `
+                + `max acceptable size is ${RESPONSE_FILE_MAX_PARSE_SIZE},`
+                + `got ${this.stats.size}.`);
+        } else {
+            const fileStr = fs.readFileSync(this.filePath, 'utf-8');
+            let jsonContent = null;
+            try {
+                jsonContent = JSON.parse(fileStr);
+            } catch (err) {
+                log.error(`Invalid json file '${this.filePath}'.`);
+                return _.merge({}, this.generateExpressSendFileResCfg(), {
+                    resHeaders: {
+                        'Mock-Warn-Invalid-Json-File': this.filePath,
+                    },
+                });
+            }
+            return _.merge({}, this.generateExpressSendFileResCfg(), {
+                resHeaders: {
+                    'Content-Type': 'application/json; charset=UTF-8',
+                },
+            });
+        }
+    }
+    generateExpressSendFileResCfg() {
+        return {
+            shouldUseExpressSendFile: true,
+            resFilePath: this.filePath,
+        };
+    }
 }
 
-function matchOneLine(line, req){
-    if (line[0] === '#') {
-        return false;
+class RuleParser {
+    constructor(ruleLine) {
+        this.ruleLine = ruleLine;
+        this.rule = new Command();
+        // todo to amend options description
+        // allow view help information by tap `mock help-map`
+        this.rule
+            .option('-q, --url-queries   <queries...>', 'url queries',      this._commanderParseUrlQueries, {})
+            .option('-p, --path-params   <params...>',  'path params',      this._commanderParsePathParams, {})
+            .option('-a, --body-args     <args...>',    'body args, json? only, key is a path in parsed json object', this._commanderParseBodyArgs,   {})
+            .option('-h, --res-headers   <headers...>', 'response headers', this._commanderParseResHeaders, {})
+            .option('-c, --status-code   <code>',       'status code')
+            .option('-m, --req-method    <method>',     'request method')
+            .option('-r, --res-file-path <file>',       'response file path')
+            .option('-t, --delay-time    <time>',       'delay time to response');
     }
-    const fields = line.match(/\S+/g);
-    if (!fields)
-        return;
-    const cfg = {
-        method: fields[0],
-        querys: parseQueryStr(fields.find(fld => fld[0] === '?')),
-        pathParams: parseQueryStr(fields.find(fld => fld[0] === '_')),
-        bodyArgs: parseQueryStr(fields.find(fld => fld[0] === '+')),
-        responsePath: fields[fields.length - 1],
-    };
+    parse() {
+        if (this.ruleLine[0].toLowerCase() === 'map')
+            this.ruleLine = this.ruleLine.slice(1);
+        if (!this.ruleLine.length)
+            return null;
+        const quickCfg = this.parseQuickCfg();
+        this.rule.parse(this.ruleLine, {from: 'user'});
+        const parsedRuleLine = this.rule.opts();
+        let result = _.merge({}, quickCfg, parsedRuleLine);
 
-    const methodOk = req.method === cfg.method.toUpperCase();
-    if (!methodOk)
-        return false;
+        const generatedResCfg = new ResponseFile(result.resFilePath).generateResCfg();
+        result = _.merge({}, generatedResCfg, result);
+        return result;
+    }
+    parseQuickCfg() {
+        let result = {};
+        if (HTTP_METHODS.includes(this.ruleLine[0].toUpperCase())) {
+            const method = this.ruleLine[0].toUpperCase();
+            result.reqMethod = method;
+            this.ruleLine = this.ruleLine.slice(1);
+        }
+        const queryStrInx = this.ruleLine.findIndex(item => item[0] === '?');
+        if (queryStrInx >=0) {
+            const queryStr = this.ruleLine[queryStrInx];
+            const queries = parseQueryStr(queryStr);
+            result.urlQueries = queries;
+            this.ruleLine.splice(queryStrInx, 1);
+        }
+        const paramsStrInx = this.ruleLine.findIndex(item => item[0] === '_');
+        if (paramsStrInx >=0) {
+            const paramsStr = this.ruleLine[paramsStrInx];
+            const params = parseQueryStr(paramsStr);
+            result.pathParams = params;
+            this.ruleLine.splice(paramsStrInx, 1);
+        }
+        const bodyArgsStrInx = this.ruleLine.findIndex(item => item[0] === '+');
+        if (bodyArgsStrInx >=0) {
+            const bodyArgsStr = this.ruleLine[bodyArgsStrInx];
+            const bodyArgs = parseQueryStr(bodyArgsStr);
+            result.bodyArgs = bodyArgs;
+            this.ruleLine.splice(bodyArgsStrInx, 1);
+        }
+        const responsePathStrInx = this.ruleLine.findIndex(item => !'?_+-'.includes(item[0]));
+        if (responsePathStrInx >=0) {
+            const responsePathStr = this.ruleLine[responsePathStrInx];
+            result.resFilePath = responsePathStr;
+            this.ruleLine.splice(responsePathStrInx, 1);
+        }
+        return result;
+    }
+    _commanderParseUrlQueries(value, previous) {
+        return _.merge(previous, parseQueryStr(value));
+    }
+    _commanderParsePathParams(value, previous) {
+        return _.merge(previous, parseQueryStr(value));
+    }
+    _commanderParseBodyArgs(value, previous) {
+        return _.merge(previous, parseQueryStr(value));
+    }
+    _commanderParseResHeaders(value, previous) {
+        return _.merge(previous, parseHttpHeader(value));
+    }
+}
 
-    let querysOk = false;
-    if (_.isObject(cfg.querys)) {
-        querysOk = true;
-        const keys = Object.keys(cfg.querys);
-        for (let i = 0; i < keys.length; i++) {
-            const key = keys[i];
-            const rule = cfg.querys[key];
-            if(!isRuleMatch(rule, req.query[key])) {
-                querysOk = false;
-                break;
+class Matcher {
+    constructor(cdResult, req) {
+        this.mapFilePath = pathUtil.resolve(cdResult.path, 'map');
+        this.req = req;
+    }
+    match() {
+        if (!fs.existsSync(this.mapFilePath))
+            return this.implicitResFileMatch();
+        return this.mapFileMatch();
+    }
+    mapFileMatch() {
+        const semiParsedMap = semiParseConfigFile(this.mapFilePath);
+        for (let i = 0; i < semiParsedMap.length; i++) {
+            let line = semiParsedMap[i];
+            const cfg = new RuleParser(ruleLine).parse();
+            if (
+                this.doesReqMethodMatch(cfg)
+                && this.doesUrlQueryMatch(cfg)
+                && this.doesPathParamsMatch(cfg)
+                && this.doesBodyArgsMatch(cfg)
+            ) {
+                return cfg;
             }
         }
-    } else if (cfg.querys === false){
-        querysOk = true;
-    } else {
-        return new Error('Abnormal condition.');
+        return null;
     }
-    if (!querysOk)
-        return false;
+    doesReqMethodMatch(cfg) {
+        return this.req.method.toUpperCase() === cfg.method.toUpperCase();
+    }
+    doesUrlQueryMatch(cfg) {
+        if (!Object.keys(cfg.urlQueries)) {
+            return true;
+        }
 
-    let pathParamsOk = false;
-    if (_.isObject(cfg.pathParams)) {
-        pathParamsOk = true;
+        const keys = Object.keys(cfg.urlQueries);
+        for (let i = 0; i < keys.length; i++) {
+            const key = keys[i];
+            const regStr = cfg.urlQueries[key];
+            if(!isStringMatching(this.req.query[key], regStr)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    doesPathParamsMatch(cfg) {
+        if (!Object.keys(cfg.pathParams)) {
+            return true;
+        }
+
         const keys = Object.keys(cfg.pathParams);
         for (let i = 0; i < keys.length; i++) {
             const key = keys[i];
-            const rule = cfg.pathParams[key];
-            if(!isRuleMatch(rule, req.query[key])) {
-                pathParamsOk = false;
-                break;
+            const regStr = cfg.pathParams[key];
+            if(!isStringMatching(this.req.params[key], regStr)) {
+                return false;
             }
         }
-    } else if (cfg.pathParams === false){
-        pathParamsOk = true;
-    } else {
-        return new Error('Abnormal condition.');
+        return true;
     }
-    if (!pathParamsOk)
-        return false;
+    doesBodyArgsMatch(cfg) {
+        if (!Object.keys(cfg.bodyArgs)) {
+            return true;
+        }
 
-    let bodyArgsOk = false;
-    if (_.isObject(cfg.bodyArgs)) {
-        bodyArgsOk = true;
         const keys = Object.keys(cfg.bodyArgs);
         for (let i = 0; i < keys.length; i++) {
             const key = keys[i];
-            const rule = cfg.bodyArgs[key];
-            if(!isRuleMatch(rule, req.body[key])) {
-                bodyArgsOk = false;
-                break;
+            const regStr = cfg.bodyArgs[key];
+            let valueToTest;
+            let compliantKey = key;
+            switch (key[0]) {
+                case '.':
+                case '[':
+                    break;
+                default:
+                    compliantKey = '.' + key;
+            }
+            try {
+                valueToTest = eval(`this.req.body${compliantKey}`)
+            } catch (err) {
+                log.error(`Bad body args key '${key}' in map file '${this.mapFilePath}'.`);
+                return false;
+            }
+            if(!isStringMatching(valueToTest, regStr)) {
+                return false;
             }
         }
-    } else if (cfg.bodyArgs === false){
-        bodyArgsOk = true;
-    } else {
-        return new Error('Abnormal condition.');
+        return true;
     }
-    if (!bodyArgsOk)
+    isStringMatching(str, regStr) {
+        if (regStr[0] === '{'
+            && regStr[regStr.length - 1] === '}'
+        ) {
+            let reg = null;
+            const regStr = regStr.slice(1, regStr.length - 1);
+            reg = new RegExp(regStr);
+            if (reg.test(str))
+                return true;
+            else
+                return false;
+        } else if (regStr === str) {
+            return true;
+        }
         return false;
-
-    return cfg.responsePath;
-}
-
-function walkMapFileLines(mapFilePath, req) {
-    return new Promise((resolve, reject) => {
-        const lineReader = readline.createInterface({
-            input: fs.createReadStream(mapFilePath),
-        });
-        let responsePath = '';
-        lineReader.on('line', line => {
-            if (responsePath !== '')
-                return;
-            try {
-                const tmp = matchOneLine(line, req);
-                if (tmp) {
-                    responsePath = tmp;
-                    resolve(responsePath);
-                    lineReader.close();
-                }
-            }
-            catch (err) {
-                err.message = `Bad rule for matching: ${line}. ${err.message}`;
-                reject(err.message);
-            }
-        });
-        lineReader.on('close', () => {
-            // handle only EOF situation
-            reject('No match.');
-        });
-    });
+    }
+    implicitResFileMatch() {
+        const implicitResFile = pathUtil.resolve(cdResult.path, 'IMPLICIT_RESPONSE_FILE_NAME');
+        if (!fs.existsSync(implicitResFile))
+            return null;
+        const cfg = new ResponseFile(implicitResFile).generateResCfg();
+        return cfg;
+    }
 }
 
 function match(req) {
-    return new Promise((resolve, reject) => {
-        const resource = cd(req.path);
-        if (resource) {
-            req.params = _.merge({}, resource.params);
-            const mapFilePath = pathUtil.resolve(resource.path, 'map');
-            const defaultResponsePath = pathUtil.resolve(resource.path, 'response');
-            if (fs.existsSync(mapFilePath)) {
-                walkMapFileLines(mapFilePath, req).then(
-                    responsePath => resolve(pathUtil.resolve(resource.path, responsePath)),
-                    reason => {
-                        console.error(reason);
-                        resolve(null);
-                    },
-                );
-            } else if (fs.existsSync(defaultResponsePath)) {
-                resolve(defaultResponsePath);
-            } else {
-                resolve(null);
-            }
-        } else {
-            resolve(null);
-        }
-    });
+    const cdResult = cd(req.path);
+    if (!cdResult)
+        return null;
+
+    req.params = _.cloneDeep(cdResult.params);
+    const ret = new Matcher(cdResult, req).match();
+    return ret;
 }
 
 module.exports = match;

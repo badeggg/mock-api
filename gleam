@@ -21,7 +21,8 @@
 - multiple spaces should be regarded as a single space
 - allow to response non-json
 - response content-type
-- want see mock-api error logs? use [& fg]
+- want see mock-api error logs?
+  + log file
 - standalone usage
   + maybe a custom 'fake-services' folder name should be enabled
 - some log may be useful

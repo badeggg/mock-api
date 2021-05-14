@@ -4,8 +4,16 @@ function log_func(level) {
 
 const log = {};
 
+log.critical = function() {
+    log_func('CRITICAL', ...arguments);
+};
+
 log.error = function() {
     log_func('ERROR', ...arguments);
+};
+
+log.warn = function() {
+    log_func('WARNING', ...arguments);
 };
 
 log.info = function() {
