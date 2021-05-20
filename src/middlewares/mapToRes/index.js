@@ -22,6 +22,7 @@ function doProxy(req, res, target) {
         }
 
         // todo to handle other types.
+        // multipart/form-data | application/x-www-form-urlencoded | application/json
     });
     delete req.headers.host;
     proxy.web(req, res, {target}, (err) => log.error(err));
