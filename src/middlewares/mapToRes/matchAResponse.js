@@ -10,7 +10,6 @@
  * The return object of this module function may contain fields:
  * {
  *      shouldUseExpressSendFile: true | false,
- *      expressSendFileOptions: {}, // placeholder, not implemented by now
  *      resHeaders: {},
  *      resBody: '',
  *      statusCode: 200 | 404 | 502 | ... ,
@@ -50,10 +49,6 @@ class ResponseFile {
         this.stats = fs.statsSync(filePath);
     }
     generateResCfg() {
-        if (!this.exists || !this.stats.isFile()) {
-            log.error(`Response file '${this.filePath}' does not exist or is not a file.`);
-            return null;
-        }
         if (this.stats.size > RESPONSE_FILE_MAX_SIZE) {
             log.error(`Response file '${this.filePath}' is too big, `
                 + `max acceptable size is ${RESPONSE_FILE_MAX_SIZE},`
@@ -74,13 +69,19 @@ class ResponseFile {
                 + `cause it is too big, `
                 + `max acceptable size is ${RESPONSE_FILE_MAX_PARSE_SIZE},`
                 + `got ${this.stats.size}.`);
+            return _.merge({}, this.generateExpressSendFileResCfg(), {
+                resHeaders: {
+                    'Mock-Not-Validated-Json-File': this.filePath,
+                    'Content-Type': 'application/json; charset=UTF-8',
+                },
+            });
         } else {
             const fileStr = fs.readFileSync(this.filePath, 'utf-8');
             let jsonContent = null;
             try {
                 jsonContent = JSON.parse(fileStr);
             } catch (err) {
-                log.error(`Invalid json file '${this.filePath}'.`);
+                log.warn(`Invalid json file '${this.filePath}'.`);
                 return _.merge({}, this.generateExpressSendFileResCfg(), {
                     resHeaders: {
                         'Mock-Warn-Invalid-Json-File': this.filePath,
@@ -103,20 +104,20 @@ class ResponseFile {
 }
 
 class RuleParser {
-    constructor(ruleLine) {
+    constructor(ruleLine, cdResult) {
+        this.mapFilePath = pathUtil.resolve(cdResult.path, 'map');
         this.ruleLine = ruleLine;
+        this.cdResult = cdResult;
         this.rule = new Command();
-        // todo to amend options description
-        // allow view help information by tap `mock help-map`
         this.rule
-            .option('-q, --url-queries   <queries...>', 'url queries',      this._commanderParseUrlQueries, {})
-            .option('-p, --path-params   <params...>',  'path params',      this._commanderParsePathParams, {})
-            .option('-a, --body-args     <args...>',    'body args, json? only, key is a path in parsed json object', this._commanderParseBodyArgs,   {})
-            .option('-h, --res-headers   <headers...>', 'response headers', this._commanderParseResHeaders, {})
-            .option('-c, --status-code   <code>',       'status code')
-            .option('-m, --req-method    <method>',     'request method')
-            .option('-r, --res-file-path <file>',       'response file path')
-            .option('-t, --delay-time    <time>',       'delay time to response');
+            .option('-q, --url-queries   <queries...>', 'url queries',        this._commanderParseUrlQueries, {})
+            .option('-p, --path-params   <params...>',  'path params',        this._commanderParsePathParams, {})
+            .option('-a, --body-args     <args...>',    'body args',          this._commanderParseBodyArgs,   {})
+            .option('-h, --res-headers   <headers...>', 'response headers',   this._commanderParseResHeaders, {})
+            .option('-c, --status-code   <code>',       'status code',        this._commanderParseStatusCode)
+            .option('-m, --req-method    <method>',     'request method',     this._commanderParseReqMethod)
+            .option('-r, --res-file-path <file>',       'response file path', this._commanderParseResFilePath)
+            .option('-t, --delay-time    <time>',       'delay to response',  this._commanderParseDelayTime);
     }
     parse() {
         if (this.ruleLine[0].toLowerCase() === 'map')
@@ -128,8 +129,10 @@ class RuleParser {
         const parsedRuleLine = this.rule.opts();
         let result = _.merge({}, quickCfg, parsedRuleLine);
 
-        const generatedResCfg = new ResponseFile(result.resFilePath).generateResCfg();
-        result = _.merge({}, generatedResCfg, result);
+        if (result.resFilePath) {
+            const generatedResCfg = new ResponseFile(result.resFilePath).generateResCfg();
+            result = _.merge({}, generatedResCfg, result);
+        }
         return result;
     }
     parseQuickCfg() {
@@ -163,7 +166,14 @@ class RuleParser {
         const responsePathStrInx = this.ruleLine.findIndex(item => !'?_+-'.includes(item[0]));
         if (responsePathStrInx >=0) {
             const responsePathStr = this.ruleLine[responsePathStrInx];
-            result.resFilePath = responsePathStr;
+            const resFilePath = pathUtil.resolve(this.cdResult.path, responsePathStr);
+            if (!fs.existsSync(resFilePath) || !fs.statsSync(resFilePath).isFile()) {
+                log.error(`Bad response-file config '${responsePathStr}' in map `
+                    + `'${this.mapFilePath}', `
+                    + `file '${resFilePath}' does not exist or is not a file.`);
+            } else {
+                result.resFilePath = resFilePath;
+            }
             this.ruleLine.splice(responsePathStrInx, 1);
         }
         return result;
@@ -180,11 +190,56 @@ class RuleParser {
     _commanderParseResHeaders(value, previous) {
         return _.merge(previous, parseHttpHeader(value));
     }
+    _commanderParseStatusCode(value) {
+        if (!value.match(/^\d{3}$/)) {
+            log.error(`Bad status code config '${value}' in map '${this.mapFilePath}'.`);
+            return null;
+        }
+        const code = parseInt(value);
+        if (code < 100 || code > 599) {
+            log.error(`Bad status code config '${value}' in map '${this.mapFilePath}'.`);
+            return null;
+        }
+        return code;
+    }
+    _commanderParseReqMethod(value) {
+        value = value.toUpperCase();
+        if (!HTTP_METHODS.includes(value)) {
+            log.error(`Bad request method config '${value}' in map '${this.mapFilePath}'.`);
+            return null;
+        }
+        return value;
+    }
+    _commanderParseResFilePath(value) {
+        const resFilePath = pathUtil.resolve(this.cdResult.path, value);
+        if (!fs.existsSync(resFilePath) || !fs.statsSync(resFilePath).isFile()) {
+            log.error(`Bad response-file config '${value}' in map '${this.mapFilePath}', `
+                + `file '${resFilePath}' does not exist or is not a file.`);
+            return null;
+        }
+        return resFilePath;
+    }
+    _commanderParseDelayTime(value) {
+        if (!value)
+            return 0;
+
+        let time;
+        if (value.match(/^\d+(ms)?$/))
+            time = parseInt(value);
+        if (value.match(/^\d+(s)?$/))
+            time = parseInt(value) * 1000;
+        if (Number.isSafeInterger(time))
+            return time;
+
+        log.error(`Bad deplay time config '${value}' in map '${this.mapFilePath}'.`);
+        return 0;
+    }
 }
 
 class Matcher {
     constructor(cdResult, req) {
         this.mapFilePath = pathUtil.resolve(cdResult.path, 'map');
+        this.cdResult = cdResult;
         this.req = req;
     }
     match() {
@@ -196,7 +251,7 @@ class Matcher {
         const semiParsedMap = semiParseConfigFile(this.mapFilePath);
         for (let i = 0; i < semiParsedMap.length; i++) {
             let line = semiParsedMap[i];
-            const cfg = new RuleParser(ruleLine).parse();
+            const cfg = new RuleParser(ruleLine, this.cdResult).parse();
             if (
                 this.doesReqMethodMatch(cfg)
                 && this.doesUrlQueryMatch(cfg)
@@ -262,7 +317,7 @@ class Matcher {
             try {
                 valueToTest = eval(`this.req.body${compliantKey}`)
             } catch (err) {
-                log.error(`Bad body args key '${key}' in map file '${this.mapFilePath}'.`);
+                log.error(`Bad body args key '${key}' in map '${this.mapFilePath}'.`);
                 return false;
             }
             if(!isStringMatching(valueToTest, regStr)) {
@@ -289,7 +344,7 @@ class Matcher {
     }
     implicitResFileMatch() {
         const implicitResFile = pathUtil.resolve(cdResult.path, 'IMPLICIT_RESPONSE_FILE_NAME');
-        if (!fs.existsSync(implicitResFile))
+        if (!fs.existsSync(implicitResFile) || !fs.statsSync(implicitResFile).isFile())
             return null;
         const cfg = new ResponseFile(implicitResFile).generateResCfg();
         return cfg;
@@ -307,3 +362,6 @@ function match(req) {
 }
 
 module.exports = match;
+module.exports.ResponseFile = ResponseFile;
+module.exports.RuleParser = RuleParser;
+module.exports.Matcher = Matcher;
