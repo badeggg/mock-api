@@ -19,7 +19,6 @@
  * @zhaoxuxu @2021-5-12
  */
 
-const readline = require('readline');
 const pathUtil = require('path');
 const fs = require('fs');
 const _ = require('lodash');
@@ -56,17 +55,17 @@ class ResponseFile {
             return null;
         }
         switch(this.ext.toLowerCase()) {
-            case '': // An empty-extname file is regarded as a json file.
-            case '.json':
-                return this.generateJsonResCfg();
-            default:
-                return this.generateExpressSendFileResCfg();
+        case '': // An empty-extname file is regarded as a json file.
+        case '.json':
+            return this.generateJsonResCfg();
+        default:
+            return this.generateExpressSendFileResCfg();
         }
     }
     generateJsonResCfg() {
         if (this.stats.size > RESPONSE_FILE_MAX_PARSE_SIZE) {
             log.warn(`Refused to validate response json file '${this.filePath}', `
-                + `cause it is too big, `
+                + 'cause it is too big, '
                 + `max acceptable size is ${RESPONSE_FILE_MAX_PARSE_SIZE},`
                 + `got ${this.stats.size}.`);
             return _.merge({}, this.generateExpressSendFileResCfg(), {
@@ -77,9 +76,8 @@ class ResponseFile {
             });
         } else {
             const fileStr = fs.readFileSync(this.filePath, 'utf-8');
-            let jsonContent = null;
             try {
-                jsonContent = JSON.parse(fileStr);
+                JSON.parse(fileStr);
             } catch (err) {
                 log.warn(`Invalid json file '${this.filePath}'.`);
                 return _.merge({}, this.generateExpressSendFileResCfg(), {
@@ -251,7 +249,7 @@ class Matcher {
         const semiParsedMap = semiParseConfigFile(this.mapFilePath);
         for (let i = 0; i < semiParsedMap.length; i++) {
             let line = semiParsedMap[i];
-            const cfg = new RuleParser(ruleLine, this.cdResult).parse();
+            const cfg = new RuleParser(line, this.cdResult).parse();
             if (
                 this.doesReqMethodMatch(cfg)
                 && this.doesUrlQueryMatch(cfg)
@@ -275,7 +273,7 @@ class Matcher {
         for (let i = 0; i < keys.length; i++) {
             const key = keys[i];
             const regStr = cfg.urlQueries[key];
-            if(!isStringMatching(this.req.query[key], regStr)) {
+            if(!this.isStringMatching(this.req.query[key], regStr)) {
                 return false;
             }
         }
@@ -290,7 +288,7 @@ class Matcher {
         for (let i = 0; i < keys.length; i++) {
             const key = keys[i];
             const regStr = cfg.pathParams[key];
-            if(!isStringMatching(this.req.params[key], regStr)) {
+            if(!this.isStringMatching(this.req.params[key], regStr)) {
                 return false;
             }
         }
@@ -308,19 +306,19 @@ class Matcher {
             let valueToTest;
             let compliantKey = key;
             switch (key[0]) {
-                case '.':
-                case '[':
-                    break;
-                default:
-                    compliantKey = '.' + key;
+            case '.':
+            case '[':
+                break;
+            default:
+                compliantKey = '.' + key;
             }
             try {
-                valueToTest = eval(`this.req.body${compliantKey}`)
+                valueToTest = eval(`this.req.body${compliantKey}`);
             } catch (err) {
                 log.error(`Bad body args key '${key}' in map '${this.mapFilePath}'.`);
                 return false;
             }
-            if(!isStringMatching(valueToTest, regStr)) {
+            if(!this.isStringMatching(valueToTest, regStr)) {
                 return false;
             }
         }
@@ -343,7 +341,7 @@ class Matcher {
         return false;
     }
     implicitResFileMatch() {
-        const implicitResFile = pathUtil.resolve(cdResult.path, 'IMPLICIT_RESPONSE_FILE_NAME');
+        const implicitResFile = pathUtil.resolve(this.cdResult.path, IMPLICIT_RESPONSE_FILE_NAME);
         if (!fs.existsSync(implicitResFile) || !fs.statsSync(implicitResFile).isFile())
             return null;
         const cfg = new ResponseFile(implicitResFile).generateResCfg();

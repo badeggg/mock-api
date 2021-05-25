@@ -1,4 +1,3 @@
-const fs = require('fs');
 const queryString = require('query-string');
 const matchAResponse = require('./matchAResponse');
 const matchAProxy404 = require('./matchAProxy404');
@@ -28,17 +27,17 @@ function doProxy(req, res, target) {
             writeBody(JSON.stringify(request.body));
         }
 
-         if (contentType.includes('application/x-www-form-urlencoded')) {
-             writeBody(queryString.stringify(req.body));
-         }
+        if (contentType.includes('application/x-www-form-urlencoded')) {
+            writeBody(queryString.stringify(req.body));
+        }
     });
     delete req.headers.host;
     proxy.web(req, res, {target}, (err) => log.error(err));
 }
 
-function responseByCfg(cfg) {
+function responseByCfg(cfg, res) {
     if (cfg.statusCode)
-        res.status(cfg.statusCode)
+        res.status(cfg.statusCode);
     res.set('Access-Control-Allow-Origin', '*');
     res.set('From-Mocking-Fake-Service', 'true');
     res.set(cfg.resHeaders);
@@ -50,7 +49,7 @@ function responseByCfg(cfg) {
 
     function send() {
         if (cfg.shouldUseExpressSendFile)
-            res.sendFile(resFilePath);
+            res.sendFile(cfg.resFilePath);
         else
             res.send(cfg.resBody);
     }
@@ -69,7 +68,7 @@ module.exports = function(req, res, next) {
                         res.sendStatus(404);
                     }
                 } else {
-                    responseByCfg(cfg);
+                    responseByCfg(cfg, res);
                 }
             },
             reason => res.status(500).send(reason.toString()),

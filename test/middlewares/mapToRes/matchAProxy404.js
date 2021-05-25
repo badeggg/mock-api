@@ -3,24 +3,24 @@ const tap = require('tap');
 tap.test('basic general match', tap => {
     const proxy404 = [
         [
-            "nodejs",
-            "https://nodejs.org/"
+            'nodejs',
+            'https://nodejs.org/'
         ],
         [
-            "bing",
-            "https://cn.bing.com/"
+            'bing',
+            'https://cn.bing.com/'
         ],
         [
-            "/api",
-            "http://api-server/api"
+            '/api',
+            'http://api-server/api'
         ],
         [
-            "/req",
-            "http://server/req"
+            '/req',
+            'http://server/req'
         ],
         [
-            ".*",
-            "https://www.google.com/"
+            '.*',
+            'https://www.google.com/'
         ]
     ];
     const matchAProxy404 = tap.mock('../../../src/middlewares/mapToRes/matchAProxy404.js', {
@@ -39,8 +39,8 @@ tap.test('basic general match', tap => {
 tap.test('null match', tap => {
     const proxy404 = [
         [
-            "nodejs",
-            "https://nodejs.org/"
+            'nodejs',
+            'https://nodejs.org/'
         ],
     ];
     const matchAProxy404 = tap.mock('../../../src/middlewares/mapToRes/matchAProxy404.js', {
