@@ -16,6 +16,16 @@ INFO  some info
 `
 
 exports[`test/utils/log.js TAP > msgMain 3`] = `
+WARNING some warning
+
+`
+
+exports[`test/utils/log.js TAP > msgMain 4`] = `
 ERROR some error
+
+`
+
+exports[`test/utils/log.js TAP > msgMain 5`] = `
+CRITICAL some critical message
 
 `

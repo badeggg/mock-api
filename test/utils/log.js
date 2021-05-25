@@ -9,7 +9,9 @@ process.stdout.write = (msg) => output.push(msg);
 
 log.debug('some debug message');
 log.info('some info');
+log.warn('some warning');
 log.error('some error');
+log.critical('some critical message');
 
 // resume console.log function
 process.stdout.write = originalStdoutWrite;
