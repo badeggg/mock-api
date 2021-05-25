@@ -45,7 +45,7 @@ class ResponseFile {
         this.filePath = filePath;
         this.ext = pathUtil.extname(filePath);
         this.exists = fs.existsSync(filePath);
-        this.stats = fs.statsSync(filePath);
+        this.stats = fs.statSync(filePath);
     }
     generateResCfg() {
         if (this.stats.size > RESPONSE_FILE_MAX_SIZE) {
@@ -165,7 +165,7 @@ class RuleParser {
         if (responsePathStrInx >=0) {
             const responsePathStr = this.ruleLine[responsePathStrInx];
             const resFilePath = pathUtil.resolve(this.cdResult.path, responsePathStr);
-            if (!fs.existsSync(resFilePath) || !fs.statsSync(resFilePath).isFile()) {
+            if (!fs.existsSync(resFilePath) || !fs.statSync(resFilePath).isFile()) {
                 log.error(`Bad response-file config '${responsePathStr}' in map `
                     + `'${this.mapFilePath}', `
                     + `file '${resFilePath}' does not exist or is not a file.`);
@@ -210,7 +210,7 @@ class RuleParser {
     }
     _commanderParseResFilePath(value) {
         const resFilePath = pathUtil.resolve(this.cdResult.path, value);
-        if (!fs.existsSync(resFilePath) || !fs.statsSync(resFilePath).isFile()) {
+        if (!fs.existsSync(resFilePath) || !fs.statSync(resFilePath).isFile()) {
             log.error(`Bad response-file config '${value}' in map '${this.mapFilePath}', `
                 + `file '${resFilePath}' does not exist or is not a file.`);
             return null;
@@ -342,7 +342,7 @@ class Matcher {
     }
     implicitResFileMatch() {
         const implicitResFile = pathUtil.resolve(this.cdResult.path, IMPLICIT_RESPONSE_FILE_NAME);
-        if (!fs.existsSync(implicitResFile) || !fs.statsSync(implicitResFile).isFile())
+        if (!fs.existsSync(implicitResFile) || !fs.statSync(implicitResFile).isFile())
             return null;
         const cfg = new ResponseFile(implicitResFile).generateResCfg();
         return cfg;

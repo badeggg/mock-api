@@ -45,7 +45,7 @@ function responseByCfg(cfg, res) {
     if (cfg.delayTime)
         setTimeout(send, cfg.delayTime);
     else
-        res.send();
+        send();
 
     function send() {
         if (cfg.shouldUseExpressSendFile)
@@ -56,21 +56,16 @@ function responseByCfg(cfg, res) {
 }
 
 module.exports = function(req, res, next) {
-    matchAResponse(req)
-        .then(
-            cfg => {
-                if (!cfg) {
-                    const proxy404Target = matchAProxy404(req);
-                    if (proxy404Target) {
-                        doProxy(req, res, proxy404Target);
-                    } else {
-                        res.set('From-Mocking-Fake-Service', 'true');
-                        res.sendStatus(404);
-                    }
-                } else {
-                    responseByCfg(cfg, res);
-                }
-            },
-            reason => res.status(500).send(reason.toString()),
-        );
+    const cfg = matchAResponse(req)
+    if (!cfg) {
+        const proxy404Target = matchAProxy404(req);
+        if (proxy404Target) {
+            doProxy(req, res, proxy404Target);
+        } else {
+            res.set('From-Mocking-Fake-Service', 'true');
+            res.sendStatus(404);
+        }
+    } else {
+        responseByCfg(cfg, res);
+    }
 };
