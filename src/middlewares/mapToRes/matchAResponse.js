@@ -38,19 +38,24 @@ const HTTP_METHODS = [
 
 class ResponseFile {
     constructor(filePath) {
-        if (!filePath) {
+        if (!filePath || !fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
             this.filePath = '';
+            if (!filePath)
+                log.error('Empty "filePath" arg for "ResponseFile" constructor.');
+            else
+                log.error(`${filePath} does not exist or is not a file.`);
             return;
         }
         this.filePath = filePath;
         this.ext = pathUtil.extname(filePath);
-        this.exists = fs.existsSync(filePath);
         this.stats = fs.statSync(filePath);
     }
     generateResCfg() {
+        if (!this.filePath)
+            return null;
         if (this.stats.size > RESPONSE_FILE_MAX_SIZE) {
             log.error(`Response file '${this.filePath}' is too big, `
-                + `max acceptable size is ${RESPONSE_FILE_MAX_SIZE},`
+                + `max acceptable size is ${RESPONSE_FILE_MAX_SIZE}, `
                 + `got ${this.stats.size}.`);
             return null;
         }
@@ -63,6 +68,8 @@ class ResponseFile {
         }
     }
     generateJsonResCfg() {
+        if (!this.filePath)
+            return null;
         if (this.stats.size > RESPONSE_FILE_MAX_PARSE_SIZE) {
             log.warn(`Refused to validate response json file '${this.filePath}', `
                 + 'cause it is too big, '
@@ -94,6 +101,8 @@ class ResponseFile {
         }
     }
     generateExpressSendFileResCfg() {
+        if (!this.filePath)
+            return null;
         return {
             shouldUseExpressSendFile: true,
             resFilePath: this.filePath,
