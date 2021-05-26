@@ -56,7 +56,7 @@ function responseByCfg(cfg, res) {
 }
 
 module.exports = function(req, res, next) {
-    const cfg = matchAResponse(req)
+    const cfg = matchAResponse(req);
     if (!cfg) {
         const proxy404Target = matchAProxy404(req);
         if (proxy404Target) {
