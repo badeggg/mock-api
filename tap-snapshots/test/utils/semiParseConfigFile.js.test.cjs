@@ -49,3 +49,85 @@ exports[`test/utils/semiParseConfigFile.js TAP normal parse function > semi pars
     ]
 ]
 `
+
+exports[`test/utils/semiParseConfigFile.js TAP pair chars > semi parse result 1`] = `
+[
+    [
+        "should be together",
+        "should",
+        "be",
+        "separated"
+    ],
+    [
+        "should be together",
+        "should",
+        "be",
+        "separated"
+    ],
+    [
+        "should be together",
+        "should",
+        "be",
+        "separated"
+    ],
+    [
+        "multiple   spaces in pair chars are reserved"
+    ],
+    [
+        "minus-char in or out",
+        "should",
+        "be-fine"
+    ],
+    [
+        "should be together (although has) other pair chars",
+        "should",
+        "be",
+        "separated"
+    ],
+    [
+        "should be together \\"although has\\" other pair chars",
+        "should",
+        "be",
+        "separated"
+    ],
+    [
+        "half pair char\\" in another pair chars",
+        "is",
+        "ignored"
+    ],
+    [
+        "cross line"
+    ],
+    [
+        "pair",
+        "chars",
+        "is",
+        "not",
+        "effective"
+    ],
+    [
+        "cross line with backslash     pair chars is ok"
+    ],
+    [
+        "  ",
+        "spaces",
+        "in",
+        "pair",
+        "chars"
+    ],
+    [
+        "empty",
+        "in",
+        "pair",
+        "chars"
+    ],
+    [
+        "pair",
+        "start",
+        "has",
+        "separator",
+        "effection",
+        "hello there "
+    ]
+]
+`

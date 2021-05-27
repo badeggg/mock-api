@@ -27,6 +27,36 @@ tap.test('normal parse function', tap => {
     tap.end();
 });
 
+tap.test('pair chars', tap => {
+    const configFileContent = `
+    'should be together' should be separated
+    "should be together" should be separated
+    (should be together) should be separated
+    'multiple   spaces in pair chars are reserved'
+    'minus-char in or out' should be-fine
+    'should be together (although has) other pair chars' should be separated
+    'should be together "although has" other pair chars' should be separated
+    'half pair char" in another pair chars' is "ignored
+    'cross line
+    pair chars is not effective'
+    'cross line with backslash\\
+    pair chars is ok'
+    '  ' spaces in pair chars
+    '' empty in pair chars
+    pair start has separator effection'hello there '
+    `;
+
+    const configFolder = tap.testdir({
+        config: configFileContent
+    });
+    const configFilePath = pathUtil.resolve(configFolder, 'config');
+
+    const semiParseConfigFile = require('../../src/utils/semiParseConfigFile.js');
+    const semiParseResult = semiParseConfigFile(configFilePath);
+    tap.matchSnapshot(toNiceJson(semiParseResult), 'semi parse result');
+    tap.end();
+});
+
 tap.test('backslash is the last character of the file', tap => {
     const configFileContent = `
     backslash is the last character of the file

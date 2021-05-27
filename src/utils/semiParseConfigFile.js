@@ -34,6 +34,51 @@ const fs = require('fs');
 const log = require('./log.js');
 const trimPoundSignComment = require('./trimPoundSignComment.js');
 
+const PAIR_CHARS = {
+    '\'': '\'',
+    '"': '"',
+    '(': ')',
+};
+
+function lineSplit(line) {
+    /**
+     * Split a string line. A single(or multiple) space is a separator while
+     * pair chars in consideration.
+     * @zhaoxuxu 2021-5-27
+     */
+    let toMatch = null;
+    let toJoin = [];
+    let splited = [];
+    for (let i = 0; i < line.length; i++) {
+        const cha = line[i];
+        if (toMatch) {
+            if (PAIR_CHARS[toMatch] === cha) {
+                join();
+                toMatch = null;
+            } else {
+                toJoin.push(cha);
+            }
+        } else {
+            if (/\s/.test(cha)) {
+                join();
+            } else if (Object.keys(PAIR_CHARS).includes(cha)) {
+                toMatch = cha;
+                join();
+            } else {
+                toJoin.push(cha);
+            }
+        }
+    }
+    join();
+    function join() {
+        if (toJoin.length) {
+            splited.push(toJoin.join(''));
+        }
+        toJoin = [];
+    }
+    return splited;
+}
+
 module.exports = function(filePath) {
     if (!fs.existsSync(filePath)
         || !fs.statSync(filePath).isFile()
@@ -60,10 +105,8 @@ module.exports = function(filePath) {
     lines = lines.map(trimPoundSignComment)
         .filter(line => Boolean(line.trim().length))
         .map(line => {
-            line = line.replace(/\s+/g, ' ');
-            const parsedLine = line.split(' ')
-                .filter(item => Boolean(item.length));
-            return parsedLine;
+            const splited = lineSplit(line);
+            return splited;
         });
 
     return lines;

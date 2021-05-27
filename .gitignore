@@ -3,6 +3,7 @@
 
 # vim
 *.swp
+*.swo
 
 # nyc
 /.nyc_output
