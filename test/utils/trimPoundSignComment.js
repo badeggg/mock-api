@@ -7,3 +7,5 @@ tap.matchSnapshot(trimPoundSignComment('some config in a line # some comment'), 
 tap.equal(trimPoundSignComment('# some comment'), '');
 tap.equal(trimPoundSignComment('#  '), '');
 tap.equal(trimPoundSignComment(''), '');
+tap.matchSnapshot(trimPoundSignComment('some config \\# escaped pound sign'), 'escaped pound');
+tap.matchSnapshot(trimPoundSignComment('note backslash self need escaping in js string \# comment'), 'not escaped pound');

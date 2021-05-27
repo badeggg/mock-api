@@ -10,6 +10,7 @@ tap.test('normal parse function', tap => {
 	  # a tab and two spaces
     basic general config
     multiple   spaces  # comment after line
+    escaped pound \\# sign
         tab	as a white space
     one config line \\
     writen in \\

@@ -32,6 +32,12 @@ exports[`test/utils/semiParseConfigFile.js TAP normal parse function > semi pars
         "spaces"
     ],
     [
+        "escaped",
+        "pound",
+        "#",
+        "sign"
+    ],
+    [
         "tab",
         "as",
         "a",
