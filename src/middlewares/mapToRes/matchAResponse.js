@@ -5,8 +5,9 @@
  * `[map] [options]`
  *     e.g. map -q query1=someValue&query2=someValue \
  *              -a arg1=someValue&[2].name=someValue&.detail=someValue \
- *              -h 'http-response-header: header-value' \
+ *              -h 'http-response-header: header value' \
  *                 'another-header: another-value'
+ * todo to doc
  * The return object of this module function may contain fields:
  * {
  *      shouldUseExpressSendFile: true | false,
@@ -22,7 +23,7 @@
 const pathUtil = require('path');
 const fs = require('fs');
 const _ = require('lodash');
-const { Command } = require('commander');
+const commander = require('commander');
 const cd = require('./cd');
 const parseQueryStr = require('../../utils/parseQueryStr');
 const parseHttpHeader = require('../../utils/parseHttpHeader');
@@ -35,6 +36,8 @@ const RESPONSE_FILE_MAX_PARSE_SIZE = 10 * 1024 * 1024;
 const HTTP_METHODS = [
     'GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH'
 ];
+const BAD_COMMANDER_OPTION_TO_DELETE = `Commander custom option parser does not has a
+proper way to indicate current option should be regarded as undefined`;
 
 class ResponseFile {
     constructor(filePath) {
@@ -115,26 +118,37 @@ class RuleParser {
         this.mapFilePath = pathUtil.resolve(cdResult.path, 'map');
         this.ruleLine = ruleLine;
         this.cdResult = cdResult;
-        this.rule = new Command();
+        this.rule = new commander.Command();
         this.rule
-            .option('-q, --url-queries   <queries...>', 'url queries',        this._commanderParseUrlQueries, {})
-            .option('-p, --path-params   <params...>',  'path params',        this._commanderParsePathParams, {})
-            .option('-a, --body-args     <args...>',    'body args',          this._commanderParseBodyArgs,   {})
-            .option('-h, --res-headers   <headers...>', 'response headers',   this._commanderParseResHeaders, {})
-            .option('-c, --status-code   <code>',       'status code',        this._commanderParseStatusCode)
-            .option('-m, --req-method    <method>',     'request method',     this._commanderParseReqMethod)
-            .option('-r, --res-file-path <file>',       'response file path', this._commanderParseResFilePath)
-            .option('-t, --delay-time    <time>',       'delay to response',  this._commanderParseDelayTime);
+            .option('-q, --url-queries   <queries...>', 'url queries',        (value, previous) => this._commanderParseUrlQueries(value, previous), {})
+            .option('-p, --path-params   <params...>',  'path params',        (value, previous) => this._commanderParsePathParams(value, previous), {})
+            .option('-a, --body-args     <args...>',    'body args',          (value, previous) => this._commanderParseBodyArgs(value, previous),   {})
+            .option('-h, --res-headers   <headers...>', 'response headers',   (value, previous) => this._commanderParseResHeaders(value, previous), {})
+            .option('-c, --status-code   <code>',       'status code',        (value, previous) => this._commanderParseStatusCode(value, previous))
+            .option('-m, --req-method    <method>',     'request method',     (value, previous) => this._commanderParseReqMethod(value, previous))
+            .option('-f, --res-file-path <file>',       'response file path', (value, previous) => this._commanderParseResFilePath(value, previous))
+            .option('-t, --delay-time    <time>',       'delay to response',  (value, previous) => this._commanderParseDelayTime(value, previous));
     }
     parse() {
-        if (this.ruleLine[0].toLowerCase() === 'map')
+        if (this.ruleLine.length && this.ruleLine[0].toLowerCase() === 'map')
             this.ruleLine = this.ruleLine.slice(1);
         if (!this.ruleLine.length)
             return null;
         const quickCfg = this.parseQuickCfg();
-        this.rule.parse(this.ruleLine, {from: 'user'});
+        this.rule.exitOverride();
+        try {
+            this.rule.parse(this.ruleLine, {from: 'user'});
+        } catch (err) {
+            log.error(`Bad config in map '${this.mapFilePath}', ${err.message}.`);
+            return null;
+        }
         const parsedRuleLine = this.rule.opts();
         let result = _.merge({}, quickCfg, parsedRuleLine);
+
+        Object.keys(result).forEach((key) => {
+            if (result[key] === BAD_COMMANDER_OPTION_TO_DELETE)
+                delete result[key];
+        });
 
         if (result.resFilePath) {
             const generatedResCfg = new ResponseFile(result.resFilePath).generateResCfg();
@@ -148,6 +162,40 @@ class RuleParser {
             const method = this.ruleLine[0].toUpperCase();
             result.reqMethod = method;
             this.ruleLine = this.ruleLine.slice(1);
+        }
+        /**
+         * An item is assumed to be a response-path-item if
+         * 1) it is just after the last quick url-query / body-args / path-params and starts
+         *    with ./
+         * 2) or it is the last item and starts with ./
+         * The condition-1-item found stop the finding of the condition-2-item.
+         * @zhaoxuxu @2021-5-27
+         */
+        let responsePathStrInx = -1;
+        const lastQuickItemsIndex = _.findLastIndex(this.ruleLine,
+            item => '?_+'.includes(item[0]));
+        const justAfterQuickItemsIndex = lastQuickItemsIndex + 1;
+        if (lastQuickItemsIndex >= 0
+            && justAfterQuickItemsIndex < this.ruleLine.length - 1
+            && this.ruleLine[justAfterQuickItemsIndex].startsWith('./')
+        ) {
+            responsePathStrInx = justAfterQuickItemsIndex;
+        } else if (this.ruleLine.length
+            && this.ruleLine[this.ruleLine.length - 1].startsWith('./')
+        ) {
+            responsePathStrInx = this.ruleLine.length - 1;
+        }
+        if (responsePathStrInx >=0) {
+            const responsePathStr = this.ruleLine[responsePathStrInx];
+            const resFilePath = pathUtil.resolve(this.cdResult.path, responsePathStr);
+            if (!fs.existsSync(resFilePath) || !fs.statSync(resFilePath).isFile()) {
+                log.error(`Bad response-file config '${responsePathStr}' in map `
+                    + `'${this.mapFilePath}', `
+                    + `file '${resFilePath}' does not exist or is not a file.`);
+            } else {
+                result.resFilePath = resFilePath;
+            }
+            this.ruleLine.splice(responsePathStrInx, 1);
         }
         const queryStrInx = this.ruleLine.findIndex(item => item[0] === '?');
         if (queryStrInx >=0) {
@@ -170,19 +218,6 @@ class RuleParser {
             result.bodyArgs = bodyArgs;
             this.ruleLine.splice(bodyArgsStrInx, 1);
         }
-        const responsePathStrInx = this.ruleLine.findIndex(item => !'?_+-'.includes(item[0]));
-        if (responsePathStrInx >=0) {
-            const responsePathStr = this.ruleLine[responsePathStrInx];
-            const resFilePath = pathUtil.resolve(this.cdResult.path, responsePathStr);
-            if (!fs.existsSync(resFilePath) || !fs.statSync(resFilePath).isFile()) {
-                log.error(`Bad response-file config '${responsePathStr}' in map `
-                    + `'${this.mapFilePath}', `
-                    + `file '${resFilePath}' does not exist or is not a file.`);
-            } else {
-                result.resFilePath = resFilePath;
-            }
-            this.ruleLine.splice(responsePathStrInx, 1);
-        }
         return result;
     }
     _commanderParseUrlQueries(value, previous) {
@@ -200,12 +235,12 @@ class RuleParser {
     _commanderParseStatusCode(value) {
         if (!value.match(/^\d{3}$/)) {
             log.error(`Bad status code config '${value}' in map '${this.mapFilePath}'.`);
-            return null;
+            return BAD_COMMANDER_OPTION_TO_DELETE;
         }
         const code = parseInt(value);
         if (code < 100 || code > 599) {
             log.error(`Bad status code config '${value}' in map '${this.mapFilePath}'.`);
-            return null;
+            return BAD_COMMANDER_OPTION_TO_DELETE;
         }
         return code;
     }
@@ -213,7 +248,7 @@ class RuleParser {
         value = value.toUpperCase();
         if (!HTTP_METHODS.includes(value)) {
             log.error(`Bad request method config '${value}' in map '${this.mapFilePath}'.`);
-            return null;
+            return BAD_COMMANDER_OPTION_TO_DELETE;
         }
         return value;
     }
@@ -222,20 +257,17 @@ class RuleParser {
         if (!fs.existsSync(resFilePath) || !fs.statSync(resFilePath).isFile()) {
             log.error(`Bad response-file config '${value}' in map '${this.mapFilePath}', `
                 + `file '${resFilePath}' does not exist or is not a file.`);
-            return null;
+            return BAD_COMMANDER_OPTION_TO_DELETE;
         }
         return resFilePath;
     }
     _commanderParseDelayTime(value) {
-        if (!value)
-            return 0;
-
         let time;
         if (value.match(/^\d+(ms)?$/))
             time = parseInt(value);
-        if (value.match(/^\d+(s)?$/))
+        if (value.match(/^\d+(s)$/))
             time = parseInt(value) * 1000;
-        if (Number.isSafeInterger(time))
+        if (Number.isSafeInteger(time))
             return time;
 
         log.error(`Bad deplay time config '${value}' in map '${this.mapFilePath}'.`);
@@ -260,7 +292,8 @@ class Matcher {
             let line = semiParsedMap[i];
             const cfg = new RuleParser(line, this.cdResult).parse();
             if (
-                this.doesReqMethodMatch(cfg)
+                cfg
+                && this.doesReqMethodMatch(cfg)
                 && this.doesUrlQueryMatch(cfg)
                 && this.doesPathParamsMatch(cfg)
                 && this.doesBodyArgsMatch(cfg)

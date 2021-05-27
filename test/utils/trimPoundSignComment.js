@@ -8,4 +8,5 @@ tap.equal(trimPoundSignComment('# some comment'), '');
 tap.equal(trimPoundSignComment('#  '), '');
 tap.equal(trimPoundSignComment(''), '');
 tap.matchSnapshot(trimPoundSignComment('some config \\# escaped pound sign'), 'escaped pound');
+// eslint-disable-next-line no-useless-escape
 tap.matchSnapshot(trimPoundSignComment('note backslash self need escaping in js string \# comment'), 'not escaped pound');
