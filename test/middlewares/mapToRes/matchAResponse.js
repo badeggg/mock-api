@@ -129,13 +129,14 @@ tap.test('class RuleParser', async tap => {
     map GET ./response
     PUT  ?query1=value&query2={.*} _param1=value +arg1.a.b=value ./response
     post -q query1=12 -p param=value -a arg=12 -t 400 ./response
-    map --url-queries   query=val&query1=val1  \
-        --path-params   params=val \
-        --body-args     arg=val    \
-        --res-headers   'a-http-header: header value' \
-        --status-code   200        \
-        --req-method    get        \
-        --res-file-path ./response \
+    get ?prefix={pre\\d+}&reg={^\\w+$} # reminder: double backslash here is for js string syntax
+    map --url-queries   query=val&query1=val1  \\
+        --path-params   params=val \\
+        --body-args     arg=val    \\
+        --res-headers   'a-http-header: header value' \\
+        --status-code   200        \\
+        --req-method    get        \\
+        --res-file-path ./response \\
         --delay-time    1s
 
     # status code
@@ -187,6 +188,9 @@ tap.test('class RuleParser', async tap => {
     GET -c 300 -q     # empty query
     GET -o            # undefined option
     GET --only-this   # undefined option
+    map -t 100        # no req-method
+    GEt               # method case insensitive
+    GET ?query        # key only query
     `;
     const fakeServicesDir = tap.testdir({
         'fake-services': {
@@ -222,4 +226,164 @@ tap.test('class RuleParser', async tap => {
     tap.matchSnapshot(warningMsgs, 'log warnings');
 
     tap.equal(new RuleParser([], cdResult).parse(), null);
+});
+
+tap.test('class Matcher', async tap => {
+    const mapFileContent = `
+    # line order is important
+    GET ?query ./response
+    GET ./response
+
+    # all match fields
+    POST ?string=str&prefix={pre\\d}&number={\\d+} _integer={\\d+}&id={\\w+} \\
+         +name=badeggg&nestObj.email={^zhaoxuxu\\w\\w@\\w+\\.com$}&arr[1].country=china
+
+    # body args
+    POST +[3].name=bade
+    POST +typo.email={zhaoxuxu}
+    map +[3].name={bade}
+    +[0]=a
+
+    # pair chars
+    options -q 'name="badeggg"' ./pair-chars-res
+    options -p 'hasSpace=has space' -q ( has space in property=  and in value ) \\
+            ./pair-chars-res
+
+    # empty value of a query/params/body field means this value can be anything except undefined
+    # which means it can be whatever but must appear
+    POST -q valueCanBeAnythingIfOnlyAppear
+    POST -p valueCanBeAnythingIfOnlyAppear
+
+    # code coverage
+    POST -q name= -p path
+    POST -p pathParamsNotMatch
+    `;
+    const fakeServicesDir = tap.testdir({
+        'fake-services': {
+            'general': {
+                map: mapFileContent,
+                response: '{"test": "general"}',
+                'pair-chars-res': '{}',
+            },
+            'no-map': {
+                response: '{"test": "no-map"}',
+            },
+            'empty': {},
+        },
+    });
+    let infoMsgs = [];
+    let warningMsgs = [];
+    let errorMsgs = [];
+    const Matcher = tap.mock('../../../src/middlewares/mapToRes/matchAResponse.js', {
+        '../../../src/utils/log.js': {
+            info: (msg) => infoMsgs.push('info: ' + removePathPrefix(msg, fakeServicesDir)),
+            warn: (msg) => warningMsgs.push('warning: ' + removePathPrefix(msg, fakeServicesDir)),
+            error: (msg) => errorMsgs.push('error: ' + removePathPrefix(msg, fakeServicesDir)),
+        },
+    }).Matcher;
+    const cdResults = {
+        general: {
+            path: pathUtil.resolve(fakeServicesDir, './fake-services/general/'),
+        },
+        noMap: {
+            path: pathUtil.resolve(fakeServicesDir, './fake-services/no-map/'),
+        },
+        empty: {
+            path: pathUtil.resolve(fakeServicesDir, './fake-services/empty/'),
+        },
+    };
+    const reqs = {
+        general: {
+            method: 'POST',
+            query: {
+                string: 'str',
+                prefix: 'pre2',
+                number: 123,
+            },
+            params: {
+                integer: 121423234,
+                id: 'akdhadjhhoaf7y4hfoh',
+            },
+            body: {
+                name: 'badeggg',
+                nestObj: {
+                    email: 'zhaoxuxujc@gmail.com',
+                },
+                arr: [
+                    12,
+                    {
+                        country: 'china'
+                    },
+                ],
+            },
+        },
+        arrBody: {
+            method: 'POST',
+            body: [
+                'a', 'b', 'c',
+                {
+                    name: 'badeggg',
+                },
+            ]
+        },
+        mapFileLineOrder: {
+            method: 'GET',
+            query: {
+                query: 'adfsd',
+            },
+        },
+        pairChars: {
+            method: 'OPTIONs',
+            query: {
+                name: '"badeggg"',
+                ' has space in property': '  and in value ',
+            },
+            params: {
+                hasSpace: 'has space',
+                'has-minus': 'has-minus',
+            },
+        },
+        nonMatch: {
+            method: 'PATCH',
+        },
+        noPathParams: {
+            method: 'POST',
+            query: {
+                name: 'badeggg',
+            },
+        },
+        pathParamsNotMatch: {
+            method: 'POST',
+            params: {},
+        },
+        valueCanBeAnythingIfOnlyAppear: {
+            method: 'POST',
+            query: {
+                valueCanBeAnythingIfOnlyAppear: ''
+            },
+        },
+    };
+    let matchArr = [];
+    matchArr.push(new Matcher(cdResults.general, reqs.general).match());
+    matchArr.push(new Matcher(cdResults.general, reqs.arrBody).match());
+    delete reqs.arrBody.body[3].name;
+    matchArr.push(new Matcher(cdResults.general, reqs.arrBody).match());
+    matchArr.push(new Matcher(cdResults.general, reqs.mapFileLineOrder).match());
+    matchArr.push(new Matcher(cdResults.general, reqs.pairChars).match());
+    delete reqs.pairChars.query.name;
+    matchArr.push(new Matcher(cdResults.general, reqs.pairChars).match());
+    matchArr.push(new Matcher(cdResults.noMap, reqs.general).match());
+    matchArr.push(new Matcher(cdResults.general, reqs.valueCanBeAnythingIfOnlyAppear).match());
+    delete reqs.valueCanBeAnythingIfOnlyAppear.query.valueCanBeAnythingIfOnlyAppear;
+    tap.equal(new Matcher(cdResults.general, reqs.valueCanBeAnythingIfOnlyAppear).match(), null);
+    matchArr.forEach(cfg => removeCfgPathPropertiesPrefix(cfg, fakeServicesDir));
+    tap.matchSnapshot(matchArr, 'match result list');
+    tap.matchSnapshot(infoMsgs, 'log infos');
+    tap.matchSnapshot(warningMsgs, 'log warnings');
+    tap.matchSnapshot(errorMsgs, 'log errors');
+
+    tap.equal(new Matcher(cdResults.empty, reqs.general).match(), null);
+    tap.equal(new Matcher(cdResults.general, reqs.nonMatch).match(), null);
+    tap.equal(new Matcher(cdResults.general, reqs.noPathParams).match(), null);
+    tap.equal(new Matcher(cdResults.general, reqs.pathParamsNotMatch).match(), null);
 });

@@ -304,11 +304,16 @@ class Matcher {
         return null;
     }
     doesReqMethodMatch(cfg) {
-        return this.req.method.toUpperCase() === cfg.method.toUpperCase();
+        if (!cfg.reqMethod)
+            return true;
+        return this.req.method.toUpperCase() === cfg.reqMethod.toUpperCase();
     }
     doesUrlQueryMatch(cfg) {
-        if (!Object.keys(cfg.urlQueries)) {
+        if (!Object.keys(cfg.urlQueries).length) {
             return true;
+        }
+        if (!this.req.query) {
+            return false;
         }
 
         const keys = Object.keys(cfg.urlQueries);
@@ -322,8 +327,11 @@ class Matcher {
         return true;
     }
     doesPathParamsMatch(cfg) {
-        if (!Object.keys(cfg.pathParams)) {
+        if (!Object.keys(cfg.pathParams).length) {
             return true;
+        }
+        if (!this.req.params) {
+            return false;
         }
 
         const keys = Object.keys(cfg.pathParams);
@@ -337,8 +345,11 @@ class Matcher {
         return true;
     }
     doesBodyArgsMatch(cfg) {
-        if (!Object.keys(cfg.bodyArgs)) {
+        if (!Object.keys(cfg.bodyArgs).length) {
             return true;
+        }
+        if (!this.req.body) {
+            return false;
         }
 
         const keys = Object.keys(cfg.bodyArgs);
@@ -357,21 +368,25 @@ class Matcher {
             try {
                 valueToTest = eval(`this.req.body${compliantKey}`);
             } catch (err) {
-                log.error(`Bad body args key '${key}' in map '${this.mapFilePath}'.`);
+                log.info(`Failed to eval request body with body args key '${key}' `
+                    +`configured in map '${this.mapFilePath}'.`);
                 return false;
             }
             if(!this.isStringMatching(valueToTest, regStr)) {
+                // todo to log.info
                 return false;
             }
         }
         return true;
     }
     isStringMatching(str, regStr) {
-        if (regStr[0] === '{'
+        if (regStr === '')
+            return str !== undefined;
+        else if (regStr[0] === '{'
             && regStr[regStr.length - 1] === '}'
         ) {
             let reg = null;
-            const regStr = regStr.slice(1, regStr.length - 1);
+            regStr = regStr.slice(1, regStr.length - 1);
             reg = new RegExp(regStr);
             if (reg.test(str))
                 return true;

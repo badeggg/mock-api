@@ -5,6 +5,117 @@
  * Make sure to inspect the output below.  Do not ignore changes!
  */
 'use strict'
+exports[`test/middlewares/mapToRes/matchAResponse.js TAP class Matcher > log errors 1`] = `
+Array []
+`
+
+exports[`test/middlewares/mapToRes/matchAResponse.js TAP class Matcher > log infos 1`] = `
+Array [
+  "info: Failed to eval request body with body args key 'typo.email' configured in map '/fake-services/general/map'.",
+  "info: Failed to eval request body with body args key 'typo.email' configured in map '/fake-services/general/map'.",
+]
+`
+
+exports[`test/middlewares/mapToRes/matchAResponse.js TAP class Matcher > log warnings 1`] = `
+Array []
+`
+
+exports[`test/middlewares/mapToRes/matchAResponse.js TAP class Matcher > match result list 1`] = `
+Array [
+  Object {
+    "bodyArgs": Object {
+      "arr[1].country": "china",
+      "name": "badeggg",
+      "nestObj.email": "{^zhaoxuxu\\\\w\\\\w@\\\\w+\\\\.com$}",
+    },
+    "pathParams": Object {
+      "id": "{\\\\w+}",
+      "integer": "{\\\\d+}",
+    },
+    "reqMethod": "POST",
+    "resHeaders": Object {},
+    "urlQueries": Object {
+      "number": "{\\\\d+}",
+      "prefix": "{pre\\\\d}",
+      "string": "str",
+    },
+  },
+  Object {
+    "bodyArgs": Object {
+      "[3].name": "{bade}",
+    },
+    "pathParams": Object {},
+    "resHeaders": Object {},
+    "urlQueries": Object {},
+  },
+  Object {
+    "bodyArgs": Object {
+      "[0]": "a",
+    },
+    "pathParams": Object {},
+    "resHeaders": Object {},
+    "urlQueries": Object {},
+  },
+  Object {
+    "bodyArgs": Object {},
+    "pathParams": Object {},
+    "reqMethod": "GET",
+    "resFilePath": "/fake-services/general/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
+    "urlQueries": Object {
+      "query": "",
+    },
+  },
+  Object {
+    "bodyArgs": Object {},
+    "pathParams": Object {},
+    "reqMethod": "OPTIONS",
+    "resFilePath": "/fake-services/general/pair-chars-res",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
+    "urlQueries": Object {
+      "name": "\\"badeggg\\"",
+    },
+  },
+  Object {
+    "bodyArgs": Object {},
+    "pathParams": Object {
+      "hasSpace": "has space",
+    },
+    "reqMethod": "OPTIONS",
+    "resFilePath": "/fake-services/general/pair-chars-res",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
+    "urlQueries": Object {
+      " has space in property": "  and in value ",
+    },
+  },
+  Object {
+    "resFilePath": "/fake-services/no-map/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
+  },
+  Object {
+    "bodyArgs": Object {},
+    "pathParams": Object {},
+    "reqMethod": "POST",
+    "resHeaders": Object {},
+    "urlQueries": Object {
+      "valueCanBeAnythingIfOnlyAppear": "",
+    },
+  },
+]
+`
+
 exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > big json file 1`] = `
 Object {
   "resFilePath": "/fake-services/fake-api-path/bigJsonFile",
@@ -163,6 +274,16 @@ Array [
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {
       "query1": "12",
+    },
+  },
+  Object {
+    "bodyArgs": Object {},
+    "pathParams": Object {},
+    "reqMethod": "GET",
+    "resHeaders": Object {},
+    "urlQueries": Object {
+      "prefix": "{pre\\\\d+}",
+      "reg": "{^\\\\w+$}",
     },
   },
   Object {
@@ -447,5 +568,28 @@ Array [
   null,
   null,
   null,
+  Object {
+    "bodyArgs": Object {},
+    "delayTime": 100,
+    "pathParams": Object {},
+    "resHeaders": Object {},
+    "urlQueries": Object {},
+  },
+  Object {
+    "bodyArgs": Object {},
+    "pathParams": Object {},
+    "reqMethod": "GET",
+    "resHeaders": Object {},
+    "urlQueries": Object {},
+  },
+  Object {
+    "bodyArgs": Object {},
+    "pathParams": Object {},
+    "reqMethod": "GET",
+    "resHeaders": Object {},
+    "urlQueries": Object {
+      "query": "",
+    },
+  },
 ]
 `

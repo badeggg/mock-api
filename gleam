@@ -58,3 +58,4 @@
 - docs
 - examples
 - think: how to test with different node versions
+- file premission check
