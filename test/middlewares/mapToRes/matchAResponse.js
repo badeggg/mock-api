@@ -17,7 +17,7 @@ function removeCfgPathPropertiesPrefix(cfg, prefix) {
 }
 
 tap.test('class ResponseFile', async tap => {
-    const fakeServicesDir = tap.testdir({
+    let fakeServicesDir = tap.testdir({
         'fake-services': {
             'fake-api-path': {
                 plainTextNoExt: 'plain text.',
@@ -30,7 +30,8 @@ tap.test('class ResponseFile', async tap => {
             },
         },
     });
-    const basePath       = pathUtil.resolve(fakeServicesDir, './fake-services/fake-api-path/');
+    fakeServicesDir = pathUtil.resolve(fakeServicesDir, './fake-services');
+    const basePath       = pathUtil.resolve(fakeServicesDir, './fake-api-path/');
     const plainTextNoExt = pathUtil.resolve(basePath, 'plainTextNoExt');
     const jsonNoExt      = pathUtil.resolve(basePath, 'jsonNoExt');
     const json           = pathUtil.resolve(basePath, 'json.json');
@@ -192,7 +193,7 @@ tap.test('class RuleParser', async tap => {
     GEt               # method case insensitive
     GET ?query        # key only query
     `;
-    const fakeServicesDir = tap.testdir({
+    let fakeServicesDir = tap.testdir({
         'fake-services': {
             'fake-api-path': {
                 map: mapFileContent,
@@ -200,6 +201,7 @@ tap.test('class RuleParser', async tap => {
             },
         },
     });
+    fakeServicesDir = pathUtil.resolve(fakeServicesDir, './fake-services');
     let errorMsgs = [];
     let warningMsgs = [];
     const RuleParser = tap.mock('../../../src/middlewares/mapToRes/matchAResponse.js', {
@@ -210,7 +212,7 @@ tap.test('class RuleParser', async tap => {
     }).RuleParser;
     const semiParseConfigFile = require('../../../src/utils/semiParseConfigFile');
     const cdResult = {
-        path: pathUtil.resolve(fakeServicesDir, './fake-services/fake-api-path/'),
+        path: pathUtil.resolve(fakeServicesDir, './fake-api-path/'),
     };
     const mapFilePath = pathUtil.resolve(cdResult.path, 'map');
     const semiParsedMap = semiParseConfigFile(mapFilePath);
@@ -236,7 +238,7 @@ tap.test('class Matcher', async tap => {
 
     # all match fields
     POST ?string=str&prefix={pre\\d}&number={\\d+} _integer={\\d+}&id={\\w+} \\
-         +name=badeggg&nestObj.email={^zhaoxuxu\\w\\w@\\w+\\.com$}&arr[1].country=china
+         +.name=badeggg&nestObj.email={^zhaoxuxu\\w\\w@\\w+\\.com$}&arr[1].country=china
 
     # body args
     POST +[3].name=bade
@@ -258,7 +260,7 @@ tap.test('class Matcher', async tap => {
     POST -q name= -p path
     POST -p pathParamsNotMatch
     `;
-    const fakeServicesDir = tap.testdir({
+    let fakeServicesDir = tap.testdir({
         'fake-services': {
             'general': {
                 map: mapFileContent,
@@ -271,6 +273,7 @@ tap.test('class Matcher', async tap => {
             'empty': {},
         },
     });
+    fakeServicesDir = pathUtil.resolve(fakeServicesDir, './fake-services');
     let infoMsgs = [];
     let warningMsgs = [];
     let errorMsgs = [];
@@ -283,13 +286,13 @@ tap.test('class Matcher', async tap => {
     }).Matcher;
     const cdResults = {
         general: {
-            path: pathUtil.resolve(fakeServicesDir, './fake-services/general/'),
+            path: pathUtil.resolve(fakeServicesDir, './general/'),
         },
         noMap: {
-            path: pathUtil.resolve(fakeServicesDir, './fake-services/no-map/'),
+            path: pathUtil.resolve(fakeServicesDir, './no-map/'),
         },
         empty: {
-            path: pathUtil.resolve(fakeServicesDir, './fake-services/empty/'),
+            path: pathUtil.resolve(fakeServicesDir, './empty/'),
         },
     };
     const reqs = {
@@ -386,4 +389,39 @@ tap.test('class Matcher', async tap => {
     tap.equal(new Matcher(cdResults.general, reqs.nonMatch).match(), null);
     tap.equal(new Matcher(cdResults.general, reqs.noPathParams).match(), null);
     tap.equal(new Matcher(cdResults.general, reqs.pathParamsNotMatch).match(), null);
+});
+
+tap.test('match function', async tap => {
+    const mapFileContent = `
+    GET ./response
+    `;
+    let fakeServicesDir = tap.testdir({
+        'fake-services': {
+            'general': {
+                map: mapFileContent,
+                response: '{"test": "general"}',
+            },
+        },
+    });
+    fakeServicesDir = pathUtil.resolve(fakeServicesDir, './fake-services');
+    const match = tap.mock('../../../src/middlewares/mapToRes/matchAResponse.js', {
+        '../../../src/config': {
+            fakeServicesBasePath: fakeServicesDir,
+        },
+    });
+    const reqs = {
+        general: {
+            method: 'GET',
+            path: '/general',
+        },
+        notExist: {
+            method: 'GET',
+            path: '/not-exist',
+        },
+    };
+    tap.matchSnapshot(
+        removeCfgPathPropertiesPrefix(match(reqs.general), fakeServicesDir),
+        'match function result'
+    );
+    tap.equal(match(reqs.notExist), null);
 });

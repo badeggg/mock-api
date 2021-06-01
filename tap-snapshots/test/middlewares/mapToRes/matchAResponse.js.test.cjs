@@ -11,8 +11,8 @@ Array []
 
 exports[`test/middlewares/mapToRes/matchAResponse.js TAP class Matcher > log infos 1`] = `
 Array [
-  "info: Failed to eval request body with body args key 'typo.email' configured in map '/fake-services/general/map'.",
-  "info: Failed to eval request body with body args key 'typo.email' configured in map '/fake-services/general/map'.",
+  "info: Failed to eval request body with body args key 'typo.email' configured in map '/general/map'.",
+  "info: Failed to eval request body with body args key 'typo.email' configured in map '/general/map'.",
 ]
 `
 
@@ -24,8 +24,8 @@ exports[`test/middlewares/mapToRes/matchAResponse.js TAP class Matcher > match r
 Array [
   Object {
     "bodyArgs": Object {
+      ".name": "badeggg",
       "arr[1].country": "china",
-      "name": "badeggg",
       "nestObj.email": "{^zhaoxuxu\\\\w\\\\w@\\\\w+\\\\.com$}",
     },
     "pathParams": Object {
@@ -60,7 +60,7 @@ Array [
     "bodyArgs": Object {},
     "pathParams": Object {},
     "reqMethod": "GET",
-    "resFilePath": "/fake-services/general/response",
+    "resFilePath": "/general/response",
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
@@ -73,7 +73,7 @@ Array [
     "bodyArgs": Object {},
     "pathParams": Object {},
     "reqMethod": "OPTIONS",
-    "resFilePath": "/fake-services/general/pair-chars-res",
+    "resFilePath": "/general/pair-chars-res",
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
@@ -88,7 +88,7 @@ Array [
       "hasSpace": "has space",
     },
     "reqMethod": "OPTIONS",
-    "resFilePath": "/fake-services/general/pair-chars-res",
+    "resFilePath": "/general/pair-chars-res",
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
@@ -98,7 +98,7 @@ Array [
     },
   },
   Object {
-    "resFilePath": "/fake-services/no-map/response",
+    "resFilePath": "/no-map/response",
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
@@ -118,10 +118,10 @@ Array [
 
 exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > big json file 1`] = `
 Object {
-  "resFilePath": "/fake-services/fake-api-path/bigJsonFile",
+  "resFilePath": "/fake-api-path/bigJsonFile",
   "resHeaders": Object {
     "Content-Type": "application/json; charset=UTF-8",
-    "Mock-Not-Validated-Json-File": "/fake-services/fake-api-path/bigJsonFile",
+    "Mock-Not-Validated-Json-File": "/fake-api-path/bigJsonFile",
   },
   "shouldUseExpressSendFile": true,
 }
@@ -129,16 +129,16 @@ Object {
 
 exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > image file 1`] = `
 Object {
-  "resFilePath": "/fake-services/fake-api-path/image.png",
+  "resFilePath": "/fake-api-path/image.png",
   "shouldUseExpressSendFile": true,
 }
 `
 
 exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > invalid json file 1`] = `
 Object {
-  "resFilePath": "/fake-services/fake-api-path/invalid.json",
+  "resFilePath": "/fake-api-path/invalid.json",
   "resHeaders": Object {
-    "Mock-Warn-Invalid-Json-File": "/fake-services/fake-api-path/invalid.json",
+    "Mock-Warn-Invalid-Json-File": "/fake-api-path/invalid.json",
   },
   "shouldUseExpressSendFile": true,
 }
@@ -146,7 +146,7 @@ Object {
 
 exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > json file 1`] = `
 Object {
-  "resFilePath": "/fake-services/fake-api-path/json.json",
+  "resFilePath": "/fake-api-path/json.json",
   "resHeaders": Object {
     "Content-Type": "application/json; charset=UTF-8",
   },
@@ -156,7 +156,7 @@ Object {
 
 exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > json without extension 1`] = `
 Object {
-  "resFilePath": "/fake-services/fake-api-path/jsonNoExt",
+  "resFilePath": "/fake-api-path/jsonNoExt",
   "resHeaders": Object {
     "Content-Type": "application/json; charset=UTF-8",
   },
@@ -166,28 +166,28 @@ Object {
 
 exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > log errors 1`] = `
 Array [
-  "error: Response file '/fake-services/fake-api-path/bigFile' is too big, max acceptable size is 524288000, got 524288001.",
-  "error: /fake-services/fake-api-path/notExistFile does not exist or is not a file.",
-  "error: /fake-services/fake-api-path does not exist or is not a file.",
+  "error: Response file '/fake-api-path/bigFile' is too big, max acceptable size is 524288000, got 524288001.",
+  "error: /fake-api-path/notExistFile does not exist or is not a file.",
+  "error: /fake-api-path does not exist or is not a file.",
   "error: Empty \\"filePath\\" arg for \\"ResponseFile\\" constructor.",
-  "error: /fake-services/fake-api-path/notExistFile does not exist or is not a file.",
-  "error: /fake-services/fake-api-path/notExistFile does not exist or is not a file.",
+  "error: /fake-api-path/notExistFile does not exist or is not a file.",
+  "error: /fake-api-path/notExistFile does not exist or is not a file.",
 ]
 `
 
 exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > log warnings 1`] = `
 Array [
-  "warning: Invalid json file '/fake-services/fake-api-path/plainTextNoExt'.",
-  "warning: Invalid json file '/fake-services/fake-api-path/invalid.json'.",
-  "warning: Refused to validate response json file '/fake-services/fake-api-path/bigJsonFile', cause it is too big, max acceptable size is 10485760,got 10485761.",
+  "warning: Invalid json file '/fake-api-path/plainTextNoExt'.",
+  "warning: Invalid json file '/fake-api-path/invalid.json'.",
+  "warning: Refused to validate response json file '/fake-api-path/bigJsonFile', cause it is too big, max acceptable size is 10485760,got 10485761.",
 ]
 `
 
 exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > plain text without extension 1`] = `
 Object {
-  "resFilePath": "/fake-services/fake-api-path/plainTextNoExt",
+  "resFilePath": "/fake-api-path/plainTextNoExt",
   "resHeaders": Object {
-    "Mock-Warn-Invalid-Json-File": "/fake-services/fake-api-path/plainTextNoExt",
+    "Mock-Warn-Invalid-Json-File": "/fake-api-path/plainTextNoExt",
   },
   "shouldUseExpressSendFile": true,
 }
@@ -195,20 +195,20 @@ Object {
 
 exports[`test/middlewares/mapToRes/matchAResponse.js TAP class RuleParser > log errors 1`] = `
 Array [
-  "error: Bad status code config 'x22' in map '/fake-services/fake-api-path/map'.",
-  "error: Bad status code config '600' in map '/fake-services/fake-api-path/map'.",
-  "error: Bad status code config '1000' in map '/fake-services/fake-api-path/map'.",
-  "error: Bad request method config 'BAD' in map '/fake-services/fake-api-path/map'.",
-  "error: Bad response-file config './not-exist' in map '/fake-services/fake-api-path/map', file '/fake-services/fake-api-path/not-exist' does not exist or is not a file.",
-  "error: Bad response-file config './not-exist' in map '/fake-services/fake-api-path/map', file '/fake-services/fake-api-path/not-exist' does not exist or is not a file.",
-  "error: Bad deplay time config '9007199254740992' in map '/fake-services/fake-api-path/map'.",
-  "error: Bad config in map '/fake-services/fake-api-path/map', error: option '-t, --delay-time    <time>' argument missing.",
-  "error: Bad deplay time config 'null' in map '/fake-services/fake-api-path/map'.",
-  "error: Bad config in map '/fake-services/fake-api-path/map', error: option '-f, --res-file-path <file>' argument missing.",
-  "error: Bad deplay time config '-c' in map '/fake-services/fake-api-path/map'.",
-  "error: Bad config in map '/fake-services/fake-api-path/map', error: option '-q, --url-queries   <queries...>' argument missing.",
-  "error: Bad config in map '/fake-services/fake-api-path/map', error: unknown option '-o'.",
-  "error: Bad config in map '/fake-services/fake-api-path/map', error: unknown option '--only-this'.",
+  "error: Bad status code config 'x22' in map '/fake-api-path/map'.",
+  "error: Bad status code config '600' in map '/fake-api-path/map'.",
+  "error: Bad status code config '1000' in map '/fake-api-path/map'.",
+  "error: Bad request method config 'BAD' in map '/fake-api-path/map'.",
+  "error: Bad response-file config './not-exist' in map '/fake-api-path/map', file '/fake-api-path/not-exist' does not exist or is not a file.",
+  "error: Bad response-file config './not-exist' in map '/fake-api-path/map', file '/fake-api-path/not-exist' does not exist or is not a file.",
+  "error: Bad deplay time config '9007199254740992' in map '/fake-api-path/map'.",
+  "error: Bad config in map '/fake-api-path/map', error: option '-t, --delay-time    <time>' argument missing.",
+  "error: Bad deplay time config 'null' in map '/fake-api-path/map'.",
+  "error: Bad config in map '/fake-api-path/map', error: option '-f, --res-file-path <file>' argument missing.",
+  "error: Bad deplay time config '-c' in map '/fake-api-path/map'.",
+  "error: Bad config in map '/fake-api-path/map', error: option '-q, --url-queries   <queries...>' argument missing.",
+  "error: Bad config in map '/fake-api-path/map', error: unknown option '-o'.",
+  "error: Bad config in map '/fake-api-path/map', error: unknown option '--only-this'.",
 ]
 `
 
@@ -222,7 +222,7 @@ Array [
     "bodyArgs": Object {},
     "pathParams": Object {},
     "reqMethod": "GET",
-    "resFilePath": "/fake-services/fake-api-path/response",
+    "resFilePath": "/fake-api-path/response",
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
@@ -233,7 +233,7 @@ Array [
     "bodyArgs": Object {},
     "pathParams": Object {},
     "reqMethod": "GET",
-    "resFilePath": "/fake-services/fake-api-path/response",
+    "resFilePath": "/fake-api-path/response",
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
@@ -248,7 +248,7 @@ Array [
       "param1": "value",
     },
     "reqMethod": "PUT",
-    "resFilePath": "/fake-services/fake-api-path/response",
+    "resFilePath": "/fake-api-path/response",
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
@@ -267,7 +267,7 @@ Array [
       "param": "value",
     },
     "reqMethod": "POST",
-    "resFilePath": "/fake-services/fake-api-path/response",
+    "resFilePath": "/fake-api-path/response",
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
@@ -295,7 +295,7 @@ Array [
       "params": "val",
     },
     "reqMethod": "GET",
-    "resFilePath": "/fake-services/fake-api-path/response",
+    "resFilePath": "/fake-api-path/response",
     "resHeaders": Object {
       "a-http-header": "header value",
       "Content-Type": "application/json; charset=UTF-8",
@@ -430,7 +430,7 @@ Array [
     "bodyArgs": Object {},
     "pathParams": Object {},
     "reqMethod": "GET",
-    "resFilePath": "/fake-services/fake-api-path/response",
+    "resFilePath": "/fake-api-path/response",
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
@@ -537,7 +537,7 @@ Array [
       "param": "90",
     },
     "reqMethod": "GET",
-    "resFilePath": "/fake-services/fake-api-path/response",
+    "resFilePath": "/fake-api-path/response",
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
@@ -592,4 +592,18 @@ Array [
     },
   },
 ]
+`
+
+exports[`test/middlewares/mapToRes/matchAResponse.js TAP match function > match function result 1`] = `
+Object {
+  "bodyArgs": Object {},
+  "pathParams": Object {},
+  "reqMethod": "GET",
+  "resFilePath": "/general/response",
+  "resHeaders": Object {
+    "Content-Type": "application/json; charset=UTF-8",
+  },
+  "shouldUseExpressSendFile": true,
+  "urlQueries": Object {},
+}
 `
