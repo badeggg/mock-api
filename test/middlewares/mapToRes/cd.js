@@ -1,6 +1,6 @@
 const tap = require('tap');
-const toNiceJson = require('../../../testUtils/toNiceJson.js');
-const removePathPrefix = require('../../../testUtils/removePathPrefix.js');
+const toNiceJson = require('../../testUtils/toNiceJson.js');
+const removePathPrefix = require('../../testUtils/removePathPrefix.js');
 
 function removeCdResultPathPrefix(result, prefix) {
     result.path = removePathPrefix(result.path, prefix);

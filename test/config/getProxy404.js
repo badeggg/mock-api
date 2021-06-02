@@ -1,5 +1,5 @@
 const tap = require('tap');
-const toNiceJson = require('../../testUtils/toNiceJson.js');
+const toNiceJson = require('../testUtils/toNiceJson.js');
 
 tap.test('find proxy404 file, parse it and return result', tap => {
     const proxy404Content = `

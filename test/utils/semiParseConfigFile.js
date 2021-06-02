@@ -1,6 +1,6 @@
 const pathUtil = require('path');
 const tap = require('tap');
-const toNiceJson = require('../../testUtils/toNiceJson.js');
+const toNiceJson = require('../testUtils/toNiceJson.js');
 
 tap.test('normal parse function', tap => {
     const configFileContent = `

@@ -2,7 +2,7 @@ const fs = require('fs');
 const tap = require('tap');
 const _ = require('lodash');
 const pathUtil = require('path');
-const removePathPrefix = require('../../../testUtils/removePathPrefix.js');
+const removePathPrefix = require('../../testUtils/removePathPrefix.js');
 
 function removeCfgPathPropertiesPrefix(cfg, prefix) {
     if (cfg && cfg.resFilePath)
