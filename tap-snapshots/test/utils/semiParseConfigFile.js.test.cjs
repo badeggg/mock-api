@@ -20,6 +20,20 @@ exports[`test/utils/semiParseConfigFile.js TAP backslash is the last character o
 ]
 `
 
+exports[`test/utils/semiParseConfigFile.js TAP config file is not readable > log errors 1`] = `
+Array [
+  "error: read file error",
+  "error: Failed to read file content of '/config'.",
+]
+`
+
+exports[`test/utils/semiParseConfigFile.js TAP config file path is not ok > log errors 1`] = `
+Array [
+  "error: /config does not exist or is not a file.",
+  "error: /configgg does not exist or is not a file.",
+]
+`
+
 exports[`test/utils/semiParseConfigFile.js TAP normal parse function > semi parse result 1`] = `
 [
     [

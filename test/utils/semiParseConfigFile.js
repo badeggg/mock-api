@@ -1,6 +1,7 @@
 const pathUtil = require('path');
 const tap = require('tap');
 const toNiceJson = require('../testUtils/toNiceJson.js');
+const removePathPrefix = require('../testUtils/removePathPrefix.js');
 
 tap.test('normal parse function', tap => {
     const configFileContent = `
@@ -99,11 +100,17 @@ tap.test('config file path is not ok', tap => {
     const configFolder = tap.testdir({
         config: {},
     });
-    const semiParseConfigFile = require('../../src/utils/semiParseConfigFile.js');
+    let errorMsgs = [];
+    const semiParseConfigFile = tap.mock('../../src/utils/semiParseConfigFile.js', {
+        '../../src/utils/log.js': {
+            error: (msg) => errorMsgs.push('error: ' + removePathPrefix(msg, configFolder)),
+        },
+    });
     let configFilePath = pathUtil.resolve(configFolder, 'config');
     tap.throws(() => semiParseConfigFile(configFilePath), 'a folder path should throw');
     configFilePath = pathUtil.resolve(configFolder, 'configgg');
     tap.throws(() => semiParseConfigFile(configFilePath), 'a non-exist path should throw');
+    tap.matchSnapshot(errorMsgs, 'log errors');
     tap.end();
 });
 
@@ -111,6 +118,7 @@ tap.test('config file is not readable', tap => {
     const configFolder = tap.testdir({
         config: '',
     });
+    let errorMsgs = [];
     const semiParseConfigFile = tap.mock('../../src/utils/semiParseConfigFile.js', {
         fs: {
             readFileSync: () => { throw new Error('read file error'); },
@@ -121,9 +129,13 @@ tap.test('config file is not readable', tap => {
                 };
             },
         },
+        '../../src/utils/log.js': {
+            error: (msg) => errorMsgs.push('error: ' + removePathPrefix(msg, configFolder)),
+        },
     });
 
     const configFilePath = pathUtil.resolve(configFolder, 'config');
     tap.notOk(semiParseConfigFile(configFilePath), 'should throw when failed to read');
+    tap.matchSnapshot(errorMsgs, 'log errors');
     tap.end();
 });
