@@ -153,10 +153,21 @@ class RuleParser {
                 delete result[key];
         });
 
-        if (result.resFilePath) {
-            const generatedResCfg = new ResponseFile(result.resFilePath).generateResCfg();
-            result = _.merge({}, generatedResCfg, result);
+        if (!result.resFilePath) {
+            const implicitResFile = pathUtil.resolve(this.cdResult.path,
+                IMPLICIT_RESPONSE_FILE_NAME);
+            if (fs.existsSync(implicitResFile) && fs.statSync(implicitResFile).isFile())
+                result.resFilePath = implicitResFile;
+            else {
+                // todo to better notice ruleline position in map file
+                log.error(`No explicit resFilePath config in ruleLine `
+                    + `${this.ruleLine.join(' ')} `
+                    + `in map file ${this.mapFilePath}, and no fine implicit response file.`);
+                return null;
+            }
         }
+        const generatedResCfg = new ResponseFile(result.resFilePath).generateResCfg();
+        result = _.merge({}, generatedResCfg, result);
         return result;
     }
     parseQuickCfg() {
@@ -285,9 +296,9 @@ class Matcher {
         this.req = req;
     }
     match() {
-        if (!fs.existsSync(this.mapFilePath))
-            return this.implicitResFileMatch();
-        return this.mapFileMatch();
+        if (fs.existsSync(this.mapFilePath))
+            return this.mapFileMatch() || this.implicitResFileMatch();
+        return this.implicitResFileMatch();
     }
     mapFileMatch() {
         const semiParsedMap = semiParseConfigFile(this.mapFilePath);
@@ -401,7 +412,8 @@ class Matcher {
         return false;
     }
     implicitResFileMatch() {
-        const implicitResFile = pathUtil.resolve(this.cdResult.path, IMPLICIT_RESPONSE_FILE_NAME);
+        const implicitResFile = pathUtil.resolve(this.cdResult.path,
+            IMPLICIT_RESPONSE_FILE_NAME);
         if (!fs.existsSync(implicitResFile) || !fs.statSync(implicitResFile).isFile())
             return null;
         const cfg = new ResponseFile(implicitResFile).generateResCfg();

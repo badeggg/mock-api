@@ -6,7 +6,21 @@
  */
 'use strict'
 exports[`test/middlewares/mapToRes/matchAResponse.js TAP class Matcher > log errors 1`] = `
-Array []
+Array [
+  "error: Bad response-file config './response' in map '/on-implicit-response-file/map', file '/on-implicit-response-file/response' does not exist or is not a file.",
+  "error: No explicit resFilePath config in ruleLine  in map file /on-implicit-response-file/map, and no fine implicit response file.",
+  "error: Bad response-file config './response' in map '/on-implicit-response-file/map', file '/on-implicit-response-file/response' does not exist or is not a file.",
+  "error: No explicit resFilePath config in ruleLine  in map file /on-implicit-response-file/map, and no fine implicit response file.",
+  "error: No explicit resFilePath config in ruleLine  in map file /on-implicit-response-file/map, and no fine implicit response file.",
+  "error: No explicit resFilePath config in ruleLine  in map file /on-implicit-response-file/map, and no fine implicit response file.",
+  "error: No explicit resFilePath config in ruleLine  in map file /on-implicit-response-file/map, and no fine implicit response file.",
+  "error: No explicit resFilePath config in ruleLine  in map file /on-implicit-response-file/map, and no fine implicit response file.",
+  "error: No explicit resFilePath config in ruleLine  in map file /on-implicit-response-file/map, and no fine implicit response file.",
+  "error: Bad response-file config './pair-chars-res' in map '/on-implicit-response-file/map', file '/on-implicit-response-file/pair-chars-res' does not exist or is not a file.",
+  "error: No explicit resFilePath config in ruleLine -q name=\\"badeggg\\" in map file /on-implicit-response-file/map, and no fine implicit response file.",
+  "error: Bad response-file config './pair-chars-res' in map '/on-implicit-response-file/map', file '/on-implicit-response-file/pair-chars-res' does not exist or is not a file.",
+  "error: No explicit resFilePath config in ruleLine -p hasSpace=has space -q  has space in property=  and in value  in map file /on-implicit-response-file/map, and no fine implicit response file.",
+]
 `
 
 exports[`test/middlewares/mapToRes/matchAResponse.js TAP class Matcher > log infos 1`] = `
@@ -33,7 +47,11 @@ Array [
       "integer": "{\\\\d+}",
     },
     "reqMethod": "POST",
-    "resHeaders": Object {},
+    "resFilePath": "/general/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
     "urlQueries": Object {
       "number": "{\\\\d+}",
       "prefix": "{pre\\\\d}",
@@ -45,7 +63,11 @@ Array [
       "[3].name": "{bade}",
     },
     "pathParams": Object {},
-    "resHeaders": Object {},
+    "resFilePath": "/general/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
   Object {
@@ -53,7 +75,11 @@ Array [
       "[0]": "a",
     },
     "pathParams": Object {},
-    "resHeaders": Object {},
+    "resFilePath": "/general/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
   Object {
@@ -108,7 +134,11 @@ Array [
     "bodyArgs": Object {},
     "pathParams": Object {},
     "reqMethod": "POST",
-    "resHeaders": Object {},
+    "resFilePath": "/general/specifiedResponse",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
     "urlQueries": Object {
       "valueCanBeAnythingIfOnlyAppear": "",
     },
@@ -280,7 +310,11 @@ Array [
     "bodyArgs": Object {},
     "pathParams": Object {},
     "reqMethod": "GET",
-    "resHeaders": Object {},
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
     "urlQueries": Object {
       "prefix": "{pre\\\\d+}",
       "reg": "{^\\\\w+$}",
@@ -311,7 +345,11 @@ Array [
     "bodyArgs": Object {},
     "pathParams": Object {},
     "reqMethod": "GET",
-    "resHeaders": Object {},
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
     "statusCode": 200,
     "urlQueries": Object {},
   },
@@ -319,111 +357,12 @@ Array [
     "bodyArgs": Object {},
     "pathParams": Object {},
     "reqMethod": "GET",
-    "resHeaders": Object {},
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
     "statusCode": 404,
-    "urlQueries": Object {},
-  },
-  Object {
-    "bodyArgs": Object {},
-    "pathParams": Object {},
-    "reqMethod": "GET",
-    "resHeaders": Object {},
-    "urlQueries": Object {},
-  },
-  Object {
-    "bodyArgs": Object {},
-    "pathParams": Object {},
-    "reqMethod": "GET",
-    "resHeaders": Object {},
-    "urlQueries": Object {},
-  },
-  Object {
-    "bodyArgs": Object {},
-    "pathParams": Object {},
-    "reqMethod": "GET",
-    "resHeaders": Object {},
-    "urlQueries": Object {},
-  },
-  Object {
-    "bodyArgs": Object {},
-    "pathParams": Object {},
-    "reqMethod": "GET",
-    "resHeaders": Object {},
-    "urlQueries": Object {},
-  },
-  Object {
-    "bodyArgs": Object {},
-    "pathParams": Object {},
-    "reqMethod": "HEAD",
-    "resHeaders": Object {},
-    "urlQueries": Object {},
-  },
-  Object {
-    "bodyArgs": Object {},
-    "pathParams": Object {},
-    "reqMethod": "POST",
-    "resHeaders": Object {},
-    "urlQueries": Object {},
-  },
-  Object {
-    "bodyArgs": Object {},
-    "pathParams": Object {},
-    "reqMethod": "PUT",
-    "resHeaders": Object {},
-    "urlQueries": Object {},
-  },
-  Object {
-    "bodyArgs": Object {},
-    "pathParams": Object {},
-    "reqMethod": "DELETE",
-    "resHeaders": Object {},
-    "urlQueries": Object {},
-  },
-  Object {
-    "bodyArgs": Object {},
-    "pathParams": Object {},
-    "reqMethod": "CONNECT",
-    "resHeaders": Object {},
-    "urlQueries": Object {},
-  },
-  Object {
-    "bodyArgs": Object {},
-    "pathParams": Object {},
-    "reqMethod": "OPTIONS",
-    "resHeaders": Object {},
-    "urlQueries": Object {},
-  },
-  Object {
-    "bodyArgs": Object {},
-    "pathParams": Object {},
-    "reqMethod": "TRACE",
-    "resHeaders": Object {},
-    "urlQueries": Object {},
-  },
-  Object {
-    "bodyArgs": Object {},
-    "pathParams": Object {},
-    "reqMethod": "PATCH",
-    "resHeaders": Object {},
-    "urlQueries": Object {},
-  },
-  Object {
-    "bodyArgs": Object {},
-    "pathParams": Object {},
-    "reqMethod": "GET",
-    "resHeaders": Object {},
-    "urlQueries": Object {},
-  },
-  Object {
-    "bodyArgs": Object {},
-    "pathParams": Object {},
-    "resHeaders": Object {},
-    "urlQueries": Object {},
-  },
-  Object {
-    "bodyArgs": Object {},
-    "pathParams": Object {},
-    "resHeaders": Object {},
     "urlQueries": Object {},
   },
   Object {
@@ -441,14 +380,185 @@ Array [
     "bodyArgs": Object {},
     "pathParams": Object {},
     "reqMethod": "GET",
-    "resHeaders": Object {},
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
   Object {
     "bodyArgs": Object {},
     "pathParams": Object {},
     "reqMethod": "GET",
-    "resHeaders": Object {},
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
+    "urlQueries": Object {},
+  },
+  Object {
+    "bodyArgs": Object {},
+    "pathParams": Object {},
+    "reqMethod": "GET",
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
+    "urlQueries": Object {},
+  },
+  Object {
+    "bodyArgs": Object {},
+    "pathParams": Object {},
+    "reqMethod": "HEAD",
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
+    "urlQueries": Object {},
+  },
+  Object {
+    "bodyArgs": Object {},
+    "pathParams": Object {},
+    "reqMethod": "POST",
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
+    "urlQueries": Object {},
+  },
+  Object {
+    "bodyArgs": Object {},
+    "pathParams": Object {},
+    "reqMethod": "PUT",
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
+    "urlQueries": Object {},
+  },
+  Object {
+    "bodyArgs": Object {},
+    "pathParams": Object {},
+    "reqMethod": "DELETE",
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
+    "urlQueries": Object {},
+  },
+  Object {
+    "bodyArgs": Object {},
+    "pathParams": Object {},
+    "reqMethod": "CONNECT",
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
+    "urlQueries": Object {},
+  },
+  Object {
+    "bodyArgs": Object {},
+    "pathParams": Object {},
+    "reqMethod": "OPTIONS",
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
+    "urlQueries": Object {},
+  },
+  Object {
+    "bodyArgs": Object {},
+    "pathParams": Object {},
+    "reqMethod": "TRACE",
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
+    "urlQueries": Object {},
+  },
+  Object {
+    "bodyArgs": Object {},
+    "pathParams": Object {},
+    "reqMethod": "PATCH",
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
+    "urlQueries": Object {},
+  },
+  Object {
+    "bodyArgs": Object {},
+    "pathParams": Object {},
+    "reqMethod": "GET",
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
+    "urlQueries": Object {},
+  },
+  Object {
+    "bodyArgs": Object {},
+    "pathParams": Object {},
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
+    "urlQueries": Object {},
+  },
+  Object {
+    "bodyArgs": Object {},
+    "pathParams": Object {},
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
+    "urlQueries": Object {},
+  },
+  Object {
+    "bodyArgs": Object {},
+    "pathParams": Object {},
+    "reqMethod": "GET",
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
+    "urlQueries": Object {},
+  },
+  Object {
+    "bodyArgs": Object {},
+    "pathParams": Object {},
+    "reqMethod": "GET",
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
+    "urlQueries": Object {},
+  },
+  Object {
+    "bodyArgs": Object {},
+    "pathParams": Object {},
+    "reqMethod": "GET",
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
     "urlQueries": Object {
       "query": "val",
     },
@@ -458,7 +568,11 @@ Array [
     "delayTime": 1000,
     "pathParams": Object {},
     "reqMethod": "GET",
-    "resHeaders": Object {},
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
   Object {
@@ -466,7 +580,11 @@ Array [
     "delayTime": 1000,
     "pathParams": Object {},
     "reqMethod": "GET",
-    "resHeaders": Object {},
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
   Object {
@@ -474,7 +592,11 @@ Array [
     "delayTime": 1000,
     "pathParams": Object {},
     "reqMethod": "GET",
-    "resHeaders": Object {},
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
   Object {
@@ -482,7 +604,11 @@ Array [
     "delayTime": 0,
     "pathParams": Object {},
     "reqMethod": "GET",
-    "resHeaders": Object {},
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
   Object {
@@ -490,7 +616,11 @@ Array [
     "delayTime": 0,
     "pathParams": Object {},
     "reqMethod": "GET",
-    "resHeaders": Object {},
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
   null,
@@ -499,14 +629,22 @@ Array [
     "delayTime": 0,
     "pathParams": Object {},
     "reqMethod": "GET",
-    "resHeaders": Object {},
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
   Object {
     "bodyArgs": Object {},
     "pathParams": Object {},
     "reqMethod": "GET",
-    "resHeaders": Object {},
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
     "urlQueries": Object {
       "query": "use-this-query-value",
     },
@@ -515,7 +653,11 @@ Array [
     "bodyArgs": Object {},
     "pathParams": Object {},
     "reqMethod": "POST",
-    "resHeaders": Object {},
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
     "urlQueries": Object {
       "query": "value",
     },
@@ -524,7 +666,11 @@ Array [
     "bodyArgs": Object {},
     "pathParams": Object {},
     "reqMethod": "GET",
-    "resHeaders": Object {},
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
     "urlQueries": Object {
       "query": "value",
       "query1": "cd",
@@ -552,14 +698,22 @@ Array [
     "delayTime": 0,
     "pathParams": Object {},
     "reqMethod": "GET",
-    "resHeaders": Object {},
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
   Object {
     "bodyArgs": Object {},
     "pathParams": Object {},
     "reqMethod": "GET",
-    "resHeaders": Object {},
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
     "urlQueries": Object {
       "-c": "",
       "300": "",
@@ -572,21 +726,33 @@ Array [
     "bodyArgs": Object {},
     "delayTime": 100,
     "pathParams": Object {},
-    "resHeaders": Object {},
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
   Object {
     "bodyArgs": Object {},
     "pathParams": Object {},
     "reqMethod": "GET",
-    "resHeaders": Object {},
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
   Object {
     "bodyArgs": Object {},
     "pathParams": Object {},
     "reqMethod": "GET",
-    "resHeaders": Object {},
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "shouldUseExpressSendFile": true,
     "urlQueries": Object {
       "query": "",
     },

@@ -59,3 +59,4 @@
 - examples
 - think: how to test with different node versions
 - file premission check
+- better notice the warning/error map line config

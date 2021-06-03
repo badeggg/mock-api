@@ -17,6 +17,20 @@ Array [
 ]
 `
 
+exports[`test/mock.js TAP doubt cases & completion test of src/middlewares/mapToRes/index.js > log errors 1`] = `
+Array []
+`
+
+exports[`test/mock.js TAP doubt cases & completion test of src/middlewares/mapToRes/index.js > log infos 1`] = `
+Array [
+  "info: \\u001b[32mmock-api listening on: 3001\\u001b[39m",
+]
+`
+
+exports[`test/mock.js TAP doubt cases & completion test of src/middlewares/mapToRes/index.js > log warnings 1`] = `
+Array []
+`
+
 exports[`test/mock.js TAP try next plus one port when current port is not available > log infos 1`] = `
 Array [
   "info: \\u001b[32mmock-api listening on: 3001\\u001b[39m",

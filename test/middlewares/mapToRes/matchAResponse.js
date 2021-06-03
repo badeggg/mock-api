@@ -253,19 +253,24 @@ tap.test('class Matcher', async tap => {
 
     # empty value of a query/params/body field means this value can be anything except undefined
     # which means it can be whatever but must appear
-    POST -q valueCanBeAnythingIfOnlyAppear
-    POST -p valueCanBeAnythingIfOnlyAppear
+    POST -q valueCanBeAnythingIfOnlyAppear ./specifiedResponse
+    POST -p valueCanBeAnythingIfOnlyAppear ./specifiedResponse
 
     # code coverage
-    POST -q name= -p path
-    POST -p pathParamsNotMatch
+    POST -q name= -p path ./specifiedResponse
+    POST -p pathParamsNotMatch ./specifiedResponse
     `;
     let fakeServicesDir = tap.testdir({
         'fake-services': {
             'general': {
                 map: mapFileContent,
                 response: '{"test": "general"}',
+                specifiedResponse: '["specified response"]',
                 'pair-chars-res': '{}',
+            },
+            'on-implicit-response-file': {
+                map: mapFileContent,
+                specifiedResponse: '["specified response"]',
             },
             'no-map': {
                 response: '{"test": "no-map"}',
@@ -287,6 +292,9 @@ tap.test('class Matcher', async tap => {
     const cdResults = {
         general: {
             path: pathUtil.resolve(fakeServicesDir, './general/'),
+        },
+        noImplicitResponseFile: {
+            path: pathUtil.resolve(fakeServicesDir, './on-implicit-response-file/'),
         },
         noMap: {
             path: pathUtil.resolve(fakeServicesDir, './no-map/'),
@@ -378,7 +386,8 @@ tap.test('class Matcher', async tap => {
     matchArr.push(new Matcher(cdResults.noMap, reqs.general).match());
     matchArr.push(new Matcher(cdResults.general, reqs.valueCanBeAnythingIfOnlyAppear).match());
     delete reqs.valueCanBeAnythingIfOnlyAppear.query.valueCanBeAnythingIfOnlyAppear;
-    tap.equal(new Matcher(cdResults.general, reqs.valueCanBeAnythingIfOnlyAppear).match(), null);
+    tap.equal(new Matcher(cdResults.noImplicitResponseFile, reqs.valueCanBeAnythingIfOnlyAppear).match(),
+        null);
     matchArr.forEach(cfg => removeCfgPathPropertiesPrefix(cfg, fakeServicesDir));
     tap.matchSnapshot(matchArr, 'match result list');
     tap.matchSnapshot(infoMsgs, 'log infos');
@@ -386,9 +395,9 @@ tap.test('class Matcher', async tap => {
     tap.matchSnapshot(errorMsgs, 'log errors');
 
     tap.equal(new Matcher(cdResults.empty, reqs.general).match(), null);
-    tap.equal(new Matcher(cdResults.general, reqs.nonMatch).match(), null);
-    tap.equal(new Matcher(cdResults.general, reqs.noPathParams).match(), null);
-    tap.equal(new Matcher(cdResults.general, reqs.pathParamsNotMatch).match(), null);
+    tap.equal(new Matcher(cdResults.noImplicitResponseFile, reqs.nonMatch).match(), null);
+    tap.equal(new Matcher(cdResults.noImplicitResponseFile, reqs.noPathParams).match(), null);
+    tap.equal(new Matcher(cdResults.noImplicitResponseFile, reqs.pathParamsNotMatch).match(), null);
 });
 
 tap.test('match function', async tap => {

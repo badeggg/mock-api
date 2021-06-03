@@ -90,3 +90,125 @@ tap.test('try next plus one port when current port is not available', async tap 
     tap.matchSnapshot(infoMsgs, 'log infos');
     tap.end();
 });
+
+tap.test('doubt cases & completion test of src/middlewares/mapToRes/index.js', async tap => {
+    const fakeServicesDir = tap.testdir({
+        'fake-services': {
+            'general': {
+                response: '["implicit response"]',
+                specifiedResponse: '["specified response"]',
+                'picture.png': 'picture(text here is fine)',
+                map: `
+                    OPTIONS # should use implicit response file
+                    GET ?whatname= ./specifiedResponse
+                    GET ?give-me-a-pic&forceHeaderJpg&causual-header ./picture.png \\
+                        --res-headers 'content-type: image/jpeg' \\
+                        -h 'a-casual-header: a casual header'
+                    GET ?give-me-a-pic ./picture.png
+                `,
+                '__address__': {
+                    specifiedResponse: '["china", "beijing"]',
+                    map: `
+                        get _address={^\\w+$} ./specifiedResponse
+                    `,
+                },
+            },
+            'delay': {
+                response: '["i am late"]',
+                map: `GET -t 300`,
+            },
+            response: '["fake service root"]',
+            proxy404: '', // todo to continue
+        },
+    });
+    let infoMsgs = [];
+    let warnMsgs = [];
+    let errorMsgs = [];
+    const mock = tap.mock('../src/mock.js', {
+        '../src/utils/getProjectRoot.js': () => fakeServicesDir,
+        '../src/utils/log.js': {
+            info: (msg) => infoMsgs.push('info: ' + msg),
+            warn: (msg) => warnMsgs.push('warn: ' + msg),
+            error: (msg) => errorMsgs.push('error: ' + msg),
+        },
+    });
+    const mockServer = await mock(process);
+    const mockingLocation = `http://localhost:${mockServer.address().port}`;
+
+    let response;
+    response = await axios.request({
+        url: mockingLocation,
+        method: 'GET',
+    });
+    tap.equal(response.data[0], 'fake service root', 'should in fake service root');
+
+    response = await axios.request({
+        url: mockingLocation + '/general',
+        method: 'OPTIONS',
+    });
+    tap.equal(response.data[0], 'implicit response', 'should use implicit response file');
+
+    response = await axios.request({
+        url: mockingLocation + '/general',
+        method: 'GET',
+        params: { whatname: 'badeggg' },
+    });
+    tap.equal(response.data[0], 'specified response', 'basic case');
+
+    response = await axios.request({
+        url: mockingLocation + '/general',
+        method: 'GET',
+        params: { 'give-me-a-pic': '' },
+    });
+    tap.equal(response.headers['content-type'], 'image/png',
+        'header content-type should be image type');
+    tap.equal(response.data, 'picture(text here is fine)',
+        'should give response a picture file');
+
+    response = await axios.request({
+        url: mockingLocation + '/general',
+        method: 'GET',
+        params: {
+            'give-me-a-pic': '',
+            forceHeaderJpg: '',
+            'causual-header': 'feel free here',
+        },
+    });
+    tap.equal(response.headers['content-type'], 'image/jpeg',
+        'header content-type should be overridden');
+    tap.equal(response.headers['a-casual-header'], 'a casual header',
+        'a random custom header should be ok');
+    tap.equal(response.data, 'picture(text here is fine)',
+        'should give response a picture file');
+
+    response = await axios.request({
+        url: mockingLocation + '/general/askAddress',
+        method: 'GET',
+    });
+    tap.equal(response.data[0], 'china', 'path params should be ok');
+
+    response = null;
+    const testDelayResponsed = axios.request({
+        url: mockingLocation + '/delay',
+        method: 'GET',
+    })
+    .then((resp) => {
+        response = resp;
+    });
+    tap.equal(response, null, 'delayed response not ok yet');
+    tap.resolveMatch(
+        new Promise(resolve => {
+            setTimeout(() => {
+                resolve(response.data[0]);
+            }, 600);
+        }),
+        'i am late',
+        'delayed response content',
+    );
+
+    await testDelayResponsed;
+    mockServer.close();
+    tap.matchSnapshot(infoMsgs, 'log infos');
+    tap.matchSnapshot(warnMsgs, 'log warnings');
+    tap.matchSnapshot(errorMsgs, 'log errors');
+});
