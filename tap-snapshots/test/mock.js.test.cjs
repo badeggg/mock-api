@@ -7,7 +7,7 @@
 'use strict'
 exports[`test/mock.js TAP basic general function > log infos 1`] = `
 Array [
-  "info: \\u001b[32mmock-api listening on: 3001\\u001b[39m",
+  "info: \\u001b[32mmock-api listening on: xxxx\\u001b[39m",
 ]
 `
 
@@ -17,22 +17,32 @@ Array [
 ]
 `
 
-exports[`test/mock.js TAP doubt cases & completion test of src/middlewares/mapToRes/index.js > log errors 1`] = `
-Array []
-`
-
-exports[`test/mock.js TAP doubt cases & completion test of src/middlewares/mapToRes/index.js > log infos 1`] = `
+exports[`test/mock.js TAP cover proxy error > log errors 1`] = `
 Array [
-  "info: \\u001b[32mmock-api listening on: 3001\\u001b[39m",
+  "error: Error: connect ECONNREFUSED 127.0.0.1:80",
 ]
 `
 
-exports[`test/mock.js TAP doubt cases & completion test of src/middlewares/mapToRes/index.js > log warnings 1`] = `
+exports[`test/mock.js TAP cover proxy error > must match snapshot 1`] = `
+Failed to proxy 404. connect ECONNREFUSED 127.0.0.1:80
+`
+
+exports[`test/mock.js TAP general doubt cases as a whole > log errors 1`] = `
+Array []
+`
+
+exports[`test/mock.js TAP general doubt cases as a whole > log infos 1`] = `
+Array [
+  "info: \\u001b[32mmock-api listening on: xxxx\\u001b[39m",
+]
+`
+
+exports[`test/mock.js TAP general doubt cases as a whole > log warnings 1`] = `
 Array []
 `
 
 exports[`test/mock.js TAP try next plus one port when current port is not available > log infos 1`] = `
 Array [
-  "info: \\u001b[32mmock-api listening on: 3001\\u001b[39m",
+  "info: \\u001b[32mmock-api listening on: xxxx\\u001b[39m",
 ]
 `

@@ -6,6 +6,10 @@ const axios = require('axios');
 const tcpPortUsed = require('tcp-port-used');
 const removePathPrefix = require('./testUtils/removePathPrefix.js');
 
+function removePortNumber(msg) {
+    return msg.replace(/(?<=listening on: )\d+/, 'xxxx');
+}
+
 tap.test('basic general function', async tap => {
     const fakeServicesDir = tap.testdir({
         'fake-services': {
@@ -19,8 +23,12 @@ tap.test('basic general function', async tap => {
     const mock = tap.mock('../src/mock.js', {
         '../src/utils/getProjectRoot.js': () => fakeServicesDir,
         '../src/utils/log.js': {
-            info: (msg) => infoMsgs.push('info: ' + removePathPrefix(msg, fakeServicesDir)),
-            warn: (msg) => warningMsgs.push('warning: ' + removePathPrefix(msg, fakeServicesDir)),
+            info: (msg) => infoMsgs.push('info: '
+                + removePathPrefix(removePortNumber(msg), fakeServicesDir)
+            ),
+            warn: (msg) => warningMsgs.push('warning: '
+                + removePathPrefix(msg, fakeServicesDir)
+            ),
         },
     });
 
@@ -78,7 +86,7 @@ tap.test('try next plus one port when current port is not available', async tap 
     }
     const mock = tap.mock('../src/mock.js', {
         '../src/utils/log.js': {
-            info: (msg) => infoMsgs.push('info: ' + msg),
+            info: (msg) => infoMsgs.push('info: ' + removePortNumber(msg)),
         },
     });
     const mockServer = await mock(process);
@@ -91,7 +99,7 @@ tap.test('try next plus one port when current port is not available', async tap 
     tap.end();
 });
 
-tap.test('doubt cases & completion test of src/middlewares/mapToRes/index.js', async tap => {
+tap.test('general doubt cases as a whole', async tap => {
     const fakeServicesDir = tap.testdir({
         'fake-services': {
             'general': {
@@ -118,7 +126,11 @@ tap.test('doubt cases & completion test of src/middlewares/mapToRes/index.js', a
                 map: `GET -t 300`,
             },
             response: '["fake service root"]',
-            proxy404: '', // todo to continue
+            proxy404: `
+                /AS/Suggestions  https://cn.bing.com     # bing dictionary
+                /sug             https://fanyi.baidu.com # baidu dictionary
+                /js/execute.php  https://www.functions-online.com # to cover urlencoded
+            `,
         },
     });
     let infoMsgs = [];
@@ -127,7 +139,7 @@ tap.test('doubt cases & completion test of src/middlewares/mapToRes/index.js', a
     const mock = tap.mock('../src/mock.js', {
         '../src/utils/getProjectRoot.js': () => fakeServicesDir,
         '../src/utils/log.js': {
-            info: (msg) => infoMsgs.push('info: ' + msg),
+            info: (msg) => infoMsgs.push('info: ' + removePortNumber(msg)),
             warn: (msg) => warnMsgs.push('warn: ' + msg),
             error: (msg) => errorMsgs.push('error: ' + msg),
         },
@@ -187,28 +199,115 @@ tap.test('doubt cases & completion test of src/middlewares/mapToRes/index.js', a
     });
     tap.equal(response.data[0], 'china', 'path params should be ok');
 
-    response = null;
+    let delayedResponse = null;
     const testDelayResponsed = axios.request({
         url: mockingLocation + '/delay',
         method: 'GET',
     })
     .then((resp) => {
-        response = resp;
+        delayedResponse = resp;
     });
-    tap.equal(response, null, 'delayed response not ok yet');
+    tap.equal(delayedResponse, null, 'delayed response not ok yet');
     tap.resolveMatch(
         new Promise(resolve => {
             setTimeout(() => {
-                resolve(response.data[0]);
+                resolve(delayedResponse.data[0]);
             }, 600);
         }),
         'i am late',
         'delayed response content',
     );
 
+    response = await axios.request({
+        url: mockingLocation + '/AS/Suggestions?scope=dictionary&pt=page.bingdict&bq=delayed&mkt=zh-cn&ds=bingdict&qry=welcom&cp=7&cvid=4C6CCF7FC8EA4DF0A02311CE7BF39A0B',
+        method: 'GET',
+    });
+    tap.ok(response.data.includes('欢迎'), 'proxy 404 bing dictionary');
+
+    response = await axios.request({
+        url: mockingLocation + '/sug',
+        method: 'POST',
+        data: { kw: 'welcome' },
+    });
+    tap.ok(JSON.stringify(response.data).includes('欢迎'), 'proxy 404 baidu dictionary');
+
+    response = await axios.request({
+        url: mockingLocation + '/js/execute.php?fuid=24',
+        method: 'POST',
+        data: 'str=hello&submit=run',
+    });
+    tap.ok(response.data.includes('hello'), 'test proxy urlencoded body');
+
+    try {
+        response = await axios.request({
+            url: mockingLocation + '/no-proxy-404-match',
+            method: 'GET',
+        });
+    } catch (err) {
+        tap.equal(err.response.status, 404, 'no proxy 404 match');
+    }
+
     await testDelayResponsed;
     mockServer.close();
     tap.matchSnapshot(infoMsgs, 'log infos');
     tap.matchSnapshot(warnMsgs, 'log warnings');
+    tap.matchSnapshot(errorMsgs, 'log errors');
+});
+
+tap.test('no proxy404 file case as a whole', async tap => {
+    const fakeServicesDir = tap.testdir({
+        'fake-services': {},
+    });
+    const mock = tap.mock('../src/mock.js', {
+        '../src/utils/getProjectRoot.js': () => fakeServicesDir,
+        '../src/utils/log.js': {
+            info: () => {},
+        },
+    });
+    const mockServer = await mock(process);
+    const mockingLocation = `http://localhost:${mockServer.address().port}`;
+
+    let response;
+    try {
+        response = await axios.request({
+            url: mockingLocation + '/no-proxy-404-file',
+            method: 'GET',
+        });
+    } catch (err) {
+        tap.equal(err.response.status, 404, 'no proxy 404 file');
+    }
+
+    mockServer.close();
+});
+
+tap.test('cover proxy error', async tap => {
+    const fakeServicesDir = tap.testdir({
+        'fake-services': {},
+    });
+    let errorMsgs = [];
+    const mock = tap.mock('../src/mock.js', {
+        '../src/utils/getProjectRoot.js': () => fakeServicesDir,
+        '../src/config/getProxy404.js': () => ['.*', 'google.com'],
+        '../src/utils/log.js': {
+            info: () => {},
+            error: (msg) => errorMsgs.push('error: ' + msg),
+        },
+    });
+    const mockServer = await mock(process);
+    const mockingLocation = `http://localhost:${mockServer.address().port}`;
+
+    let response;
+    try {
+        response = await axios.request({
+            url: mockingLocation + '/404',
+            method: 'GET',
+        });
+    } catch (err) {
+        tap.equal(err.response.status, 502, 'should response 502');
+        tap.ok(err.response.data.startsWith('Failed to proxy 404.'));
+        tap.matchSnapshot(err.response.data);
+    }
+
+    mockServer.close();
     tap.matchSnapshot(errorMsgs, 'log errors');
 });

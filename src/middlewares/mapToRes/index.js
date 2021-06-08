@@ -32,7 +32,11 @@ function doProxy(req, res, target) {
         }
     });
     delete req.headers.host;
-    proxy.web(req, res, {target}, (err) => log.error(err));
+    proxy.web(req, res, {target}, (err) => {
+        log.error(err)
+        res.status(502);
+        res.send('Failed to proxy 404. ' + err.message);
+    });
 }
 
 function responseByCfg(cfg, res) {
