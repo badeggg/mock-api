@@ -9,15 +9,21 @@ tap.test('find proxy404 file, parse it and return result', tap => {
     /api   http://api-server/api # all request with '/api' prefix path
     /req   http://server/req  third and other items are ignored
     https://www.google.com/
+    nodejs.org # invalid url target, only domain
     `;
     const fakeServicesBasePath = tap.testdir({
         proxy404: proxy404Content,
     });
 
+    let errorMsgs = [];
     const getProxy404 = tap.mock('../../src/config/getProxy404.js', {
         '../../src/config/getFakeServicesBasePath.js': () => fakeServicesBasePath,
+        '../../src/utils/log.js': {
+            error: (msg) => errorMsgs.push('error: ' + msg),
+        },
     });
     tap.matchSnapshot(toNiceJson(getProxy404()), 'parsed proxy404 result');
+    tap.matchSnapshot(errorMsgs, 'log errors');
     tap.end();
 });
 
