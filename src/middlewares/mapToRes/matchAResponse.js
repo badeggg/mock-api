@@ -160,7 +160,7 @@ class RuleParser {
                 result.resFilePath = implicitResFile;
             else {
                 // todo to better notice ruleline position in map file
-                log.error(`No explicit resFilePath config in ruleLine `
+                log.error('No explicit resFilePath config in ruleLine '
                     + `${this.ruleLine.join(' ')} `
                     + `in map file ${this.mapFilePath}, and no fine implicit response file.`);
                 return null;

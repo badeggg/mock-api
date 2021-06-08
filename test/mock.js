@@ -123,7 +123,7 @@ tap.test('general doubt cases as a whole', async tap => {
             },
             'delay': {
                 response: '["i am late"]',
-                map: `GET -t 300`,
+                map: 'GET -t 300',
             },
             response: '["fake service root"]',
             proxy404: `
@@ -204,9 +204,9 @@ tap.test('general doubt cases as a whole', async tap => {
         url: mockingLocation + '/delay',
         method: 'GET',
     })
-    .then((resp) => {
-        delayedResponse = resp;
-    });
+        .then((resp) => {
+            delayedResponse = resp;
+        });
     tap.equal(delayedResponse, null, 'delayed response not ok yet');
     tap.resolveMatch(
         new Promise(resolve => {
@@ -267,9 +267,8 @@ tap.test('no proxy404 file case as a whole', async tap => {
     const mockServer = await mock(process);
     const mockingLocation = `http://localhost:${mockServer.address().port}`;
 
-    let response;
     try {
-        response = await axios.request({
+        await axios.request({
             url: mockingLocation + '/no-proxy-404-file',
             method: 'GET',
         });
@@ -296,9 +295,8 @@ tap.test('cover proxy error', async tap => {
     const mockServer = await mock(process);
     const mockingLocation = `http://localhost:${mockServer.address().port}`;
 
-    let response;
     try {
-        response = await axios.request({
+        await axios.request({
             url: mockingLocation + '/404',
             method: 'GET',
         });
