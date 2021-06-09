@@ -60,3 +60,5 @@
 - think: how to test with different node versions
 - file premission check
 - better notice the warning/error map line config
+- can we limit send rate when response a big file? this may help
+  simulating big file download progress
