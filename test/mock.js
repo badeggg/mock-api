@@ -32,7 +32,7 @@ tap.test('basic general function', async tap => {
         },
     });
 
-    const mockServer = await mock(process);
+    const mockServer = await mock();
     tap.type(mockServer, require('http').Server,
         'mock function should return a nodejs http.Server');
     tap.type(mockServer.address().port, 'number',
@@ -89,7 +89,7 @@ tap.test('try next plus one port when current port is not available', async tap 
             info: (msg) => infoMsgs.push('info: ' + removePortNumber(msg)),
         },
     });
-    const mockServer = await mock(process);
+    const mockServer = await mock();
     tap.equal(mockServer.address().port, availablePort,
         'should try next one port');
     if (portHolderServer)
@@ -144,7 +144,7 @@ tap.test('general doubt cases as a whole', async tap => {
             error: (msg) => errorMsgs.push('error: ' + msg),
         },
     });
-    const mockServer = await mock(process);
+    const mockServer = await mock();
     const mockingLocation = `http://localhost:${mockServer.address().port}`;
 
     let response;
@@ -264,7 +264,7 @@ tap.test('no proxy404 file case as a whole', async tap => {
             info: () => {},
         },
     });
-    const mockServer = await mock(process);
+    const mockServer = await mock();
     const mockingLocation = `http://localhost:${mockServer.address().port}`;
 
     try {
@@ -292,7 +292,7 @@ tap.test('cover proxy error', async tap => {
             error: (msg) => errorMsgs.push('error: ' + msg),
         },
     });
-    const mockServer = await mock(process);
+    const mockServer = await mock();
     const mockingLocation = `http://localhost:${mockServer.address().port}`;
 
     try {

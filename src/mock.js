@@ -23,7 +23,7 @@ async function tillListen(tryPort) {
     }
 }
 
-module.exports = async (process) => {
+module.exports = async () => {
     const REQUEST_MAX_JSON_SIZE = '10mb'; // todo, to make it configurable
     const REQUEST_MAX_URLENCODED_SIZE = '10mb'; // todo, to make it configurable
     app.use(express.json({limit: REQUEST_MAX_JSON_SIZE}));
