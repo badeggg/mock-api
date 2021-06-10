@@ -9,6 +9,7 @@ const chalk = require('chalk');
 const mapToRes = require('./middlewares/mapToRes');
 const projectRoot = require('./utils/getProjectRoot.js')();
 const log = require('./utils/log.js');
+const watchingQuit = require('./utils/watchingQuit');
 
 async function tillListen(tryPort) {
     const isInUse = await tcpPortUsed.check(tryPort, '127.0.0.1');
@@ -38,6 +39,10 @@ module.exports = async () => {
         mockingLocation,
         'utf-8',
     );
-    log.info(chalk.green(`mock-api listening on: ${listenOnPort}`));
+    log.info(chalk.green(`Mock-api listening on: ${listenOnPort}`));
+    watchingQuit(code => {
+        fs.rmSync(pathUtil.resolve(projectRoot, './.mockingLocation'), { force: true });
+        log.info(`Mock-api quit with code ${code}.`);
+    });
     return server;
 };
