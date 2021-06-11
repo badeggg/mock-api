@@ -1,3 +1,4 @@
+const child_process = require('child_process');
 const fs = require('fs');
 const net = require('net');
 const pathUtil = require('path');
@@ -308,4 +309,31 @@ tap.test('cover proxy error', async tap => {
 
     mockServer.close();
     tap.matchSnapshot(errorMsgs, 'log errors');
+});
+
+tap.test('clear mockingLocation when quit', async tap => {
+    const assistPath = pathUtil.resolve(__dirname, './mock.assist.js');
+    const assist = child_process.fork(assistPath);
+    const mockingLocationPath = pathUtil.resolve(__dirname, '.mockingLocation');
+    tap.resolveMatch(
+        new Promise(resolve => {
+            assist.on('message', m => {
+                if (m === 'started') {
+                    resolve(fs.existsSync(mockingLocationPath));
+                    process.kill(assist.pid);
+                }
+            });
+        }),
+        true,
+        '.mockingLocation file should exist',
+    );
+    tap.resolveMatch(
+        new Promise(resolve => {
+            assist.on('exit', m => {
+                resolve(fs.existsSync(mockingLocationPath));
+            });
+        }),
+        false,
+        '.mockingLocation file should not exist anymore',
+    );
 });

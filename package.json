@@ -35,6 +35,6 @@
         "tap": "^15.0.2"
     },
     "tap": {
-        "test-ignore": "^test/testUtils"
+        "test-ignore": "^test/testUtils|^test/utils/watchingQuit.assist.js|^test/mock.assist.js"
     }
 }

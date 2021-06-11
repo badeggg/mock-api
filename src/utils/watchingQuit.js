@@ -20,7 +20,7 @@ function flushHandlersAndQuit(code) {
 
 module.exports = function(handler) {
     if (typeof handler !== 'function')
-        return
+        return false;
 
     handlers.push(handler);
 
@@ -31,3 +31,5 @@ module.exports = function(handler) {
         process.on(sig, (sig, code) => flushHandlersAndQuit(code));
     });
 }
+
+module.exports.coveredSignals = signals;

@@ -7,7 +7,7 @@
 'use strict'
 exports[`test/mock.js TAP basic general function > log infos 1`] = `
 Array [
-  "info: \\u001b[32mmock-api listening on: xxxx\\u001b[39m",
+  "info: \\u001b[32mMock-api listening on: xxxx\\u001b[39m",
 ]
 `
 
@@ -33,7 +33,7 @@ Array []
 
 exports[`test/mock.js TAP general doubt cases as a whole > log infos 1`] = `
 Array [
-  "info: \\u001b[32mmock-api listening on: xxxx\\u001b[39m",
+  "info: \\u001b[32mMock-api listening on: xxxx\\u001b[39m",
 ]
 `
 
@@ -43,6 +43,6 @@ Array []
 
 exports[`test/mock.js TAP try next plus one port when current port is not available > log infos 1`] = `
 Array [
-  "info: \\u001b[32mmock-api listening on: xxxx\\u001b[39m",
+  "info: \\u001b[32mMock-api listening on: xxxx\\u001b[39m",
 ]
 `
