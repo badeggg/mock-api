@@ -30,6 +30,6 @@ module.exports = function(handler) {
         process.removeAllListeners(sig);
         process.on(sig, (sig, code) => flushHandlersAndQuit(code));
     });
-}
+};
 
 module.exports.coveredSignals = signals;

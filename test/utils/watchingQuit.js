@@ -8,18 +8,18 @@ tap.test('self exit', async tap => {
     function toEval() {
         const watchingQuit = require('../../src/utils/watchingQuit.js');
         watchingQuit((code) => process.send(`assist quit with code ${code}`));
-        setTimeout(() => {process.exit(0)}, 300);
+        setTimeout(() => {process.exit(0);}, 300);
     }
     const assist = child_process.fork(assistPath, [`(${toEval.toString()})()`]);
     tap.resolveMatch(
         new Promise(resolve => {
-            assist.on('message', m => resolve(m))
+            assist.on('message', m => resolve(m));
         }),
         'assist quit with code 0',
     );
     tap.resolveMatch(
         new Promise(resolve => {
-            assist.on('exit', code => resolve(code))
+            assist.on('exit', code => resolve(code));
         }),
         0,
     );
@@ -49,13 +49,13 @@ tap.test('signaled quit', async tap => {
         setTimeout(() => process.kill(assist.pid, sigText), 300);
         tap.resolveMatch(
             new Promise(resolve => {
-                assist.on('message', m => resolve(m))
+                assist.on('message', m => resolve(m));
             }),
             `assist quit with code ${code}`,
         );
         tap.resolveMatch(
             new Promise(resolve => {
-                assist.on('exit', code => resolve(code))
+                assist.on('exit', code => resolve(code));
             }),
             code,
         );
