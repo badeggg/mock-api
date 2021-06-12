@@ -1,3 +1,4 @@
 - big body entify may cause error, need fix. at least check a 5M request
 - some test suit rely on setTimeout may fail when js code have a uncommon
   execution time
+- real proxy404 test suit may fail if the network is poor
