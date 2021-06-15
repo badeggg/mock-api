@@ -46,7 +46,7 @@ tap.test('signaled quit', async tap => {
         const code = map[0];
         const sigText = map[1];
         const assist = child_process.fork(assistPath, [`(${toEval.toString()})()`]);
-        setTimeout(() => process.kill(assist.pid, sigText), 300);
+        setTimeout(() => process.kill(assist.pid, sigText), 3000);
         tap.resolveMatch(
             new Promise(resolve => {
                 assist.on('message', m => resolve(m));
