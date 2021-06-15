@@ -41,7 +41,12 @@ module.exports = async () => {
     );
     log.info(chalk.green(`Mock-api listening on: ${listenOnPort}`));
     watchingQuit(code => {
-        fs.rmSync(pathUtil.resolve(projectRoot, './.mockingLocation'), { force: true });
+        try {
+            fs.unlinkSync(pathUtil.resolve(projectRoot, './.mockingLocation'));
+        } catch (err) {
+            log.error('Error on cleaning .mockingLocation file when quit.');
+            log.error(err);
+        }
         log.info(`Mock-api quit with code ${code}.`);
     });
     return server;
