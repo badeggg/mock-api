@@ -44,8 +44,7 @@ module.exports = async () => {
         try {
             fs.unlinkSync(pathUtil.resolve(projectRoot, './.mockingLocation'));
         } catch (err) {
-            log.error('Error on cleaning .mockingLocation file when quit.');
-            log.error(err);
+            log.error('Error on cleaning .mockingLocation file when quit. ' + err);
         }
         log.info(`Mock-api quit with code ${code}.`);
     });

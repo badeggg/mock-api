@@ -337,3 +337,21 @@ tap.test('clear mockingLocation when quit', async tap => {
         '.mockingLocation file should not exist anymore',
     );
 });
+
+tap.test('error log on clear mockingLocation when quit', async tap => {
+    const assistPath = pathUtil.resolve(__dirname, './mock.assist.js');
+    const assist = child_process.fork(assistPath);
+    const mockingLocationPath = pathUtil.resolve(__dirname, '.mockingLocation');
+    tap.resolveMatchSnapshot(
+        new Promise(resolve => {
+            assist.on('message', m => {
+                if (m === 'started') {
+                    fs.unlinkSync(mockingLocationPath);
+                    process.kill(assist.pid);
+                } else if (m.startsWith('error: ')) {
+                    resolve(m);
+                }
+            });
+        }),
+    );
+});
