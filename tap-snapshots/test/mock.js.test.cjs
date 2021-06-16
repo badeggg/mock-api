@@ -28,7 +28,7 @@ Failed to proxy 404. connect ECONNREFUSED 127.0.0.1:80
 `
 
 exports[`test/mock.js TAP error log on clear mockingLocation when quit > expect resolving Promise 1`] = `
-error: Error on cleaning .mockingLocation file when quit. Error: ENOENT: no such file or directory, unlink '/Users/zhaoxuxu/my_repo/mock-api/test/.mockingLocation'
+error: Error on cleaning .mockingLocation file when quit. Error: ENOENT: no such file or directory, unlink '/.mockingLocation'
 `
 
 exports[`test/mock.js TAP general doubt cases as a whole > log errors 1`] = `

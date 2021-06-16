@@ -349,7 +349,7 @@ tap.test('error log on clear mockingLocation when quit', async tap => {
                     fs.unlinkSync(mockingLocationPath);
                     process.kill(assist.pid);
                 } else if (m.startsWith('error: ')) {
-                    resolve(m);
+                    resolve(removePathPrefix(m, __dirname));
                 }
             });
         }),
