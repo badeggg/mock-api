@@ -63,3 +63,5 @@
 - can we limit send rate when response a big file? this may help
   simulating big file download progress
 - off only current
+- non-direct response
+    + such as an executable js script and response it's return value
