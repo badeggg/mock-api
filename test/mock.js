@@ -355,3 +355,125 @@ tap.test('error log on clear mockingLocation when quit', async tap => {
         }),
     );
 });
+
+tap.test('response js result as a whole', async tap => {
+    const fakeServicesDir = tap.testdir({
+        'fake-services': {
+            'fake-api-path': {
+                'ok.js': `
+                    const obj1 = {a: 1};
+                    const obj2 = {a: 2};
+                    module.exports = (req) => {
+                        return {
+                            ...obj1,
+                            name: req.query.name,
+                        };
+                    };
+                `,
+                'bad.js': `
+                    const a = 90;
+                    module.exports = () => {
+                        a = 8;
+                        return a;
+                    };
+                `,
+                'undefined.js': `
+                    module.exports = () => {
+                        return;
+                    };
+                `,
+                'string.js': `
+                    module.exports = () => {
+                        return 'string';
+                    };
+                `,
+                'number.js': `
+                    module.exports = () => {
+                        return 123;
+                    };
+                `,
+                'null.js': `
+                    module.exports = () => {
+                        return null;
+                    };
+                `,
+                'function.js': `
+                    module.exports = () => {
+                        return () => {console.log('foo')};
+                    };
+                `,
+                map: `
+                    GET     -r ./ok.js
+                    DELETE  -r ./undefined.js
+                    PATCH   -r ./string.js
+                    PUT     -r ./number.js
+                    TRACE   -r ./null.js
+                    OPTIONS -r ./function.js
+                    POST    -r ./bad.js
+                `,
+            },
+        },
+    });
+    let warningMsgs = [];
+    let errorMsgs = [];
+    const mock = tap.mock('../src/mock.js', {
+        '../src/utils/getProjectRoot.js': () => fakeServicesDir,
+        '../src/utils/log.js': {
+            info: () => {},
+            warn: (msg) => warningMsgs.push('warning: '
+                + removePathPrefix(msg, fakeServicesDir)
+            ),
+            error: (msg) => errorMsgs.push(
+                'error: ' + removePathPrefix(
+                    msg,
+                    pathUtil.resolve(fakeServicesDir, '../../')
+                )
+            ),
+        },
+    });
+
+    const mockServer = await mock();
+
+    const mockingLocation = `http://localhost:${mockServer.address().port}`;
+
+    let options = {
+        url: mockingLocation + '/fake-api-path',
+        params: {name: 'badeggg'},
+        method: 'GET',
+    };
+    let response = await axios.request(options);
+    tap.matchSnapshot(response.data, 'ok.js result');
+
+    options.method = 'DELETE';
+    response = await axios.request(options);
+    tap.equal(response.data, '');
+
+    options.method = 'PATCH';
+    response = await axios.request(options);
+    tap.equal(response.data, 'string');
+
+    options.method = 'PUT';
+    response = await axios.request(options);
+    tap.equal(response.data, 123);
+
+    options.method = 'TRACE';
+    response = await axios.request(options);
+    tap.equal(response.data, null);
+
+    options.method = 'OPTIONS';
+    response = await axios.request(options);
+    tap.matchSnapshot(response.data, 'function.js result');
+
+    options.method = 'POST';
+    response = await axios.request(options);
+    tap.matchSnapshot(
+        removePathPrefix(response.data, pathUtil.resolve(fakeServicesDir, '../../')),
+        'bad.js result'
+    );
+
+    tap.matchSnapshot(warningMsgs, 'log warnings');
+    tap.matchSnapshot(errorMsgs, 'log errors');
+
+    mockServer.close();
+    tap.end();
+});
