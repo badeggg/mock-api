@@ -40,7 +40,7 @@ const BAD_COMMANDER_OPTION_TO_DELETE = `Commander custom option parser does not 
 proper way to indicate current option should be regarded as undefined`;
 
 class ResponseFile {
-    constructor(filePath) {
+    constructor(filePath, resJsResult, req) {
         if (!filePath || !fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
             this.filePath = '';
             if (!filePath)
@@ -52,6 +52,10 @@ class ResponseFile {
         this.filePath = filePath;
         this.ext = pathUtil.extname(filePath);
         this.stats = fs.statSync(filePath);
+        this.resJsResult = resJsResult;
+        if (this.resJsResult === undefined)
+            this.resJsResult = false;
+        this.req = req;
     }
     generateResCfg() {
         if (!this.filePath)
@@ -66,6 +70,8 @@ class ResponseFile {
         case '': // An empty-extname file is regarded as a json file.
         case '.json':
             return this.generateJsonResCfg();
+        case '.js':
+            return this.generateJsResCfg();
         default:
             return this.generateExpressSendFileResCfg();
         }
@@ -76,7 +82,7 @@ class ResponseFile {
         if (this.stats.size > RESPONSE_FILE_MAX_PARSE_SIZE) {
             log.warn(`Refused to validate response json file '${this.filePath}', `
                 + 'cause it is too big, '
-                + `max acceptable size is ${RESPONSE_FILE_MAX_PARSE_SIZE},`
+                + `max acceptable size is ${RESPONSE_FILE_MAX_PARSE_SIZE}, `
                 + `got ${this.stats.size}.`);
             return _.merge({}, this.generateExpressSendFileResCfg(), {
                 resHeaders: {
@@ -103,6 +109,59 @@ class ResponseFile {
             });
         }
     }
+    generateJsResCfg() {
+        if (!this.filePath)
+            return null;
+        if (!this.resJsResult)
+            return this.generateExpressSendFileResCfg();
+        if (this.stats.size > RESPONSE_FILE_MAX_PARSE_SIZE) {
+            log.warn(`Refused to execute response js file '${this.filePath}', `
+                + 'cause it is too big, '
+                + `max acceptable size is ${RESPONSE_FILE_MAX_PARSE_SIZE}, `
+                + `got ${this.stats.size}.`);
+            return _.merge({}, this.generateExpressSendFileResCfg(), {
+                resHeaders: {
+                    'Mock-Big-Js-File-Self': this.filePath,
+                },
+            });
+        } else {
+            let resBody;
+            try {
+                resBody = require(this.filePath)(this.req);
+            } catch (err) {
+                const errStr = (
+                    `Failed to execute js script '${this.filePath}'.\n`
+                    + err.stack
+                );
+                log.error(errStr);
+                return {
+                    shouldUseExpressSendFile: false,
+                    resBody: errStr,
+                    resHeaders: {
+                        'Mock-Error-Invalid-Js-File': this.filePath,
+                    },
+                };
+            }
+            if (resBody && !_.isPlainObject(resBody) && !_.isArray(resBody)) {
+                resBody = resBody.toString();
+                return {
+                    shouldUseExpressSendFile: false,
+                    resBody,
+                    resHeaders: {
+                        'Content-Type': 'text/plain; charset=UTF-8',
+                    },
+                };
+            }
+            resBody = JSON.stringify(resBody);
+            return {
+                shouldUseExpressSendFile: false,
+                resBody,
+                resHeaders: {
+                    'Content-Type': 'application/json; charset=UTF-8',
+                },
+            };
+        }
+    }
     generateExpressSendFileResCfg() {
         if (!this.filePath)
             return null;
@@ -114,7 +173,7 @@ class ResponseFile {
 }
 
 class RuleParser {
-    constructor(ruleLine, cdResult) {
+    constructor(ruleLine, cdResult, req) {
         this.mapFilePath = pathUtil.resolve(cdResult.path, 'map');
         this.ruleLine = ruleLine;
         this.cdResult = cdResult;
@@ -128,9 +187,11 @@ class RuleParser {
             .option('-m, --req-method    <method>',     'request method',     (value, previous) => this._commanderParseReqMethod(value, previous))
             .option('-f, --res-file-path <file>',       'response file path', (value, previous) => this._commanderParseResFilePath(value, previous))
             .option('-t, --delay-time    <time>',       'delay to response',  (value, previous) => this._commanderParseDelayTime(value, previous))
+            .option('-r, --res-js-result',              'response js result', false)
             .configureOutput({
                 writeErr: () => {},
             });
+        this.req = req;
     }
     parse() {
         if (this.ruleLine.length && this.ruleLine[0].toLowerCase() === 'map')
@@ -166,7 +227,9 @@ class RuleParser {
                 return null;
             }
         }
-        const generatedResCfg = new ResponseFile(result.resFilePath).generateResCfg();
+        const generatedResCfg = new ResponseFile(
+            result.resFilePath, result.resJsResult, this.req
+        ).generateResCfg();
         result = _.merge({}, generatedResCfg, result);
         return result;
     }
@@ -304,7 +367,7 @@ class Matcher {
         const semiParsedMap = semiParseConfigFile(this.mapFilePath);
         for (let i = 0; i < semiParsedMap.length; i++) {
             let line = semiParsedMap[i];
-            const cfg = new RuleParser(line, this.cdResult).parse();
+            const cfg = new RuleParser(line, this.cdResult, this.req).parse();
             if (
                 cfg
                 && this.doesReqMethodMatch(cfg)

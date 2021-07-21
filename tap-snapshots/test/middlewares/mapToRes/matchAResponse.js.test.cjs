@@ -51,6 +51,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {
       "number": "{\\\\d+}",
@@ -67,6 +68,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
@@ -79,6 +81,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
@@ -90,6 +93,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {
       "query": "",
@@ -103,6 +107,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {
       "name": "\\"badeggg\\"",
@@ -118,6 +123,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {
       " has space in property": "  and in value ",
@@ -138,6 +144,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {
       "valueCanBeAnythingIfOnlyAppear": "",
@@ -196,12 +203,27 @@ Object {
 
 exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > log errors 1`] = `
 Array [
-  "error: Response file '/fake-api-path/bigFile' is too big, max acceptable size is 524288000, got 524288001.",
-  "error: /fake-api-path/notExistFile does not exist or is not a file.",
-  "error: /fake-api-path does not exist or is not a file.",
+  "error: Response file '/test/middlewares/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/bigFile' is too big, max acceptable size is 524288000, got 524288001.",
+  String(
+    error: Failed to execute js script '/test/middlewares/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/bad.js'.
+    TypeError: Assignment to constant variable.
+        at Object.<anonymous> (/test/middlewares/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/bad.js:3:23)
+        at MockedModule.Module._compile (internal/modules/cjs/loader.js:1063:30)
+        at MockedModule.Module._compile (/node_modules/source-map-support/source-map-support.js:547:25)
+        at MockedModule.replacementCompile (/node_modules/append-transform/index.js:60:13)
+        at Module._extensions..js (internal/modules/cjs/loader.js:1092:10)
+        at Object.<anonymous> (/node_modules/append-transform/index.js:64:4)
+        at MockedModule.Module.load (internal/modules/cjs/loader.js:928:32)
+        at MockedModule.require (/node_modules/libtap/lib/mock.js:69:24)
+        at require (internal/modules/cjs/helpers.js:88:18)
+        at ResponseFile.generateJsResCfg (/src/middlewares/mapToRes/matchAResponse.js:130:27)
+  ),
+  "error: /test/middlewares/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/notExistFile does not exist or is not a file.",
+  "error: /test/middlewares/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path does not exist or is not a file.",
   "error: Empty \\"filePath\\" arg for \\"ResponseFile\\" constructor.",
-  "error: /fake-api-path/notExistFile does not exist or is not a file.",
-  "error: /fake-api-path/notExistFile does not exist or is not a file.",
+  "error: /test/middlewares/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/notExistFile does not exist or is not a file.",
+  "error: /test/middlewares/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/notExistFile does not exist or is not a file.",
+  "error: /test/middlewares/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/notExistFile does not exist or is not a file.",
 ]
 `
 
@@ -209,7 +231,8 @@ exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > lo
 Array [
   "warning: Invalid json file '/fake-api-path/plainTextNoExt'.",
   "warning: Invalid json file '/fake-api-path/invalid.json'.",
-  "warning: Refused to validate response json file '/fake-api-path/bigJsonFile', cause it is too big, max acceptable size is 10485760,got 10485761.",
+  "warning: Refused to validate response json file '/fake-api-path/bigJsonFile', cause it is too big, max acceptable size is 10485760, got 10485761.",
+  "warning: Refused to execute response js file '/fake-api-path/big.js', cause it is too big, max acceptable size is 10485760, got 10485761.",
 ]
 `
 
@@ -219,6 +242,76 @@ Object {
   "resHeaders": Object {
     "Mock-Warn-Invalid-Json-File": "/fake-api-path/plainTextNoExt",
   },
+  "shouldUseExpressSendFile": true,
+}
+`
+
+exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > return js result 1`] = `
+Object {
+  "resBody": "{\\"req\\":1,\\"a\\":1}",
+  "resHeaders": Object {
+    "Content-Type": "application/json; charset=UTF-8",
+  },
+  "shouldUseExpressSendFile": false,
+}
+`
+
+exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > return js result but js file is too big 1`] = `
+Object {
+  "resFilePath": "/fake-api-path/big.js",
+  "resHeaders": Object {
+    "Mock-Big-Js-File-Self": "/fake-api-path/big.js",
+  },
+  "shouldUseExpressSendFile": true,
+}
+`
+
+exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > return js result but js is not valid 1`] = `
+Object {
+  "resBody": String(
+    Failed to execute js script '/test/middlewares/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/bad.js'.
+    TypeError: Assignment to constant variable.
+        at Object.<anonymous> (/test/middlewares/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/bad.js:3:23)
+        at MockedModule.Module._compile (internal/modules/cjs/loader.js:1063:30)
+        at MockedModule.Module._compile (/node_modules/source-map-support/source-map-support.js:547:25)
+        at MockedModule.replacementCompile (/node_modules/append-transform/index.js:60:13)
+        at Module._extensions..js (internal/modules/cjs/loader.js:1092:10)
+        at Object.<anonymous> (/node_modules/append-transform/index.js:64:4)
+        at MockedModule.Module.load (internal/modules/cjs/loader.js:928:32)
+        at MockedModule.require (/node_modules/libtap/lib/mock.js:69:24)
+        at require (internal/modules/cjs/helpers.js:88:18)
+        at ResponseFile.generateJsResCfg (/src/middlewares/mapToRes/matchAResponse.js:130:27)
+  ),
+  "resHeaders": Object {
+    "Mock-Error-Invalid-Js-File": "/test/middlewares/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/bad.js",
+  },
+  "shouldUseExpressSendFile": false,
+}
+`
+
+exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > return js result empty 1`] = `
+Object {
+  "resBody": "null",
+  "resHeaders": Object {
+    "Content-Type": "application/json; charset=UTF-8",
+  },
+  "shouldUseExpressSendFile": false,
+}
+`
+
+exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > return js result primitive 1`] = `
+Object {
+  "resBody": "string",
+  "resHeaders": Object {
+    "Content-Type": "text/plain; charset=UTF-8",
+  },
+  "shouldUseExpressSendFile": false,
+}
+`
+
+exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > return js self 1`] = `
+Object {
+  "resFilePath": "/fake-api-path/ok.js",
   "shouldUseExpressSendFile": true,
 }
 `
@@ -256,6 +349,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
@@ -267,6 +361,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
@@ -282,6 +377,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {
       "query1": "value",
@@ -301,6 +397,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {
       "query1": "12",
@@ -314,6 +411,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {
       "prefix": "{pre\\\\d+}",
@@ -334,6 +432,7 @@ Array [
       "a-http-header": "header value",
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": true,
     "shouldUseExpressSendFile": true,
     "statusCode": 200,
     "urlQueries": Object {
@@ -349,6 +448,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "statusCode": 200,
     "urlQueries": Object {},
@@ -361,6 +461,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "statusCode": 404,
     "urlQueries": Object {},
@@ -373,6 +474,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
@@ -384,6 +486,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
@@ -395,6 +498,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
@@ -406,6 +510,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
@@ -417,6 +522,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
@@ -428,6 +534,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
@@ -439,6 +546,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
@@ -450,6 +558,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
@@ -461,6 +570,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
@@ -472,6 +582,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
@@ -483,6 +594,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
@@ -494,6 +606,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
@@ -505,6 +618,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
@@ -515,6 +629,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
@@ -525,17 +640,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
-    "shouldUseExpressSendFile": true,
-    "urlQueries": Object {},
-  },
-  Object {
-    "bodyArgs": Object {},
-    "pathParams": Object {},
-    "reqMethod": "GET",
-    "resFilePath": "/fake-api-path/response",
-    "resHeaders": Object {
-      "Content-Type": "application/json; charset=UTF-8",
-    },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
@@ -547,6 +652,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
@@ -558,6 +664,19 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
+    "shouldUseExpressSendFile": true,
+    "urlQueries": Object {},
+  },
+  Object {
+    "bodyArgs": Object {},
+    "pathParams": Object {},
+    "reqMethod": "GET",
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {
       "query": "val",
@@ -572,6 +691,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
@@ -584,6 +704,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
@@ -596,6 +717,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
@@ -608,6 +730,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
@@ -620,6 +743,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
@@ -633,6 +757,50 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
+    "shouldUseExpressSendFile": true,
+    "urlQueries": Object {},
+  },
+  Object {
+    "bodyArgs": Object {},
+    "pathParams": Object {},
+    "resBody": "123",
+    "resFilePath": "/fake-api-path/ok.js",
+    "resHeaders": Object {
+      "Content-Type": "text/plain; charset=UTF-8",
+    },
+    "resJsResult": true,
+    "shouldUseExpressSendFile": false,
+    "urlQueries": Object {},
+  },
+  Object {
+    "bodyArgs": Object {},
+    "pathParams": Object {},
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "resJsResult": true,
+    "shouldUseExpressSendFile": true,
+    "urlQueries": Object {},
+  },
+  Object {
+    "bodyArgs": Object {},
+    "pathParams": Object {},
+    "resFilePath": "/fake-api-path/ok.js",
+    "resHeaders": Object {},
+    "resJsResult": false,
+    "shouldUseExpressSendFile": true,
+    "urlQueries": Object {},
+  },
+  Object {
+    "bodyArgs": Object {},
+    "pathParams": Object {},
+    "resFilePath": "/fake-api-path/response",
+    "resHeaders": Object {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    "resJsResult": true,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
@@ -644,6 +812,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {
       "query": "use-this-query-value",
@@ -657,6 +826,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {
       "query": "value",
@@ -670,6 +840,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {
       "query": "value",
@@ -687,6 +858,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {
       "query": "3",
@@ -702,6 +874,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
@@ -713,6 +886,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {
       "-c": "",
@@ -730,6 +904,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
@@ -741,6 +916,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {},
   },
@@ -752,6 +928,7 @@ Array [
     "resHeaders": Object {
       "Content-Type": "application/json; charset=UTF-8",
     },
+    "resJsResult": false,
     "shouldUseExpressSendFile": true,
     "urlQueries": Object {
       "query": "",
@@ -769,6 +946,7 @@ Object {
   "resHeaders": Object {
     "Content-Type": "application/json; charset=UTF-8",
   },
+  "resJsResult": false,
   "shouldUseExpressSendFile": true,
   "urlQueries": Object {},
 }

@@ -5,14 +5,21 @@ const pathUtil = require('path');
 const removePathPrefix = require('../../testUtils/removePathPrefix.js');
 
 function removeCfgPathPropertiesPrefix(cfg, prefix) {
+    if (cfg && cfg.resBody)
+        cfg.resBody = removePathPrefix(cfg.resBody, prefix);
     if (cfg && cfg.resFilePath)
         cfg.resFilePath = removePathPrefix(cfg.resFilePath, prefix);
-    if (cfg && cfg.resHeaders && cfg.resHeaders['Mock-Not-Validated-Json-File'])
-        cfg.resHeaders['Mock-Not-Validated-Json-File'] =
-            removePathPrefix(cfg.resHeaders['Mock-Not-Validated-Json-File'], prefix);
-    if (cfg && cfg.resHeaders && cfg.resHeaders['Mock-Warn-Invalid-Json-File'])
-        cfg.resHeaders['Mock-Warn-Invalid-Json-File'] =
-            removePathPrefix(cfg.resHeaders['Mock-Warn-Invalid-Json-File'], prefix);
+    const resHeadersNeedTrim = [
+        'Mock-Big-Js-File-Self',
+        'Mock-Not-Validated-Json-File',
+        'Mock-Warn-Invalid-Json-File',
+        'Mock-Error-Invalid-Js-File',
+    ];
+    resHeadersNeedTrim.forEach(header => {
+        if (cfg && cfg.resHeaders && cfg.resHeaders[header])
+            cfg.resHeaders[header] =
+                removePathPrefix(cfg.resHeaders[header], prefix);
+    });
     return cfg;
 }
 
@@ -27,6 +34,34 @@ tap.test('class ResponseFile', async tap => {
                 'image.png':    'text here is fine',
                 bigFile:        'text here is fine',
                 bigJsonFile:    'text here is fine',
+                'ok.js':        `
+                    const obj1 = {a: 1};
+                    const obj2 = {a: 2};
+                    module.exports = function(req) {
+                        return {
+                            ...req,
+                            ...obj1,
+                        };
+                    };
+                `,
+                'retPrimitive.js': `
+                    module.exports = function() {
+                        return 'string';
+                    };
+                `,
+                'retEmpty.js': `
+                    module.exports = function() {
+                        return null;
+                    };
+                `,
+                'bad.js':        `
+                    const a = 1;
+                    a = 2
+                    module.exports = function() {
+                        return a;
+                    };
+                `,
+                'big.js':       'text here is fine',
             },
         },
     });
@@ -41,6 +76,11 @@ tap.test('class ResponseFile', async tap => {
     const bigJsonFile    = pathUtil.resolve(basePath, 'bigJsonFile');
     const notExistFile   = pathUtil.resolve(basePath, 'notExistFile');
     const isNotFile      = basePath;
+    const okJs           = pathUtil.resolve(basePath, 'ok.js');
+    const retPrimitiveJs = pathUtil.resolve(basePath, 'retPrimitive.js');
+    const retEmptyJs     = pathUtil.resolve(basePath, 'retEmpty.js');
+    const badJs          = pathUtil.resolve(basePath, 'bad.js');
+    const bigJs          = pathUtil.resolve(basePath, 'big.js');
 
     let errorMsgs = [];
     let warningMsgs = [];
@@ -54,6 +94,7 @@ tap.test('class ResponseFile', async tap => {
                 case 'bigFile':
                     return _.merge(fs.statSync(filePath), { size: 500 * 1024 * 1024 + 1 });
                 case 'bigJsonFile':
+                case 'big.js':
                     return _.merge(fs.statSync(filePath), { size: 10 * 1024 * 1024 + 1 });
                 default:
                     return fs.statSync(filePath);
@@ -61,8 +102,11 @@ tap.test('class ResponseFile', async tap => {
             },
         },
         '../../../src/utils/log.js': {
-            error: (msg) => errorMsgs.push('error: ' + removePathPrefix(msg, fakeServicesDir)),
             warn: (msg) => warningMsgs.push('warning: ' + removePathPrefix(msg, fakeServicesDir)),
+            error: (msg) => errorMsgs.push('error: ' + removePathPrefix(
+                msg,
+                pathUtil.resolve(fakeServicesDir, '../../../../../')
+            )),
         },
     }).ResponseFile;
 
@@ -114,10 +158,53 @@ tap.test('class ResponseFile', async tap => {
         ),
         'big json file'
     );
+    tap.matchSnapshot(
+        removeCfgPathPropertiesPrefix(
+            new ResponseFile(okJs, true, {req: 1}).generateResCfg(),
+            fakeServicesDir
+        ),
+        'return js result'
+    );
+    tap.matchSnapshot(
+        removeCfgPathPropertiesPrefix(
+            new ResponseFile(retPrimitiveJs, true).generateResCfg(),
+            fakeServicesDir
+        ),
+        'return js result primitive'
+    );
+    tap.matchSnapshot(
+        removeCfgPathPropertiesPrefix(
+            new ResponseFile(retEmptyJs, true).generateResCfg(),
+            fakeServicesDir
+        ),
+        'return js result empty'
+    );
+    tap.matchSnapshot(
+        removeCfgPathPropertiesPrefix(
+            new ResponseFile(okJs).generateResCfg(),
+            fakeServicesDir
+        ),
+        'return js self'
+    );
+    tap.matchSnapshot(
+        removeCfgPathPropertiesPrefix(
+            new ResponseFile(badJs, true).generateResCfg(),
+            pathUtil.resolve(fakeServicesDir, '../../../../../')
+        ),
+        'return js result but js is not valid'
+    );
+    tap.matchSnapshot(
+        removeCfgPathPropertiesPrefix(
+            new ResponseFile(bigJs, true).generateResCfg(),
+            fakeServicesDir,
+        ),
+        'return js result but js file is too big'
+    );
     tap.equal(new ResponseFile(notExistFile).generateResCfg(), null);
     tap.equal(new ResponseFile(isNotFile).generateResCfg(), null);
     tap.equal(new ResponseFile('').generateResCfg(), null);
     tap.equal(new ResponseFile(notExistFile).generateJsonResCfg(), null);
+    tap.equal(new ResponseFile(notExistFile).generateJsResCfg(), null);
     tap.equal(new ResponseFile(notExistFile).generateExpressSendFileResCfg(), null);
     tap.matchSnapshot(errorMsgs, 'log errors');
     tap.matchSnapshot(warningMsgs, 'log warnings');
@@ -138,7 +225,8 @@ tap.test('class RuleParser', async tap => {
         --status-code   200        \\
         --req-method    get        \\
         --res-file-path ./response \\
-        --delay-time    1s
+        --delay-time    1s         \\
+        --res-js-result
 
     # status code
     GET -c 200
@@ -177,6 +265,12 @@ tap.test('class RuleParser', async tap => {
     GET -t
     GET -t null
 
+    # response js result
+    map -r ./ok.js
+    map -r
+    map ./ok.js
+    map -r balabala
+
     # unusual cases
     get ?query=override-me -q query=use-this-query-value # formal rule override quick format
     get ?query=value -m post                             # formal rule override quick format
@@ -198,6 +292,9 @@ tap.test('class RuleParser', async tap => {
             'fake-api-path': {
                 map: mapFileContent,
                 response: '{"name": "badeggg"}',
+                'ok.js': `
+                    module.exports = function(){ return 123; }
+                `,
             },
         },
     });
