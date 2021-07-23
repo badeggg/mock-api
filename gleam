@@ -63,5 +63,6 @@
 - can we limit send rate when response a big file? this may help
   simulating big file download progress
 - off only current
-- non-direct response
-    + such as an executable js script and response it's return value
+- review http method, CONNECT for example
+- 'do not use cached js module when execute it'
+  + may need review, e.g. all js script related modules & test suit

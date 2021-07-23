@@ -216,7 +216,7 @@ Array [
         at MockedModule.Module.load (internal/modules/cjs/loader.js:928:32)
         at MockedModule.require (/node_modules/libtap/lib/mock.js:69:24)
         at require (internal/modules/cjs/helpers.js:88:18)
-        at ResponseFile.generateJsResCfg (/src/middlewares/mapToRes/matchAResponse.js:130:27)
+        at ResponseFile.generateJsResCfg (/src/middlewares/mapToRes/matchAResponse.js:138:27)
   ),
   "error: /test/middlewares/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/notExistFile does not exist or is not a file.",
   "error: /test/middlewares/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path does not exist or is not a file.",
@@ -280,7 +280,7 @@ Object {
         at MockedModule.Module.load (internal/modules/cjs/loader.js:928:32)
         at MockedModule.require (/node_modules/libtap/lib/mock.js:69:24)
         at require (internal/modules/cjs/helpers.js:88:18)
-        at ResponseFile.generateJsResCfg (/src/middlewares/mapToRes/matchAResponse.js:130:27)
+        at ResponseFile.generateJsResCfg (/src/middlewares/mapToRes/matchAResponse.js:138:27)
   ),
   "resHeaders": Object {
     "Mock-Error-Invalid-Js-File": "/test/middlewares/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/bad.js",

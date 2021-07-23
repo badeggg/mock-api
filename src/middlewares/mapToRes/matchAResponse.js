@@ -127,6 +127,14 @@ class ResponseFile {
         } else {
             let resBody;
             try {
+                /**
+                 * We must not use require cached module since we want js file change
+                 * take effect immediately. `delete require.cache[...]` is fine but
+                 * test suit with tapJs seems not ok.
+                 * todo to write test suit
+                 * @zhaoxuxu @2021-7-23
+                 */
+                delete require.cache[require.resolve(this.filePath)];
                 resBody = require(this.filePath)(this.req);
             } catch (err) {
                 const errStr = (
