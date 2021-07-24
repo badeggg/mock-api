@@ -3,10 +3,11 @@ const tap = require('tap');
 const _ = require('lodash');
 const pathUtil = require('path');
 const removePathPrefix = require('../../testUtils/removePathPrefix.js');
+const obscureErrorStack = require('../../testUtils/obscureErrorStack.js');
 
-function removeCfgPathPropertiesPrefix(cfg, prefix) {
+function trimCfg(cfg, prefix) {
     if (cfg && cfg.resBody)
-        cfg.resBody = removePathPrefix(cfg.resBody, prefix);
+        cfg.resBody = removePathPrefix(obscureErrorStack(cfg.resBody), prefix);
     if (cfg && cfg.resFilePath)
         cfg.resFilePath = removePathPrefix(cfg.resFilePath, prefix);
     const resHeadersNeedTrim = [
@@ -104,97 +105,97 @@ tap.test('class ResponseFile', async tap => {
         '../../../src/utils/log.js': {
             warn: (msg) => warningMsgs.push('warning: ' + removePathPrefix(msg, fakeServicesDir)),
             error: (msg) => errorMsgs.push('error: ' + removePathPrefix(
-                msg,
+                obscureErrorStack(msg),
                 pathUtil.resolve(fakeServicesDir, '../../../../../')
             )),
         },
     }).ResponseFile;
 
     tap.matchSnapshot(
-        removeCfgPathPropertiesPrefix(
+        trimCfg(
             new ResponseFile(plainTextNoExt).generateResCfg(),
             fakeServicesDir
         ),
         'plain text without extension'
     );
     tap.matchSnapshot(
-        removeCfgPathPropertiesPrefix(
+        trimCfg(
             new ResponseFile(jsonNoExt).generateResCfg(),
             fakeServicesDir
         ),
         'json without extension');
     tap.matchSnapshot(
-        removeCfgPathPropertiesPrefix(
+        trimCfg(
             new ResponseFile(json).generateResCfg(),
             fakeServicesDir
         ),
         'json file'
     );
     tap.matchSnapshot(
-        removeCfgPathPropertiesPrefix(
+        trimCfg(
             new ResponseFile(invalidJson).generateResCfg(),
             fakeServicesDir
         ),
         'invalid json file'
     );
     tap.matchSnapshot(
-        removeCfgPathPropertiesPrefix(
+        trimCfg(
             new ResponseFile(image).generateResCfg(),
             fakeServicesDir
         ),
         'image file'
     );
     tap.equal(
-        removeCfgPathPropertiesPrefix(
+        trimCfg(
             new ResponseFile(bigFile).generateResCfg(),
             fakeServicesDir
         ),
         null
     );
     tap.matchSnapshot(
-        removeCfgPathPropertiesPrefix(
+        trimCfg(
             new ResponseFile(bigJsonFile).generateResCfg(),
             fakeServicesDir
         ),
         'big json file'
     );
     tap.matchSnapshot(
-        removeCfgPathPropertiesPrefix(
+        trimCfg(
             new ResponseFile(okJs, true, {req: 1}).generateResCfg(),
             fakeServicesDir
         ),
         'return js result'
     );
     tap.matchSnapshot(
-        removeCfgPathPropertiesPrefix(
+        trimCfg(
             new ResponseFile(retPrimitiveJs, true).generateResCfg(),
             fakeServicesDir
         ),
         'return js result primitive'
     );
     tap.matchSnapshot(
-        removeCfgPathPropertiesPrefix(
+        trimCfg(
             new ResponseFile(retEmptyJs, true).generateResCfg(),
             fakeServicesDir
         ),
         'return js result empty'
     );
     tap.matchSnapshot(
-        removeCfgPathPropertiesPrefix(
+        trimCfg(
             new ResponseFile(okJs).generateResCfg(),
             fakeServicesDir
         ),
         'return js self'
     );
     tap.matchSnapshot(
-        removeCfgPathPropertiesPrefix(
+        trimCfg(
             new ResponseFile(badJs, true).generateResCfg(),
             pathUtil.resolve(fakeServicesDir, '../../../../../')
         ),
         'return js result but js is not valid'
     );
     tap.matchSnapshot(
-        removeCfgPathPropertiesPrefix(
+        trimCfg(
             new ResponseFile(bigJs, true).generateResCfg(),
             fakeServicesDir,
         ),
@@ -317,7 +318,7 @@ tap.test('class RuleParser', async tap => {
     for (let i = 0; i < semiParsedMap.length; i++) {
         let line = semiParsedMap[i];
         let cfg = new RuleParser(line, cdResult).parse();
-        removeCfgPathPropertiesPrefix(cfg, fakeServicesDir);
+        trimCfg(cfg, fakeServicesDir);
         cfgs.push(cfg);
     }
     tap.matchSnapshot(cfgs, 'parsed rule lines');
@@ -485,7 +486,7 @@ tap.test('class Matcher', async tap => {
     delete reqs.valueCanBeAnythingIfOnlyAppear.query.valueCanBeAnythingIfOnlyAppear;
     tap.equal(new Matcher(cdResults.noImplicitResponseFile, reqs.valueCanBeAnythingIfOnlyAppear).match(),
         null);
-    matchArr.forEach(cfg => removeCfgPathPropertiesPrefix(cfg, fakeServicesDir));
+    matchArr.forEach(cfg => trimCfg(cfg, fakeServicesDir));
     tap.matchSnapshot(matchArr, 'match result list');
     tap.matchSnapshot(infoMsgs, 'log infos');
     tap.matchSnapshot(warningMsgs, 'log warnings');
@@ -526,7 +527,7 @@ tap.test('match function', async tap => {
         },
     };
     tap.matchSnapshot(
-        removeCfgPathPropertiesPrefix(match(reqs.general), fakeServicesDir),
+        trimCfg(match(reqs.general), fakeServicesDir),
         'match function result'
     );
     tap.equal(match(reqs.notExist), null);
