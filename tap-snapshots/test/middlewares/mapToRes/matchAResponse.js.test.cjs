@@ -218,6 +218,10 @@ Array [
         at ...
         at ...
   ),
+  String(
+    error: Failed to execute js script '/test/middlewares/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/nonExportFn.js'.
+    ERROR_EXPORT_FUNCTION. Js file /test/middlewares/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/nonExportFn.js should export a function which returns what you want to response.
+  ),
   "error: /test/middlewares/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/notExistFile does not exist or is not a file.",
   "error: /test/middlewares/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path does not exist or is not a file.",
   "error: Empty \\"filePath\\" arg for \\"ResponseFile\\" constructor.",
@@ -248,9 +252,22 @@ Object {
 
 exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > return js result 1`] = `
 Object {
-  "resBody": "{\\"req\\":1,\\"a\\":1}",
+  "resBody": "{\\"query\\":{\\"a\\":1},\\"a\\":1}",
   "resHeaders": Object {
     "Content-Type": "application/json; charset=UTF-8",
+  },
+  "shouldUseExpressSendFile": false,
+}
+`
+
+exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > return js result but js file does not export a function 1`] = `
+Object {
+  "resBody": String(
+    Failed to execute js script '/fake-api-path/nonExportFn.js'.
+    ERROR_EXPORT_FUNCTION. Js file /fake-api-path/nonExportFn.js should export a function which returns what you want to response.
+  ),
+  "resHeaders": Object {
+    "Mock-Error-Invalid-Js-File": "/fake-api-path/nonExportFn.js",
   },
   "shouldUseExpressSendFile": false,
 }
@@ -284,6 +301,16 @@ Object {
   ),
   "resHeaders": Object {
     "Mock-Error-Invalid-Js-File": "/test/middlewares/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/bad.js",
+  },
+  "shouldUseExpressSendFile": false,
+}
+`
+
+exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > return js result correctly even after js file changed 1`] = `
+Object {
+  "resBody": "12",
+  "resHeaders": Object {
+    "Content-Type": "text/plain; charset=UTF-8",
   },
   "shouldUseExpressSendFile": false,
 }

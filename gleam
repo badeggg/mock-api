@@ -64,6 +64,3 @@
   simulating big file download progress
 - off only current
 - review http method, CONNECT for example
-- 'do not use cached js module when execute it'
-  + may need review, e.g. all js script related modules & test suit
-  + better error msg, js file export must be a function

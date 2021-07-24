@@ -22,6 +22,7 @@
 
 const pathUtil = require('path');
 const fs = require('fs');
+const { execFileSync } = require('child_process');
 const _ = require('lodash');
 const commander = require('commander');
 const cd = require('./cd');
@@ -55,7 +56,7 @@ class ResponseFile {
         this.resJsResult = resJsResult;
         if (this.resJsResult === undefined)
             this.resJsResult = false;
-        this.req = req;
+        this.req = req || {};
     }
     generateResCfg() {
         if (!this.filePath)
@@ -125,33 +126,31 @@ class ResponseFile {
                 },
             });
         } else {
-            let resBody;
-            try {
-                /**
-                 * We must not use require cached module since we want js file change
-                 * take effect immediately. `delete require.cache[...]` is fine but
-                 * test suit with tapJs seems not ok.
-                 * todo to write test suit
-                 * @zhaoxuxu @2021-7-23
-                 */
-                delete require.cache[require.resolve(this.filePath)];
-                resBody = require(this.filePath)(this.req);
-            } catch (err) {
-                const errStr = (
-                    `Failed to execute js script '${this.filePath}'.\n`
-                    + err.stack
-                );
-                log.error(errStr);
+            const execResult = execFileSync(
+                pathUtil.resolve(__dirname, './execJsFileHelper.js'),
+                [
+                    this.filePath,
+                    JSON.stringify([{
+                        method: this.req.method,
+                        query: this.req.query,
+                        params: this.req.params,
+                        body: this.req.body,
+                    }]),
+                ],
+            );
+            const { jsResult, meetWithErr } = JSON.parse(execResult);
+            if (meetWithErr) {
+                log.error(jsResult);
                 return {
                     shouldUseExpressSendFile: false,
-                    resBody: errStr,
+                    resBody: jsResult,
                     resHeaders: {
                         'Mock-Error-Invalid-Js-File': this.filePath,
                     },
                 };
             }
-            if (resBody && !_.isPlainObject(resBody) && !_.isArray(resBody)) {
-                resBody = resBody.toString();
+            if (jsResult && !_.isPlainObject(jsResult) && !_.isArray(jsResult)) {
+                const resBody = jsResult.toString();
                 return {
                     shouldUseExpressSendFile: false,
                     resBody,
@@ -160,7 +159,7 @@ class ResponseFile {
                     },
                 };
             }
-            resBody = JSON.stringify(resBody);
+            const resBody = JSON.stringify(jsResult);
             return {
                 shouldUseExpressSendFile: false,
                 resBody,

@@ -48,37 +48,50 @@ Array []
 exports[`test/mock.js TAP response js result as a whole > bad.js result 1`] = `
 Failed to execute js script '/test/tap-testdir-mock-response-js-result-as-a-whole/fake-services/fake-api-path/bad.js'.
 TypeError: Assignment to constant variable.
-    at module.exports (/test/tap-testdir-mock-response-js-result-as-a-whole/fake-services/fake-api-path/bad.js:4:27)
-    at ResponseFile.generateJsResCfg (/src/middlewares/mapToRes/matchAResponse.js:138:27)
-    at ResponseFile.generateResCfg (/src/middlewares/mapToRes/matchAResponse.js:74:25)
-    at RuleParser.parse (/src/middlewares/mapToRes/matchAResponse.js:240:11)
-    at Matcher.mapFileMatch (/src/middlewares/mapToRes/matchAResponse.js:378:71)
-    at Matcher.match (/src/middlewares/mapToRes/matchAResponse.js:371:25)
-    at matchAResponse (/src/middlewares/mapToRes/matchAResponse.js:501:44)
-    at module.exports (/src/middlewares/mapToRes/index.js:63:17)
-    at Layer.handle [as handle_request] (/node_modules/express/lib/router/layer.js:95:5)
-    at trim_prefix (/node_modules/express/lib/router/index.js:317:13)
+    at ...
+    at ...
+    at ...
+    at ...
+    at ...
+    at ...
+    at ...
+    at ...
+    at ...
+    at ...
+`
+
+exports[`test/mock.js TAP response js result as a whole > badExport.js result 1`] = `
+Failed to execute js script '/test/tap-testdir-mock-response-js-result-as-a-whole/fake-services/fake-api-path/badExport.js'.
+ERROR_EXPORT_FUNCTION. Js file /test/tap-testdir-mock-response-js-result-as-a-whole/fake-services/fake-api-path/badExport.js should export a function which returns what you want to response.
 `
 
 exports[`test/mock.js TAP response js result as a whole > function.js result 1`] = `
-() => {console.log('foo')}
+
 `
 
 exports[`test/mock.js TAP response js result as a whole > log errors 1`] = `
 Array [
   String(
+    error: Failed to execute js script '/test/tap-testdir-mock-response-js-result-as-a-whole/fake-services/fake-api-path/badExport.js'.
+    ERROR_EXPORT_FUNCTION. Js file /test/tap-testdir-mock-response-js-result-as-a-whole/fake-services/fake-api-path/badExport.js should export a function which returns what you want to response.
+  ),
+  String(
+    error: Failed to execute js script '/test/tap-testdir-mock-response-js-result-as-a-whole/fake-services/fake-api-path/badExport.js'.
+    ERROR_EXPORT_FUNCTION. Js file /test/tap-testdir-mock-response-js-result-as-a-whole/fake-services/fake-api-path/badExport.js should export a function which returns what you want to response.
+  ),
+  String(
     error: Failed to execute js script '/test/tap-testdir-mock-response-js-result-as-a-whole/fake-services/fake-api-path/bad.js'.
     TypeError: Assignment to constant variable.
-        at module.exports (/test/tap-testdir-mock-response-js-result-as-a-whole/fake-services/fake-api-path/bad.js:4:27)
-        at ResponseFile.generateJsResCfg (/src/middlewares/mapToRes/matchAResponse.js:138:27)
-        at ResponseFile.generateResCfg (/src/middlewares/mapToRes/matchAResponse.js:74:25)
-        at RuleParser.parse (/src/middlewares/mapToRes/matchAResponse.js:240:11)
-        at Matcher.mapFileMatch (/src/middlewares/mapToRes/matchAResponse.js:378:71)
-        at Matcher.match (/src/middlewares/mapToRes/matchAResponse.js:371:25)
-        at matchAResponse (/src/middlewares/mapToRes/matchAResponse.js:501:44)
-        at module.exports (/src/middlewares/mapToRes/index.js:63:17)
-        at Layer.handle [as handle_request] (/node_modules/express/lib/router/layer.js:95:5)
-        at trim_prefix (/node_modules/express/lib/router/index.js:317:13)
+        at ...
+        at ...
+        at ...
+        at ...
+        at ...
+        at ...
+        at ...
+        at ...
+        at ...
+        at ...
   ),
 ]
 `

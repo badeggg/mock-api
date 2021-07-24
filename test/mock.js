@@ -6,6 +6,7 @@ const tap = require('tap');
 const axios = require('axios');
 const tcpPortUsed = require('tcp-port-used');
 const removePathPrefix = require('./testUtils/removePathPrefix.js');
+const obscureErrorStack = require('./testUtils/obscureErrorStack.js');
 
 function removePortNumber(msg) {
     return msg.replace(/(?<=listening on: )\d+/, 'xxxx');
@@ -402,14 +403,18 @@ tap.test('response js result as a whole', async tap => {
                         return () => {console.log('foo')};
                     };
                 `,
+                'badExport.js': `
+                    module.exports = 1;
+                `,
                 map: `
-                    GET     -r ./ok.js
-                    DELETE  -r ./undefined.js
-                    PATCH   -r ./string.js
-                    PUT     -r ./number.js
-                    TRACE   -r ./null.js
-                    OPTIONS -r ./function.js
-                    POST    -r ./bad.js
+                    GET ?name=badeggg  -r ./ok.js
+                    GET ?name=badeggg1 -r ./undefined.js
+                    GET ?name=badeggg2 -r ./string.js
+                    GET ?name=badeggg3 -r ./number.js
+                    GET ?name=badeggg4 -r ./null.js
+                    GET ?name=badeggg5 -r ./function.js
+                    GET ?name=badeggg6 -r ./badExport.js
+                    GET ?name=badeggg7 -r ./bad.js
                 `,
             },
         },
@@ -425,7 +430,7 @@ tap.test('response js result as a whole', async tap => {
             ),
             error: (msg) => errorMsgs.push(
                 'error: ' + removePathPrefix(
-                    msg,
+                    obscureErrorStack(msg),
                     pathUtil.resolve(fakeServicesDir, '../../')
                 )
             ),
@@ -444,30 +449,43 @@ tap.test('response js result as a whole', async tap => {
     let response = await axios.request(options);
     tap.matchSnapshot(response.data, 'ok.js result');
 
-    options.method = 'DELETE';
+    options.params.name = 'badeggg1';
     response = await axios.request(options);
     tap.equal(response.data, '');
 
-    options.method = 'PATCH';
+    options.params.name = 'badeggg2';
     response = await axios.request(options);
     tap.equal(response.data, 'string');
 
-    options.method = 'PUT';
+    options.params.name = 'badeggg3';
     response = await axios.request(options);
     tap.equal(response.data, 123);
 
-    options.method = 'TRACE';
+    options.params.name = 'badeggg4';
     response = await axios.request(options);
     tap.equal(response.data, null);
 
-    options.method = 'OPTIONS';
+    options.params.name = 'badeggg5';
     response = await axios.request(options);
     tap.matchSnapshot(response.data, 'function.js result');
 
-    options.method = 'POST';
+    options.params.name = 'badeggg6';
     response = await axios.request(options);
     tap.matchSnapshot(
-        removePathPrefix(response.data, pathUtil.resolve(fakeServicesDir, '../../')),
+        removePathPrefix(
+            obscureErrorStack(response.data),
+            pathUtil.resolve(fakeServicesDir, '../../')
+        ),
+        'badExport.js result'
+    );
+
+    options.params.name = 'badeggg7';
+    response = await axios.request(options);
+    tap.matchSnapshot(
+        removePathPrefix(
+            obscureErrorStack(response.data),
+            pathUtil.resolve(fakeServicesDir, '../../')
+        ),
         'bad.js result'
     );
 

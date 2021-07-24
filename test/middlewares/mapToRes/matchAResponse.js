@@ -62,7 +62,8 @@ tap.test('class ResponseFile', async tap => {
                         return a;
                     };
                 `,
-                'big.js':       'text here is fine',
+                'big.js':         'text here is fine',
+                'nonExportFn.js': 'const a = 90;',
             },
         },
     });
@@ -82,6 +83,7 @@ tap.test('class ResponseFile', async tap => {
     const retEmptyJs     = pathUtil.resolve(basePath, 'retEmpty.js');
     const badJs          = pathUtil.resolve(basePath, 'bad.js');
     const bigJs          = pathUtil.resolve(basePath, 'big.js');
+    const nonExportFnJs  = pathUtil.resolve(basePath, 'nonExportFn.js');
 
     let errorMsgs = [];
     let warningMsgs = [];
@@ -161,7 +163,7 @@ tap.test('class ResponseFile', async tap => {
     );
     tap.matchSnapshot(
         trimCfg(
-            new ResponseFile(okJs, true, {req: 1}).generateResCfg(),
+            new ResponseFile(okJs, true, {query: {a: 1}}).generateResCfg(),
             fakeServicesDir
         ),
         'return js result'
@@ -187,6 +189,21 @@ tap.test('class ResponseFile', async tap => {
         ),
         'return js self'
     );
+    fs.writeFileSync(
+        okJs,
+        `
+            module.exports = () => 12;
+        `,
+        'utf-8',
+    );
+    tap.matchSnapshot(
+        // this test spot should be after any normal okJs related test
+        trimCfg(
+            new ResponseFile(okJs, true).generateResCfg(),
+            fakeServicesDir
+        ),
+        'return js result correctly even after js file changed'
+    );
     tap.matchSnapshot(
         trimCfg(
             new ResponseFile(badJs, true).generateResCfg(),
@@ -200,6 +217,13 @@ tap.test('class ResponseFile', async tap => {
             fakeServicesDir,
         ),
         'return js result but js file is too big'
+    );
+    tap.matchSnapshot(
+        trimCfg(
+            new ResponseFile(nonExportFnJs, true).generateResCfg(),
+            fakeServicesDir,
+        ),
+        'return js result but js file does not export a function'
     );
     tap.equal(new ResponseFile(notExistFile).generateResCfg(), null);
     tap.equal(new ResponseFile(isNotFile).generateResCfg(), null);
