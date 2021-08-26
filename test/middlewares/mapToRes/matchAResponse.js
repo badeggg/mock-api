@@ -63,7 +63,13 @@ tap.test('class ResponseFile', async tap => {
                     };
                 `,
                 'big.js':         'text here is fine',
-                'nonExportFn.js': 'const a = 90;',
+                'nonExportFn.js': 'const a = 2;',
+                'obj.js':         `
+                    module.exports = {
+                        name: '小明'
+                    };
+                `,
+                'undefined.js':    'module.exports = undefined;',
             },
         },
     });
@@ -84,6 +90,8 @@ tap.test('class ResponseFile', async tap => {
     const badJs          = pathUtil.resolve(basePath, 'bad.js');
     const bigJs          = pathUtil.resolve(basePath, 'big.js');
     const nonExportFnJs  = pathUtil.resolve(basePath, 'nonExportFn.js');
+    const objJs          = pathUtil.resolve(basePath, 'obj.js');
+    const undefinedJs    = pathUtil.resolve(basePath, 'undefined.js');
 
     let errorMsgs = [];
     let warningMsgs = [];
@@ -225,6 +233,7 @@ tap.test('class ResponseFile', async tap => {
         ),
         'return js result but js file does not export a function'
     );
+    
     tap.equal(new ResponseFile(notExistFile).generateResCfg(), null);
     tap.equal(new ResponseFile(isNotFile).generateResCfg(), null);
     tap.equal(new ResponseFile('').generateResCfg(), null);
@@ -233,6 +242,21 @@ tap.test('class ResponseFile', async tap => {
     tap.equal(new ResponseFile(notExistFile).generateExpressSendFileResCfg(), null);
     tap.matchSnapshot(errorMsgs, 'log errors');
     tap.matchSnapshot(warningMsgs, 'log warnings');
+
+    // tap.matchSnapshot(
+    //     trimCfg(
+    //         new ResponseFile(undefinedJs, true).generateResCfg(),
+    //         fakeServicesDir,
+    //     ),
+    //     'return js result but undefined'
+    // );
+    tap.matchSnapshot(
+        trimCfg(
+            new ResponseFile(objJs, true).generateResCfg(),
+            fakeServicesDir,
+        ),
+        'return object js result'
+    );
 });
 
 tap.test('class RuleParser', async tap => {

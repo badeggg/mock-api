@@ -16,15 +16,17 @@ let jsResult;
 let meetWithErr = false;
 try {
     const script = require(jsFilePath);
-    if (typeof script !== 'function') {
-        throw new Error(`ERROR_EXPORT_FUNCTION. Js file ${jsFilePath} should export `
-            + 'a function which returns what you want to response.');
+    if (script === undefined) {
+        throw new Error(`ERROR_EXPORT_VALUE Js file ${jsFilePath} shouldn't export undefined`);
+    } else if (typeof script === 'function') {
+        jsResult = script(req);
+    } else {
+        jsResult = script;
     }
-    jsResult = script(req);
 } catch (err) {
     const errStr = (
         `Failed to execute js script '${jsFilePath}'.\n`
-        + (err.message.startsWith('ERROR_EXPORT_FUNCTION') ? err.message : err.stack)
+        + (err.message.startsWith('ERROR_EXPORT_VALUE') ? err.message : err.stack)
     );
     jsResult = errStr;
     meetWithErr = true;
