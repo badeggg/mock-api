@@ -181,6 +181,26 @@ Object {
 }
 `
 
+exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > js export object 1`] = `
+Object {
+  "resBody": "{\\"name\\":\\"小明\\"}",
+  "resHeaders": Object {
+    "Content-Type": "application/json; charset=UTF-8",
+  },
+  "shouldUseExpressSendFile": false,
+}
+`
+
+exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > js export undefined 1`] = `
+Object {
+  "resBody": undefined,
+  "resHeaders": Object {
+    "Content-Type": "application/json; charset=UTF-8",
+  },
+  "shouldUseExpressSendFile": false,
+}
+`
+
 exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > json file 1`] = `
 Object {
   "resFilePath": "/fake-api-path/json.json",
@@ -218,10 +238,6 @@ Array [
         at ...
         at ...
   ),
-  String(
-    error: Failed to execute js script '/test/middlewares/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/nonExportFn.js'.
-    ERROR_EXPORT_FUNCTION. Js file /test/middlewares/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/nonExportFn.js should export a function which returns what you want to response.
-  ),
   "error: /test/middlewares/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/notExistFile does not exist or is not a file.",
   "error: /test/middlewares/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path does not exist or is not a file.",
   "error: Empty \\"filePath\\" arg for \\"ResponseFile\\" constructor.",
@@ -255,19 +271,6 @@ Object {
   "resBody": "{\\"query\\":{\\"a\\":1},\\"a\\":1}",
   "resHeaders": Object {
     "Content-Type": "application/json; charset=UTF-8",
-  },
-  "shouldUseExpressSendFile": false,
-}
-`
-
-exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > return js result but js file does not export a function 1`] = `
-Object {
-  "resBody": String(
-    Failed to execute js script '/fake-api-path/nonExportFn.js'.
-    ERROR_EXPORT_FUNCTION. Js file /fake-api-path/nonExportFn.js should export a function which returns what you want to response.
-  ),
-  "resHeaders": Object {
-    "Mock-Error-Invalid-Js-File": "/fake-api-path/nonExportFn.js",
   },
   "shouldUseExpressSendFile": false,
 }
@@ -336,7 +339,7 @@ Object {
 }
 `
 
-exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > return js self 1`] = `
+exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > return js result with empty request argument 1`] = `
 Object {
   "resFilePath": "/fake-api-path/ok.js",
   "shouldUseExpressSendFile": true,

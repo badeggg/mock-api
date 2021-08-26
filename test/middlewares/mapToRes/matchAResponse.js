@@ -63,7 +63,12 @@ tap.test('class ResponseFile', async tap => {
                     };
                 `,
                 'big.js':         'text here is fine',
-                'nonExportFn.js': 'const a = 90;',
+                'obj.js':         `
+                    module.exports = {
+                        name: '小明'
+                    };
+                `,
+                'undefined.js':    'module.exports = undefined;',
             },
         },
     });
@@ -83,7 +88,8 @@ tap.test('class ResponseFile', async tap => {
     const retEmptyJs     = pathUtil.resolve(basePath, 'retEmpty.js');
     const badJs          = pathUtil.resolve(basePath, 'bad.js');
     const bigJs          = pathUtil.resolve(basePath, 'big.js');
-    const nonExportFnJs  = pathUtil.resolve(basePath, 'nonExportFn.js');
+    const objJs          = pathUtil.resolve(basePath, 'obj.js');
+    const undefinedJs    = pathUtil.resolve(basePath, 'undefined.js');
 
     let errorMsgs = [];
     let warningMsgs = [];
@@ -187,7 +193,7 @@ tap.test('class ResponseFile', async tap => {
             new ResponseFile(okJs).generateResCfg(),
             fakeServicesDir
         ),
-        'return js self'
+        'return js result with empty request argument'
     );
     fs.writeFileSync(
         okJs,
@@ -218,13 +224,22 @@ tap.test('class ResponseFile', async tap => {
         ),
         'return js result but js file is too big'
     );
+
     tap.matchSnapshot(
         trimCfg(
-            new ResponseFile(nonExportFnJs, true).generateResCfg(),
+            new ResponseFile(objJs, true).generateResCfg(),
             fakeServicesDir,
         ),
-        'return js result but js file does not export a function'
+        'js export object'
     );
+    tap.matchSnapshot(
+        trimCfg(
+            new ResponseFile(undefinedJs, true).generateResCfg(),
+            fakeServicesDir,
+        ),
+        'js export undefined'
+    );
+    
     tap.equal(new ResponseFile(notExistFile).generateResCfg(), null);
     tap.equal(new ResponseFile(isNotFile).generateResCfg(), null);
     tap.equal(new ResponseFile('').generateResCfg(), null);

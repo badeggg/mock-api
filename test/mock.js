@@ -403,18 +403,42 @@ tap.test('response js result as a whole', async tap => {
                         return () => {console.log('foo')};
                     };
                 `,
-                'badExport.js': `
+                'exportNum.js': `
                     module.exports = 1;
                 `,
+                'exportStr.js': `
+                    module.exports = 'str';
+                `,
+                'exportObj.js': `
+                    module.exports = {a: 12};
+                `,
+                'exportArr.js': `
+                    module.exports = [1, null, {a: 56}];
+                `,
+                'exportNull.js': `
+                    module.exports = null;
+                `,
+                'exportSymbol.js': `
+                    module.exports = Symbol();
+                `,
+                'exportObjHasFunc.js': `
+                    module.exports = {fn: () => {}};
+                `,
                 map: `
-                    GET ?name=badeggg  -r ./ok.js
-                    GET ?name=badeggg1 -r ./undefined.js
-                    GET ?name=badeggg2 -r ./string.js
-                    GET ?name=badeggg3 -r ./number.js
-                    GET ?name=badeggg4 -r ./null.js
-                    GET ?name=badeggg5 -r ./function.js
-                    GET ?name=badeggg6 -r ./badExport.js
-                    GET ?name=badeggg7 -r ./bad.js
+                    GET ?name=badeggg   -r ./ok.js
+                    GET ?name=badeggg1  -r ./undefined.js
+                    GET ?name=badeggg2  -r ./string.js
+                    GET ?name=badeggg3  -r ./number.js
+                    GET ?name=badeggg4  -r ./null.js
+                    GET ?name=badeggg5  -r ./function.js
+                    GET ?name=badeggg6  -r ./exportNum.js
+                    GET ?name=badeggg7  -r ./exportStr.js
+                    GET ?name=badeggg8  -r ./exportObj.js
+                    GET ?name=badeggg9  -r ./exportArr.js
+                    GET ?name=badeggg10 -r ./exportNull.js
+                    GET ?name=badeggg11 -r ./exportSymbol.js
+                    GET ?name=badeggg12 -r ./exportObjHasFunc.js
+                    GET ?name=badegggXX -r ./bad.js
                 `,
             },
         },
@@ -471,15 +495,33 @@ tap.test('response js result as a whole', async tap => {
 
     options.params.name = 'badeggg6';
     response = await axios.request(options);
-    tap.matchSnapshot(
-        removePathPrefix(
-            obscureErrorStack(response.data),
-            pathUtil.resolve(fakeServicesDir, '../../')
-        ),
-        'badExport.js result'
-    );
+    tap.matchSnapshot(response.data, 'js export number');
 
     options.params.name = 'badeggg7';
+    response = await axios.request(options);
+    tap.matchSnapshot(response.data, 'js export string');
+
+    options.params.name = 'badeggg8';
+    response = await axios.request(options);
+    tap.matchSnapshot(response.data, 'js export object');
+
+    options.params.name = 'badeggg9';
+    response = await axios.request(options);
+    tap.matchSnapshot(response.data, 'js export array');
+
+    options.params.name = 'badeggg10';
+    response = await axios.request(options);
+    tap.matchSnapshot(response.data, 'js export null');
+
+    options.params.name = 'badeggg11';
+    response = await axios.request(options);
+    tap.matchSnapshot(response.data, 'js export symbol');
+
+    options.params.name = 'badeggg12';
+    response = await axios.request(options);
+    tap.matchSnapshot(response.data, 'js export objHasFunc');
+
+    options.params.name = 'badegggXX';
     response = await axios.request(options);
     tap.matchSnapshot(
         removePathPrefix(

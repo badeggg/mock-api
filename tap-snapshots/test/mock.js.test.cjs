@@ -60,25 +60,48 @@ TypeError: Assignment to constant variable.
     at ...
 `
 
-exports[`test/mock.js TAP response js result as a whole > badExport.js result 1`] = `
-Failed to execute js script '/test/tap-testdir-mock-response-js-result-as-a-whole/fake-services/fake-api-path/badExport.js'.
-ERROR_EXPORT_FUNCTION. Js file /test/tap-testdir-mock-response-js-result-as-a-whole/fake-services/fake-api-path/badExport.js should export a function which returns what you want to response.
+exports[`test/mock.js TAP response js result as a whole > function.js result 1`] = `
+
 `
 
-exports[`test/mock.js TAP response js result as a whole > function.js result 1`] = `
+exports[`test/mock.js TAP response js result as a whole > js export array 1`] = `
+Array [
+  1,
+  null,
+  Object {
+    "a": 56,
+  },
+]
+`
+
+exports[`test/mock.js TAP response js result as a whole > js export null 1`] = `
+null
+`
+
+exports[`test/mock.js TAP response js result as a whole > js export number 1`] = `
+1
+`
+
+exports[`test/mock.js TAP response js result as a whole > js export objHasFunc 1`] = `
+Object {}
+`
+
+exports[`test/mock.js TAP response js result as a whole > js export object 1`] = `
+Object {
+  "a": 12,
+}
+`
+
+exports[`test/mock.js TAP response js result as a whole > js export string 1`] = `
+str
+`
+
+exports[`test/mock.js TAP response js result as a whole > js export symbol 1`] = `
 
 `
 
 exports[`test/mock.js TAP response js result as a whole > log errors 1`] = `
 Array [
-  String(
-    error: Failed to execute js script '/test/tap-testdir-mock-response-js-result-as-a-whole/fake-services/fake-api-path/badExport.js'.
-    ERROR_EXPORT_FUNCTION. Js file /test/tap-testdir-mock-response-js-result-as-a-whole/fake-services/fake-api-path/badExport.js should export a function which returns what you want to response.
-  ),
-  String(
-    error: Failed to execute js script '/test/tap-testdir-mock-response-js-result-as-a-whole/fake-services/fake-api-path/badExport.js'.
-    ERROR_EXPORT_FUNCTION. Js file /test/tap-testdir-mock-response-js-result-as-a-whole/fake-services/fake-api-path/badExport.js should export a function which returns what you want to response.
-  ),
   String(
     error: Failed to execute js script '/test/tap-testdir-mock-response-js-result-as-a-whole/fake-services/fake-api-path/bad.js'.
     TypeError: Assignment to constant variable.
