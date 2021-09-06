@@ -1,7 +1,7 @@
 /**
  * Most of the config files of mock-api have the convention:
  *   - the basic config unit is a line of text
- *   - a backslash is the last character of a line will cause the next
+ *   - a backslash in the last character of a line will cause the next
  *     line(if any) concated to current line.
  *   - items in a config unit(a line) is separated by one or more white
  *     space character(s), including space, tab, form feed, line feed, 

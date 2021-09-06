@@ -193,8 +193,8 @@ class RuleParser {
             .option('-c, --status-code   <code>',       'status code',        (value, previous) => this._commanderParseStatusCode(value, previous))
             .option('-m, --req-method    <method>',     'request method',     (value, previous) => this._commanderParseReqMethod(value, previous))
             .option('-f, --res-file-path <file>',       'response file path', (value, previous) => this._commanderParseResFilePath(value, previous))
-            .option('-t, --delay-time    <time>',       'delay to response',  (value, previous) => this._commanderParseDelayTime(value, previous))
-            .option('-r, --res-js-result',              'response js result', false)
+            .option('-t, --delay-time    <time>',       'delay to respond',   (value, previous) => this._commanderParseDelayTime(value, previous))
+            .option('-r, --res-js-result',              'respond js result', false)
             .configureOutput({
                 writeErr: () => {},
             });

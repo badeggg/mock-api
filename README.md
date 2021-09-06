@@ -1,5 +1,7 @@
 # mock-api
-A **least dependent**, **localized** and **with version control** mock tool for front-end development.
+A **least dependent**, **localized**, **with version control** and **effect immediately** http
+api mock tool for front-end project, nodejs back-end project, or even general back-end project
+if you want.
 
 ## Table of Contents
 - [mock-api](#mock-api)
@@ -7,36 +9,52 @@ A **least dependent**, **localized** and **with version control** mock tool for 
 - [How is it working?](#How-is-it-working)
 - [Installation](#Installation)
 - [Usage](#Usage)
-  + [Basic usage, configure a api to mock](#Basic-usage-configure-a-api-to-mock)
+  + [Basic usage, configure a api to mock](#Basic-usage-configure-an-api-to-mock)
   + [The map file](#The-map-file)
-  + [Url query](#Url-query)
-  + [Path parameters](#Path-parameters)
-  + [Body arguments](#Body-arguments)
+    + ['map' word](#map-word)
+    + [http method](#http-method)
+    + [options](#options)
+      + [Match request by url query](#match-request-by-url-query)
+      + [Match request by path params](#match-request-by-path-params)
+      + [Match request by body arguments](#match-request-by-body-arguments)
+      + [Set response headers](#set-response-headers)
+      + [Set response code](#set-response-code)
+      + [Match request method](#match-request-method)
+      + [Set response file path](#set-response-file-path)
+      + [Delay to respond](#delay-to-respond)
+      + [Respond js result](#respond-js-result)
   + [Proxy 404](#Proxy-404)
   + [Disable part of the mocking](#Disable-part-of-the-mocking)
+  + [Config file common convention](#config-file-common-convention)
 - [Tips](#Tips)
 - [Await features...](#Await-features)
 
 ## Why _this_ mock-api?
 - least dependent
-  + least coordination with back-end developers in coding _all_ your front-end logic and styles
-  + the only information you need is the api defination: method, path, queries, reponse structure etc.
+  + least coordination with other developers in coding _all_ your project
+  + the only information you need is the api defination: method, path, queries, reponse
+    structure etc.
   + and of course you may mock any response as you want, such as an error response specifically
 - localized
   + no bother to start and maintain a mock service on a virtual machine
-  + start mocking just as you start your development project, e.g. `npm run serve` if your project is
-    a vue-cli-serivce project
+  + start mocking just as you start your project development, e.g. `npm run serve` if your
+    project is a vue-cli-serivce project
 - with version control
-  + all the mock configuration stay with your project source code version control, so that after half
-    year, for example, you still can use the mock configuration configured now.
+  + all of the mock configuration stay with your project source code version control, so that
+    after half year, for example, you still can use the mock configuration configured now.
+- effect immediately
+  + almost all config can take effect immediately, e.g.
+    + a new mocking api path
+    + a response file amending
+    + and even the proxy404 file
 
 [Back To Top](#mock-api)
 
 ## How is it working?
-The design is simple. 'mock-api' start a service on local computer, response to request according to
-mock configuration. Mock configuration should be placed on `fake-services` folder on project root
-directory. It will create a file named `.mockingLocation` on project root to indicate the mocking
-location.
+The design is simple. 'mock-api' start a service on local computer, respond to request
+according to mock configuration. Mock configuration should be placed on `fake-services` folder
+on project root directory. 'mock-api' will create a file named `.mockingLocation` on project
+root to indicate the mocking location.
 
 How to write a mock configuration is describe below.
 
@@ -52,156 +70,363 @@ $ npm install @badeggg/mock-api
 [Back To Top](#mock-api)
 
 ## Usage
-### Basic usage, configure a api to mock
+### Basic usage, configure an api to mock
 1. Add fake-services folder on the root of your project.
     ```
     $ cd /your/project/root
     $ mkdir fake-services
-    
-    // to be continued ...
     ```
-2. Create series of folders relative to api path in fake-services. [Path parameters](#Path-parameters) can be handled.
+2. Create series of folders relative to api path in fake-services.
+   [Path parameters](#match-request-by-path-params) can be handled.
     ```
-    // continued
     $ cd fake-services
     $ mkdir -p mocking/api/path
-    
-    // to be continued ...
     ```
 3. Create text file as response entity.
     ```
-    // continued
     $ cd mocking/api/path
     $ echo 'data to response' > response
-    
-    // to be continued ...
     ```
-4. Set mocking rules to map request to a file to response. [The map file](#The-map-file) is responsible for those mocking rules.
+4. Now you can start the mock server to check what you just configured.
     ```
-    // continued
-    $ touch map
-    $ vi map // edit this map file
+    $ npx mock
+    >> Fri Oct 15 2021 17:32:31 GMT+0800 (China Standard Time) INFO  Mock-api listening on: 3000
     ```
-5. Some coordination on your project.
-    - Add a script in package.json, such that start the mock service first and then start the well-known
-      webpack dev-server when run this script.
-      + Of course the 'dev-server' part is dependent on your specific project.
-      + For example, if your project is constructed with vue-cli-service, `"serve-mock": "mock | vue-cli-service serve",`
-        should be added
-    - Modify the original development start script, so that .mockingLocation file is removed first and
-      then start then well-known webpack dev-server when run this non-mocking start development script.
-      + Of course the 'dev-server' part is dependent on your specific project.
-      + For example, if your project is constructed with vue-cli-service, `"serve": "rm -f .mockingLocation && vue-cli-service serve",`
-        should be the modified version script.
-    - Make sure the original dev-server api proxy is configured to mocking location when you are mocking.
-      + For example, if your project is constructed with vue-cli-service, part of the vue.config.js should looks
-        like:
-        ```
-        let MOCKING_LOCATION = null;
-        if (fs.existsSync('./.mockingLocation')) {
-            MOCKING_LOCATION = fs.readFileSync('./.mockingLocation', 'utf-8');
-        }
+    ```
+    # in another shell
+    $ curl localhost:3000/mocking/api/path
+    >> data to response
+    ```
 
-        module.exports = {
-            devServer: {
-                proxy: {
-                    '/api': MOCKING_LOCATION ? MOCKING_LOCATION : 'https://your.test.environment.com',
-                },
+If your project is a nodejs back-end project, you may have figured out what else to do. Just
+edit the scripts section in package.json to make sure mock server is started and api requests
+are passed to mock server when developing the project.
+
+If your project is general back-end project, a java project for example. You need install
+nodejs npm and do the similar things as a nodejs project. Welcome to javascript world ;-)
+
+I'll do a rather detailed description here with common front-end project. In a common front-end
+project, you need some coordination:
+
+- Add a script in package.json, such that start the mock service first and then start the well-known
+  webpack dev-server when run this script.
+  + Of course the 'dev-server' part is dependent on your specific project.
+  + For example, if your project is constructed with vue-cli-service, `"serve-mock": "mock | vue-cli-service serve",`
+    should be added
+- Modify the original development start script, so that .mockingLocation file is removed first and
+  then start the well-known webpack dev-server when run this non-mocking start development script.
+  + Of course the 'dev-server' part is dependent on your specific project.
+  + For example, if your project is constructed with vue-cli-service, `"serve": "rm -f .mockingLocation && vue-cli-service serve",`
+    should be the modified version script.
+- Make sure the original dev-server api proxy is configured to mocking location when you are mocking.
+  + For example, if your project is constructed with vue-cli-service, part of the vue.config.js should looks
+    like:
+    ```
+    let MOCKING_LOCATION = null;
+    if (fs.existsSync('./.mockingLocation')) {
+        MOCKING_LOCATION = fs.readFileSync('./.mockingLocation', 'utf-8');
+    }
+
+    module.exports = {
+        devServer: {
+            proxy: {
+                '/api': MOCKING_LOCATION ? MOCKING_LOCATION : 'https://your.test.environment.com',
             },
-        };
-        ```
+        },
+    };
+    ```
+
+To configure different response for different request on same api path, you will need set
+[the map file](#the-map-file).
+
+After proxy all api requests to mock server, you don't really need configure all of the
+api mocking. Check [proxy 404 feature](#Proxy-404).
 
 [Back To Top](#mock-api)
 
 ### The map file
-This file is optional. If this map file does not exist, './response' will
-be sent to client.
-Lines starting with '#' will be ignored. Some ordered fields indicate
-how to find the response in current path. Those fields are:
+This file is used to configure how to response an api request with current path. We say
+'current path' means the directory where the map file is in and the api request path matchs.
+
+The map file is optional. If this map file does not exist, contents in './response' will
+be sent to client.  Lines starting with '#' will be ignored, any content after '#' will
+also be ignored. Each line is a map rule, each map rule is space-separated. 'Mock-api' will
+try to find a matching rule from the first line to the end line. A found matching rule
+will block any further search. If no matching rule is found, the default response file
+'./response' will be used. If './response' file does not exist, a 404 is triggered,
+check [proxy 404](#Proxy-404).
+
+Syntax of the map rule is: `[map word] [http method] [options]`. Here are few typical examples:
 ```
-    METHOD       : required
-                   capital
-                   e.g. GET, POST
-
-    ?queries     : optional
-                   starts with ?
-                   urlencoded, braces to include a regular expression
-                       to match value
-                   e.g. ?qu1={.*}&qu2={.*}
-
-    _pathParams  : optional
-                   starts with _
-                   urlencoded, braces to include a regular expression
-                       to match value
-                   e.g. _pa1={.*}&pa2={.*}
-
-    +bodyArgs    : optional
-                   starts with +
-                   urlencoded, braces to include a regular expression
-                       to match value
-                   e.g. +arg1={.*}&arg2={.*}
-
-    responsePath : required
-                   search response file by this field based on current
-                       directory
-                   always is the last field
-                   e.g. ./response
-
+GET ./response # if the request method is GET, contents in ./response will be responsed
+map -t 500 ./response # delay 500ms to response
 ```
-These fields are divided by space(s), e.g:
+#### 'map' word
+'map' or 'MAP' appeared in the map rule start is trimmed. It is for good looking reason.
+
+Case insensitive.
+
+#### http method
+Http method may be configured to match request. If configured, it must be the first item in
+rule line(if 'map' word appears, http method must be the second item). If no method is
+configured, any method is considered matching.
+
+Case insensitive.
+
+#### options
+
+Option names (e.g. --url-queries --status-code) are case sensitive.
+
+No url query option configured in a map rule line means any query content of the request is
+ok with this map rule response. So with path parameter and body argument config and http
+method.
+
+<hr>
+
+##### Match request by url query:
+
+**?<queries...>, -q <queries...>, --url-queries <queries...>**<br>
+
+Form of <queries...> is almost like url query form. It contains one or more '&' seperated
+query config. Each query config has two parts and are connected by '='. The first part is
+query name, the second part is query value. If the query value config is surrounded by '{}',
+content between '{}' is regarded as a regular expression.
+
+For example:
 ```
-GET ?qu1={.*}&qu2={.*} _pa1={.*}&pa2={.*} ./response
-GET ?range={.*}&n={.*} _param1={.*} ./response
-GET _param1={.*} ./response
-GET ?range={.*}&n={.*} ./response
-POST +username={xyz}&password={.*} ./response
-GET ./response
+?name=badeggg&id={^\d+$}
+-q name=badeggg
+--url-queries name=badeggg
 ```
 
 [Back To Top](#mock-api)
 
-### Url query
-The url query will be tested with the regular expression specified
-by `?queries` field in map file. e.g.:
+<hr>
+
+##### Match request by path params:
+
+**_<params...>, -p <params...>, --path-params <params...>**<br>
+
+Form of <params...> is identical with form of <queries...>.
+
+Unlike url queries, path params do not come with natural defination ---- after url path start
+with '?' defines the url queries. To define path params, create a `__parameterName__` folder in
+corresponding position on 'series of folders'.  This specific folder name should start and end
+with double underscore while parameter name in the middle. Then in the map rule line in map
+file, `_params` will be `_parameterName`. e.g: `fake-services/some/path/__id__` define a 'id'
+path parameter in api, map rule line `map _id=123 ./response` in
+`fake-services/some/path/__id__/map` will match a request with path `/some/path/123`.
+
+For example:
 ```
-GET ?range={.*}&n={.*} ./response
+_name=badeggg&id={^\d+$}
+-p name=badeggg
+--path-params name=badeggg
 ```
-No url query field configured in a map rule means any query content of the request is ok with
-this map rule response.
 
 [Back To Top](#mock-api)
 
-### Path parameters
-Of course we can handle parameters in api path. 
-Create a `__parameter_name__` folder in corresponding position on 'series of folders'.
-This specific folder name should start and end with double underscore while parameter name
-in the middle. Then in the map file, `_pathParams` will be `_parameter_name` and
-the actual corresponding path section will be tested with the regular expression specified
-by `_pathParams` field in map file. e.g.:
+<hr>
+
+##### Match request by body arguments:
+
+**+<args...>, -a <args...>, --body-args <args...>**<br>
+
+We can parse "application/json" and "application/x-www-form-urlencoded" type body of request
+to do the matching.
+
+Form of <args...> is a superset of <queries...>. Besides the basic form of <queries...>, body
+args also support deep property chain match ---- that means if the parsed body of request is
+a multiple level js object e.g `{data: {person: {name: 'badeggg'}}}`, the match rule line
+`+data.person.name=badeggg` will match the request. Actually,the specified body argument 'key'
+(`data.person.name` in the last example) is passed to js `eval()` properly to get value of
+the 'key' to do the matching. So mixing array with object or pure array in parsed body of
+request works fine.
+
+For example:
 ```
-GET _parameter_name={.*} ./response
++data.person.name=badeggg
+-a id={^\d+$}
+--body-args country=china
 ```
-No path parameter field configured in a map rule means any path parameter of the request
-is ok with this map rule response.
 
 [Back To Top](#mock-api)
 
-### Body arguments
-For now, we only support `application/json` request 'Content-Type', and 10mb request max size.
-The first level fields of the parsed json will be tested with the regular expression specified
-by `_bodyArgs` field in map file. e.g.:
+<hr>
+
+##### Set response headers:
+
+**-h <headers...>, --res-headers <headers...>**<br>
+
+For example:
 ```
-POST +username={xyz}&password={.*} ./response
+-h 'a-casual-header: a casual header' 'another-header: header value'
+--res-headers 'content-type: image/jpeg'
 ```
-No body argument field configured in a map rule means any body argument of the request
-is ok with this map rule response.
+
+To set multiple headers, either write one option name(-h) trailing with multiple header pairs
+or write multiple times option name(-h) trailing with header pair.
 
 [Back To Top](#mock-api)
+
+<hr>
+
+##### Set response code:
+
+**-c \<code>, --status-code \<code>**<br>
+
+For example:
+```
+-c 200
+--status-code 404
+```
+
+[Back To Top](#mock-api)
+
+<hr>
+
+##### Match request method:
+
+**-m \<method>, --req-method \<method>**<br>
+
+In most cases, you do not need formally set request method option, since
+the quick [http method](#http-method) is more convenient.
+
+Option value is case insensitive and will override quick http method setting.
+
+For example:
+```
+-m get
+--req-method post
+```
+
+[Back To Top](#mock-api)
+
+<hr>
+
+##### Set response file path:
+
+**-f \<file>, --res-file-path \<file>**<br>
+
+Relative to directory of current map file or absolute path ----
+although absolute path is not recommended, since we want 'fake-services' folder be tracked
+by version control software like git.
+
+Since response file setting is basic and frequent. We have some convenient way to set it.
+- quick path setting
+  + In a map rule line, an item is assumed to be a response-path-item if
+    1) it is just after the last quick url-query(starts with ?) / body-args(starts with +)
+      / path-params(starts with _) and starts with ./
+    2) or it is the last item and starts with ./
+
+    The condition-1-item found stop the finding of the condition-2-item.<br>
+    Notice that quick path setting must start with ./ restrict it can't be an absolute path.
+- implicit path
+  + if the map file does not exist or non map rule line match the request,
+    'fake-services/api/path/response' will be regarded as response file path
+  + if a map rule line does not specify a file path, './response' will be regarded as
+    response file path
+
+If the specified file has '.json' extension **or has no extension**, file content will be
+parsed and validated as json. If parse failed, a header
+'Mock-Not-Validated-Json-File: {filePath}' will be set and responded. If the file is too big,
+will refuse to parse and a header 'Mock-Not-Validated-Json-File: filePath' will be set and
+responded. If parse succeeded or refused, a header
+'Content-Type: application/json; charset=UTF-8' will be set and responded.
+
+If the specified file has '.js' extension and --res-js-result option is set, file content
+will be evaluated as js script. If the script export a function, function executing result
+will be responded, else the script export will be responded. Check
+[respond js result](#Respond-js-result) for details.
+
+File content is always sent by [expressJs](https://expressjs.com/) sendFile except the
+specified file has '.js' extension and --res-js-result option is set.
+
+For example:
+```
+-f ./response.json
+--res-file-path ./picture.jpg
+```
+
+[Back To Top](#mock-api)
+
+<hr>
+
+##### Delay to respond:
+
+**-t \<time>, --delay-time \<time>**<br>
+
+Time unit should be 'ms'(millisecond) or 's'(second). An empty unit
+specifying means millisecond unit.
+
+For example:
+```
+-t 500          # delay 500 milliseconds to respond
+-t 500ms        # delay 500 milliseconds to respond
+--delay-time 1s # delay 1 second to respond
+```
+
+[Back To Top](#mock-api)
+
+<hr>
+
+##### Respond js result:
+
+**-r, --res-js-result**<br>
+
+Whether evaluate the response js file and respond the result. The specifed response file path
+must have '.js' extension and export a function, an object, an array or a js primitive value.
+
+This feature is useful when you 1) need mock a big json response and are tired of json syntax
+fixing line by line, e.g. ' --> "; 2) need some simple logic to generate response by request
+info.
+
+If the file exports a function, the function will be executed with argument 'request', function
+returned value will be responded. The argument is a js object with request info:
+```
+{
+  method: req.method, // request http method
+  query: req.query,   // request url query
+  params: req.params, // request path params
+  body: req.body,     // request body
+}
+```
+
+If the file does not export a function, the exported value will be responded.
+
+Notice that, if this option is not set, file content will be responded no matter the file has
+'.js' extension or not.
+
+For example:
+```
+# map rule line
+-r ./response-big-json.js
+--res-js-result ./response-simple-logic.js
+
+# in ./response.js
+module.exports = {
+  name: 'badeggg', // I am sick of json syntax fixing
+  age: 18,
+  // lots of fields
+};
+
+# in ./response-simple-logic.js
+const echo = function(req) {
+  return req;
+};
+module.exports = echo;
+```
+
+[Back To Top](#mock-api)
+
+<hr>
 
 ### Proxy 404
-You may not want all the api requsts goes to mocking. 
-When there is not a match rule for the api request -- we say 404, 'mock-api'
-will proxy the request to the location specified by **/your/project/root/fake-services/proxy404**. e.g.:
+You may not want to mock all of the api requests.
+When there is not a match rule for the api request -- we say 404 either because the
+correspondinng path does not exist or the map rules do not match, 'mock-api'
+will proxy the request to the location specified by
+**/your/project/root/fake-services/proxy404**. e.g.:
 ```
 $ echo 'https://nodejs.org' > /your/project/root/fake-services/proxy404
 ```
@@ -245,24 +470,39 @@ $ touch off
 After the above commands execution, any request whose path has prefix of `/some/mock/path`
 will be considered as a non-mocking-match request and will be proxied as 'proxy404' file config.
 
-Notice that an 'off' file on the very fake-services folder will not disable all mocking for now.
-Maybe this should be changed ;-).
+Notice that an 'off' file in the very fake-services folder will disable all the mockings. This
+is convenient when you want to use full real api services then use mocking services, back and
+forth.
+
+[Back To Top](#mock-api)
+
+### Config file common convention
+Most of the config files(the map file, the proxy404 file for instances) of mock-api have the
+convention:
+- the basic config unit is a line of text
+- a backslash in the last character of a line will cause the next
+  line(if any) concated to current line.
+- items in a config unit(a line) is separated by one or more white
+  space character(s), including space, tab, form feed, line feed,
+  and other Unicode spaces
+- any content after #(pound sign) is comment, which will be ignored
+
+The items in a config unit may have different meaning for different
+config purpose.
 
 [Back To Top](#mock-api)
 
 ## Tips
 - a response header 'From-Mocking-Fake-Service' was added if the response is from mocking
+- touch an 'off' file in the very fake-services filder to turn off all mocking and use full
+  real api services, remove it to back using mock.
+  Check [disable part of the mocking](#Disable-part-of-the-mocking)
+- a very long config line can be seperated to multiple lines with a trailing backslash(\\)
 
 [Back To Top](#mock-api)
 
 ## Await features...
 - websocket
-- single-space-separated feature will be a little bit tolerant, multiple spaces is also ok
-  for example
-- '# text' after config line will be regarded as comment
-- proxy404 file change can take effect immediately
-- a vue-cli-service plugin can ease the coordination config on your project
-- support `application/x-www-form-urlencoded` and `multipart/form-data` request 'Content-Type'.
-- ...
+- windows support
 
 [Back To Top](#mock-api)
