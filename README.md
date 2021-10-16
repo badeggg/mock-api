@@ -403,7 +403,7 @@ For example:
 -r ./response-big-json.js
 --res-js-result ./response-simple-logic.js
 
-# in ./response.js
+# in ./response-big-json.js
 module.exports = {
   name: 'badeggg', // I am sick of json syntax fixing
   age: 18,
