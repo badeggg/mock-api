@@ -49,6 +49,10 @@
     + interval auto response (multiple, cancelable)
     + match rule to a message response
     + close
+    + every thing in ws-response.js?
+      + return a promise
+      + what arguments should be passed to js script
+    + proxy, off the fake-services
 - 🌠 mock anything of http
     + ✔ status code
     + ✔ delay
