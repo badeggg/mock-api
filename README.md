@@ -493,6 +493,12 @@ config purpose.
 [Back To Top](#mock-api)
 
 ## Tips
+- occasionally, npm script like `mock | node ./index.js` may not work, since
+  `mock`(mock-api) is ready('.mockingLocation' file is set) before `node ./index.js` start
+  executing is not guaranteed. One of the solutions is start mock-api in another
+  terminal tab and then start your project. Separate starting also let you view mock-api logs
+  in mock-api terminal tab, which is beneficial for debugging proxy problems related to
+  mock-api.
 - a response header 'From-Mocking-Fake-Service' was added if the response is from mocking
 - touch an 'off' file in the very fake-services filder to turn off all mocking and use full
   real api services, remove it to back using mock.
