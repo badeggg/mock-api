@@ -8,7 +8,7 @@
 exports[`test/config/getProxy404.js TAP find proxy404 file, parse it and return result > log errors 1`] = `
 Array [
   "error: Bad proxy 404 target 'nodejs.org'.",
-  "error: TypeError [ERR_INVALID_URL]: Invalid URL: nodejs.org",
+  "error: TypeError [ERR_INVALID_URL]: Invalid URL",
 ]
 `
 

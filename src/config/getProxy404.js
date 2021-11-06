@@ -28,7 +28,7 @@ module.exports = function() {
                 new URL(target);
             } catch (err) {
                 log.error(`Bad proxy 404 target '${target}'.`);
-                log.error(err);
+                log.error(err.toString());
                 return;
             }
             proxy404.push([regStr, target]);

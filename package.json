@@ -36,7 +36,7 @@
     "devDependencies": {
         "axios": "^0.21.2",
         "eslint": "^7.24.0",
-        "tap": "^15.0.2"
+        "tap": "^15.0.10"
     },
     "tap": {
         "test-ignore": "^test/testUtils|^test/utils/watchingQuit.assist.js|^test/mock.assist.js"
