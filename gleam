@@ -66,3 +66,4 @@
 - review http method, CONNECT for example
 - todo: able config to not config.log, this is useful when `npx mock | sleep 0.5 & node start.js`
 - on (off)
+- timeout shoule can be led to proxy404
