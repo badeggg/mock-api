@@ -1,8 +1,4 @@
 module.exports = (str) => {
-    const reg = /^(\s+at).+$/gm;
-    if (str.replaceAll)
-        str = str.replaceAll(reg, '$1 ...');
-    else
-        str = str.replace(reg, '$1 ...');
+    str = str.replace(/((\s+at).+\r?\n?\r?)+$/, '\n$2 ...\n$2 ...');
     return str;
 };
