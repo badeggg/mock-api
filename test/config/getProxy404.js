@@ -23,7 +23,14 @@ tap.test('find proxy404 file, parse it and return result', tap => {
         },
     });
     tap.matchSnapshot(toNiceJson(getProxy404()), 'parsed proxy404 result');
-    tap.matchSnapshot(errorMsgs, 'log errors');
+    tap.match(
+      errorMsgs,
+      [
+        "error: Bad proxy 404 target 'nodejs.org'.",
+        "error: TypeError [ERR_INVALID_URL]: Invalid URL",
+      ],
+      'log errors',
+    );
     tap.end();
 });
 
