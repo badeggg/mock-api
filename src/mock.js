@@ -4,15 +4,15 @@ const pathUtil = require('path');
 const fs = require('fs');
 const express = require('express');
 const app = express();
-const tcpPortUsed = require('tcp-port-used');
 const chalk = require('chalk');
 const mapToRes = require('./middlewares/mapToRes');
 const projectRoot = require('./utils/getProjectRoot.js')();
+const isPortInUse = require('./utils/isPortInUse.js');
 const log = require('./utils/log.js');
 const watchingQuit = require('./utils/watchingQuit');
 
 async function tillListen(tryPort) {
-    const isInUse = await tcpPortUsed.check(tryPort, '127.0.0.1');
+    const isInUse = await isPortInUse(tryPort);
     if (!isInUse) {
         return await new Promise(resolve => {
             const server = app.listen(tryPort, () => {

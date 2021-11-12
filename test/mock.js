@@ -4,7 +4,7 @@ const net = require('net');
 const pathUtil = require('path');
 const tap = require('tap');
 const axios = require('axios');
-const tcpPortUsed = require('tcp-port-used');
+const isPortInUse = require('../src/utils/isPortInUse.js');
 const removePathPrefix = require('./testUtils/removePathPrefix.js');
 const obscureErrorStack = require('./testUtils/obscureErrorStack.js');
 const _  = require('lodash');
@@ -69,7 +69,7 @@ tap.test('basic general function', async tap => {
 tap.test('try next plus one port when current port is not available', async tap => {
     let infoMsgs = [];
     const inUsePort = 3000;
-    const isInUse = await tcpPortUsed.check(inUsePort, '127.0.0.1');
+    const isInUse = await isPortInUse(inUsePort, '127.0.0.1');
     let portHolderServer;
     if (!isInUse) {
         await new Promise(resolve => {
@@ -81,7 +81,7 @@ tap.test('try next plus one port when current port is not available', async tap 
     }
     let availablePort = inUsePort + 1;
     while(true) {
-        const isAvailable = !(await tcpPortUsed.check(availablePort, '127.0.0.1'));
+        const isAvailable = !(await isPortInUse(availablePort, '127.0.0.1'));
         if (isAvailable) {
             break;
         }
