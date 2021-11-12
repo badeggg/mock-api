@@ -129,9 +129,14 @@ tap.test('general doubt cases as a whole', async tap => {
             },
             response: '["fake service root"]',
             proxy404: `
-                /AS/Suggestions  https://cn.bing.com     # bing dictionary
-                /sug             https://fanyi.baidu.com # baidu dictionary
-                /js/execute.php  https://www.functions-online.com # to cover urlencoded
+                # bing dictionary to cover url query
+                /AS/Suggestions https://cn.bing.com
+
+                # baidu dictionary to cover json body
+                /sug https://fanyi.baidu.com
+
+                # youdao dictionary to cover urlencoded body
+                /translate_o https://fanyi.youdao.com
             `,
         },
     });
@@ -224,21 +229,52 @@ tap.test('general doubt cases as a whole', async tap => {
         url: mockingLocation + '/AS/Suggestions?scope=dictionary&pt=page.bingdict&bq=delayed&mkt=zh-cn&ds=bingdict&qry=welcom&cp=7&cvid=4C6CCF7FC8EA4DF0A02311CE7BF39A0B',
         method: 'GET',
     });
-    tap.ok(response.data.includes('欢迎'), 'proxy 404 bing dictionary');
+    tap.ok(
+        response.data.includes('欢迎'),
+        'proxy 404 bing dictionary to cover url query',
+    );
 
     response = await axios.request({
         url: mockingLocation + '/sug',
         method: 'POST',
         data: { kw: 'welcome' },
     });
-    tap.ok(JSON.stringify(response.data).includes('欢迎'), 'proxy 404 baidu dictionary');
+    tap.ok(
+        JSON.stringify(response.data).includes('欢迎'),
+        'proxy 404 baidu dictionary to cover json body',
+    );
 
     response = await axios.request({
-        url: mockingLocation + '/js/execute.php?fuid=24',
+        url: mockingLocation + '/translate_o?smartresult=dict&smartresult=rule',
         method: 'POST',
-        data: 'str=hello&submit=run',
+        data: 'i=welcome%0A&from=AUTO&to=AUTO&smartresult=dict&client=fanyideskweb'
+            + '&salt=16366980836162&sign=15d850c3b7004b1865f56437d4e7291d&lts=1636698083616'
+            + '&bv=6162c8562c5298b891ba4697dc459245&doctype=json&version=2.1&keyfrom=fanyi.web'
+            + '&action=FY_BY_REALTlME',
+        headers: {
+            'Connection': 'keep-alive',
+            'Pragma': 'no-cache',
+            'Cache-Control': 'no-cache',
+            'sec-ch-ua': '"Google Chrome";v="95", "Chromium";v="95", ";Not A Brand";v="99"',
+            'Accept': 'application/json, text/javascript, */*; q=0.01',
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'X-Requested-With': 'XMLHttpRequest',
+            'sec-ch-ua-mobile': '?0',
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36',
+            'sec-ch-ua-platform': '"macOS"',
+            'Origin': 'https://fanyi.youdao.com',
+            'Sec-Fetch-Site': 'same-origin',
+            'Sec-Fetch-Mode': 'cors',
+            'Sec-Fetch-Dest': 'empty',
+            'Referer': 'https://fanyi.youdao.com/',
+            'Accept-Language': 'zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7,sq;q=0.6',
+            'Cookie': 'OUTFOX_SEARCH_USER_ID=1932056775@10.108.160.102; JSESSIONID=aaaTiPWF80LQegf5FZs0x; OUTFOX_SEARCH_USER_ID_NCOO=1528357016.3182464; ___rl__test__cookies=1636698083614',
+        },
     });
-    tap.ok(response.data.includes('hello'), 'test proxy urlencoded body');
+    tap.ok(
+        JSON.stringify(response.data).includes('欢迎'),
+        'proxy 404 youdao dictionary test proxy urlencoded body',
+    );
 
     try {
         response = await axios.request({
