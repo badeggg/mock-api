@@ -14,8 +14,7 @@
         "lintfix": "npm run lint -- --fix"
     },
     "files": [
-        "src",
-        "docs"
+        "src"
     ],
     "author": "badeggg",
     "license": "ISC",
