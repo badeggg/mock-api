@@ -7,6 +7,7 @@ const axios = require('axios');
 const tcpPortUsed = require('tcp-port-used');
 const removePathPrefix = require('./testUtils/removePathPrefix.js');
 const obscureErrorStack = require('./testUtils/obscureErrorStack.js');
+const _  = require('lodash');
 
 function removePortNumber(msg) {
     return msg.replace(/(?<=listening on: )\d+/, 'xxxx');
@@ -501,67 +502,99 @@ tap.test('response js result as a whole', async tap => {
 
     const mockingLocation = `http://localhost:${mockServer.address().port}`;
 
-    let options = {
+    const optionsTemplate = {
         url: mockingLocation + '/fake-api-path',
         params: {name: 'badeggg'},
         method: 'GET',
     };
-    let response = await axios.request(options);
-    tap.matchSnapshot(response.data, 'ok.js result');
 
-    options.params.name = 'badeggg1';
-    response = await axios.request(options);
-    tap.equal(response.data, '');
-
-    options.params.name = 'badeggg2';
-    response = await axios.request(options);
-    tap.equal(response.data, 'string');
-
-    options.params.name = 'badeggg3';
-    response = await axios.request(options);
-    tap.equal(response.data, 123);
-
-    options.params.name = 'badeggg4';
-    response = await axios.request(options);
-    tap.equal(response.data, null);
-
-    options.params.name = 'badeggg5';
-    response = await axios.request(options);
-    tap.matchSnapshot(response.data, 'function.js result');
-
-    options.params.name = 'badeggg6';
-    response = await axios.request(options);
-    tap.matchSnapshot(response.data, 'js export number');
-
-    options.params.name = 'badeggg7';
-    response = await axios.request(options);
-    tap.matchSnapshot(response.data, 'js export string');
-
-    options.params.name = 'badeggg8';
-    response = await axios.request(options);
-    tap.matchSnapshot(response.data, 'js export object');
-
-    options.params.name = 'badeggg9';
-    response = await axios.request(options);
-    tap.matchSnapshot(response.data, 'js export array');
-
-    options.params.name = 'badeggg10';
-    response = await axios.request(options);
-    tap.matchSnapshot(response.data, 'js export null');
-
-    options.params.name = 'badeggg11';
-    response = await axios.request(options);
-    tap.matchSnapshot(response.data, 'js export symbol');
-
-    options.params.name = 'badeggg12';
-    response = await axios.request(options);
-    tap.matchSnapshot(response.data, 'js export objHasFunc');
-
-    options.params.name = 'badegggXX';
-    response = await axios.request(options);
+    const responses = await Promise.all([
+        (() => {
+            const options = _.cloneDeep(optionsTemplate);
+            return axios.request(options);
+        })(),
+        (() => {
+            const options = _.cloneDeep(optionsTemplate);
+            options.params.name = 'badeggg1';
+            return axios.request(options);
+        })(),
+        (() => {
+            const options = _.cloneDeep(optionsTemplate);
+            options.params.name = 'badeggg2';
+            return axios.request(options);
+        })(),
+        (() => {
+            const options = _.cloneDeep(optionsTemplate);
+            options.params.name = 'badeggg3';
+            return axios.request(options);
+        })(),
+        (() => {
+            const options = _.cloneDeep(optionsTemplate);
+            options.params.name = 'badeggg4';
+            return axios.request(options);
+        })(),
+        (() => {
+            const options = _.cloneDeep(optionsTemplate);
+            options.params.name = 'badeggg5';
+            return axios.request(options);
+        })(),
+        (() => {
+            const options = _.cloneDeep(optionsTemplate);
+            options.params.name = 'badeggg6';
+            return axios.request(options);
+        })(),
+        (() => {
+            const options = _.cloneDeep(optionsTemplate);
+            options.params.name = 'badeggg7';
+            return axios.request(options);
+        })(),
+        (() => {
+            const options = _.cloneDeep(optionsTemplate);
+            options.params.name = 'badeggg8';
+            return axios.request(options);
+        })(),
+        (() => {
+            const options = _.cloneDeep(optionsTemplate);
+            options.params.name = 'badeggg9';
+            return axios.request(options);
+        })(),
+        (() => {
+            const options = _.cloneDeep(optionsTemplate);
+            options.params.name = 'badeggg10';
+            return axios.request(options);
+        })(),
+        (() => {
+            const options = _.cloneDeep(optionsTemplate);
+            options.params.name = 'badeggg11';
+            return axios.request(options);
+        })(),
+        (() => {
+            const options = _.cloneDeep(optionsTemplate);
+            options.params.name = 'badeggg12';
+            return axios.request(options);
+        })(),
+        (() => {
+            const options = _.cloneDeep(optionsTemplate);
+            options.params.name = 'badegggXX';
+            return axios.request(options);
+        })(),
+    ]);
+    tap.matchSnapshot(responses[0].data, 'ok.js result');
+    tap.equal(responses[1].data, '');
+    tap.equal(responses[2].data, 'string');
+    tap.equal(responses[3].data, 123);
+    tap.equal(responses[4].data, null);
+    tap.matchSnapshot(responses[5].data, 'function.js result');
+    tap.matchSnapshot(responses[6].data, 'js export number');
+    tap.matchSnapshot(responses[7].data, 'js export string');
+    tap.matchSnapshot(responses[8].data, 'js export object');
+    tap.matchSnapshot(responses[9].data, 'js export array');
+    tap.matchSnapshot(responses[10].data, 'js export null');
+    tap.matchSnapshot(responses[11].data, 'js export symbol');
+    tap.matchSnapshot(responses[12].data, 'js export objHasFunc');
     tap.matchSnapshot(
         removePathPrefix(
-            obscureErrorStack(response.data),
+            obscureErrorStack(responses[13].data),
             pathUtil.resolve(fakeServicesDir, '../../')
         ),
         'bad.js result'
