@@ -579,6 +579,9 @@ tap.test('match function no fake servives folder', async tap => {
         '../../../src/config': {
             fakeServicesBasePath,
         },
+        '../../../src/utils/log.js': {
+            error: () => {},
+        },
     });
     const reqs = {
         general: {
@@ -596,6 +599,9 @@ tap.test('match function no fake servives folder', async tap => {
     match = tap.mock('../../../src/middlewares/mapToRes/matchAResponse.js', {
         '../../../src/middlewares/mapToRes/cd.js': () => {
             throw new Error('common error');
+        },
+        '../../../src/utils/log.js': {
+            error: () => {},
         },
     });
     tap.throws(() => match(reqs.general));

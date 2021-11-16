@@ -609,7 +609,6 @@ tap.test('response js result as a whole', async tap => {
 
 tap.test('no fake servives folder', async tap => {
     const projectRoot = tap.testdir({});
-    const fakeServicesBasePath = pathUtil.resolve(projectRoot, 'fake-services');
     let errorMsgs = [];
     const mock = tap.mock('../src/mock.js', {
         '../src/utils/getProjectRoot.js': () => projectRoot,
