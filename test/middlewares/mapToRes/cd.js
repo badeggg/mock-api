@@ -1,6 +1,7 @@
 const tap = require('tap');
 const toNiceJson = require('../../testUtils/toNiceJson.js');
 const removePathPrefix = require('../../testUtils/removePathPrefix.js');
+const pathUtil = require('path');
 
 function removeCdResultPathPrefix(result, prefix) {
     result.path = removePathPrefix(result.path, prefix);
@@ -92,5 +93,31 @@ tap.test('non-conventional path parameter', tap => {
         },
     });
     tap.equal(cd('/path/badeggg/zhaoxuxujc@gmail'), false);
+    tap.end();
+});
+
+tap.test('no fake servives folder', tap => {
+    const projectRoot = tap.testdir({});
+    const fakeServicesBasePath = pathUtil.resolve(projectRoot, 'fake-services');
+    const cd = tap.mock('../../../src/middlewares/mapToRes/cd.js', {
+        '../../../src/config': {
+            fakeServicesBasePath,
+        },
+    });
+    tap.throws(
+        () => {
+            try {
+                cd('/');
+            } catch (e) {
+                e.message = removePathPrefix(e.message, projectRoot);
+                throw e;
+            }
+        },
+        {
+            name: 'NO-FAKE-SERVIVES-FOLDER',
+            message: '\'fake-services\' folder does not exist in your project.\n'
+                + '\'/fake-services\' does not exist.\n',
+        },
+    );
     tap.end();
 });

@@ -571,3 +571,32 @@ tap.test('match function', async tap => {
     );
     tap.equal(match(reqs.notExist), null);
 });
+
+tap.test('match function no fake servives folder', async tap => {
+    const projectRoot = tap.testdir({});
+    const fakeServicesBasePath = pathUtil.resolve(projectRoot, 'fake-services');
+    let match = tap.mock('../../../src/middlewares/mapToRes/matchAResponse.js', {
+        '../../../src/config': {
+            fakeServicesBasePath,
+        },
+    });
+    const reqs = {
+        general: {
+            method: 'GET',
+            path: '/general',
+        },
+    };
+    const matchResult = match(reqs.general);
+    tap.equal(matchResult.statusCode, 404);
+    tap.equal(
+        removePathPrefix(matchResult.resBody, projectRoot),
+        '\'fake-services\' folder does not exist in your project.\n'
+            + '\'/fake-services\' does not exist.\n',
+    );
+    match = tap.mock('../../../src/middlewares/mapToRes/matchAResponse.js', {
+        '../../../src/middlewares/mapToRes/cd.js': () => {
+            throw new Error('common error');
+        },
+    });
+    tap.throws(() => match(reqs.general));
+});

@@ -44,6 +44,13 @@ function cdOne(folder, current) {
 }
 
 function cd(path) {
+    if (!fs.existsSync(config.fakeServicesBasePath)) {
+        const err = new Error('\'fake-services\' folder does not exist in your project.\n'
+            + `'${config.fakeServicesBasePath}' does not exist.\n`
+        );
+        err.name = 'NO-FAKE-SERVIVES-FOLDER';
+        throw err;
+    }
     let current = {path: config.fakeServicesBasePath, params: {}};
     if (currentPathIsOff(current.path)) {
         return false;

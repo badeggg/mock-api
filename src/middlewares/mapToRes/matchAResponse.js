@@ -492,7 +492,19 @@ class Matcher {
 }
 
 function match(req) {
-    const cdResult = cd(req.path);
+    let cdResult;
+    try {
+        cdResult = cd(req.path);
+    } catch (err) {
+        log.error(err.message);
+        if (err.name === 'NO-FAKE-SERVIVES-FOLDER') {
+            return {
+                resBody: err.message,
+                statusCode: 404,
+            };
+        }
+        throw err;
+    }
     if (!cdResult)
         return null;
 
