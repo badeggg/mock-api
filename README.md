@@ -10,6 +10,7 @@ if you want.
 - [Installation](#Installation)
 - [Usage](#Usage)
   + [Basic usage, configure a api to mock](#Basic-usage-configure-an-api-to-mock)
+  + [Few simple examples](#Few-simple-examples)
   + [The map file](#The-map-file)
     + ['map' word](#map-word)
     + [http method](#http-method)
@@ -141,6 +142,11 @@ To configure different response for different request on same api path, you will
 
 After proxy all api requests to mock server, you don't really need configure all of the
 api mocking. Check [proxy 404 feature](#Proxy-404).
+
+[Back To Top](#mock-api)
+
+### Few simple examples
+- Using in a common vue project: [mock-api-example-vue](https://github.com/badeggg/mock-api-example-vue)
 
 [Back To Top](#mock-api)
 
