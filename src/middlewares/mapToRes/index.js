@@ -67,7 +67,12 @@ module.exports = function(req, res, next) {
             doProxy(req, res, proxy404Target);
         } else {
             res.set('From-Mocking-Fake-Service', 'true');
-            res.sendStatus(404);
+            res.status(404)
+            res.send(
+                'Not Found.<br>\n'
+                + 'You may need set a proxy404 file in fake-services folder.<br>\n'
+                + 'Refer https://github.com/badeggg/mock-api#proxy-404'
+            );
         }
     } else {
         responseByCfg(cfg, res);
