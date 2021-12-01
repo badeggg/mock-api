@@ -34,7 +34,8 @@
         "http-proxy": "^1.17.0",
         "lodash": "^4.17.14",
         "query-string": "^7.0.0",
-        "tcp-port-used": "^1.0.2"
+        "tcp-port-used": "^1.0.2",
+        "ws": "^8.3.0"
     },
     "devDependencies": {
         "axios": "^0.21.2",

@@ -1,38 +1,47 @@
 // The separation of index.js/mock.js is for easier unit testing.
 
+const http = require('http');
 const pathUtil = require('path');
 const fs = require('fs');
 const express = require('express');
-const app = express();
 const chalk = require('chalk');
+const WSServer = require('ws').Server;
 const mapToRes = require('./middlewares/mapToRes');
 const projectRoot = require('./utils/getProjectRoot.js')();
 const isPortInUse = require('./utils/isPortInUse.js');
 const log = require('./utils/log.js');
 const watchingQuit = require('./utils/watchingQuit');
 
-async function tillListen(tryPort) {
+async function tillListen(server, tryPort) {
     const isInUse = await isPortInUse(tryPort);
     if (!isInUse) {
         return await new Promise(resolve => {
-            const server = app.listen(tryPort, () => {
-                resolve(server);
+            server.listen(tryPort, () => {
+                resolve(tryPort);
             });
         });
     } else {
-        return tillListen(++tryPort);
+        return tillListen(server, ++tryPort);
     }
 }
 
-module.exports = async (tryPort = 3000) => {
+const httpApp = function() {
+    const app = express();
     const REQUEST_MAX_JSON_SIZE = '10mb'; // todo, to make it configurable
     const REQUEST_MAX_URLENCODED_SIZE = '10mb'; // todo, to make it configurable
     app.use(express.json({limit: REQUEST_MAX_JSON_SIZE}));
     app.use(express.urlencoded({limit: REQUEST_MAX_URLENCODED_SIZE, extended: false,}));
     app.use(mapToRes);
+    return app;
+};
 
-    const server = await tillListen(tryPort);
-    const listenOnPort = server.address().port;
+module.exports = async (tryPort = 3000) => {
+    const server = http.createServer();
+    const wss = new WSServer({ server });
+    server.on('request', httpApp());
+
+    const listenOnPort = await tillListen(server, tryPort);
+
     const mockingLocation = `http://localhost:${listenOnPort}`;
     fs.writeFileSync(
         pathUtil.resolve(projectRoot, './.mockingLocation'),
