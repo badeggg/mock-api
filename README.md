@@ -27,7 +27,7 @@ if you want.
   + [Proxy 404](#Proxy-404)
   + [Disable part of the mocking](#Disable-part-of-the-mocking)
   + [Config file common convention](#config-file-common-convention)
-- [Tips](#Tips)
+- [Tips or Troubleshooting](#Tips-or-Troubleshooting)
 - [Await features...](#Await-features)
 
 ## Why _this_ mock-api?
@@ -498,11 +498,11 @@ config purpose.
 
 [Back To Top](#mock-api)
 
-## Tips
-- occasionally, npm script like `mock | node ./index.js` may not work, since
+## Tips or Troubleshooting
+- **occasionally, npm script like `mock | node ./index.js` may not work, since
   `mock`(mock-api) is ready('.mockingLocation' file is set) before `node ./index.js` start
   executing is not guaranteed. One of the solutions is start mock-api in another
-  terminal tab and then start your project. Separate starting also let you view mock-api logs
+  terminal tab and then start your project.** Separate starting also let you view mock-api logs
   in mock-api terminal tab, which is beneficial for debugging proxy problems related to
   mock-api.
 - a response header 'From-Mocking-Fake-Service' was added if the response is from mocking
