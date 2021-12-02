@@ -156,7 +156,8 @@ This file is used to configure how to response an api request with current path.
 
 The map file is optional. If this map file does not exist, contents in './response' will
 be sent to client.  Lines starting with '#' will be ignored, any content after '#' will
-also be ignored. Each line is a map rule, each map rule is space-separated. 'Mock-api' will
+also be ignored. Each line is a map rule, each map rule is space-separated.
+Check [config file common convention](#config-file-common-convention). 'Mock-api' will
 try to find a matching rule from the first line to the end line. A found matching rule
 will block any further search. If no matching rule is found, the default response file
 './response' will be used. If './response' file does not exist, a 404 is triggered,
@@ -440,16 +441,21 @@ After the above command execution, all non-mocking-match requests will be proxie
 https://nodejs.org.
 
 In some cases, a single proxy 404 can not satisfy your requirement. You may configure multiple
-proxy 404 destination like follows in `proxy404` file:
+proxy 404 destinations in `proxy404` file.
+
+In proxy404 file, lines starting with '#' will be ignored, any content after '#' will also be
+ignored.  Each line is a proxy404 rule, each proxy404 rule is space-separated.
+Check [config file common convention](#config-file-common-convention). The first element in a
+rule is regarded as a regular expression to match the request path, the second element is the
+corresponding destination, any other elements are ignored. If a proxy404 rule has only one
+element, the regular expression to match is implicitly set `.*`, that means any path, and the
+one only element is the destination. Configuration lines are order sensitive. 'Mock-api' will
+try to find a matching rule from the first line to the end line. A found matching rule will
+block any further search. If no matching rule is found, 404 is then responded.
+
+e.g.:
 ```
 # Contents of /your/project/root/fake-services/proxy404.
-#
-# Some comment. Any line starts with '#' is regarded as a comment line.
-# Single space separated config line. The first element is regarded as a regular expression
-# to match the request path, the second element is the corresponding destination.
-# If a config line has only one element, the regular expression to match is implicitly set
-# to `.*`, that means any path, and the element is the destination.
-# Configuration lines are order sensitive. Lines are parsed line-by-line.
 #
 # Configuration in this file will have the effect:
 # 1) any non-mocking-match request whose path has 'baidu' text will be proxyed to https://baidu.com;
@@ -486,12 +492,23 @@ forth.
 Most of the config files(the map file, the proxy404 file for instances) of mock-api have the
 convention:
 - the basic config unit is a line of text
+- any content after #(pound sign) in a line is comment, which will be ignored
 - a backslash in the last character of a line will cause the next
   line(if any) concated to current line.
 - items in a config unit(a line) is separated by one or more white
   space character(s), including space, tab, form feed, line feed,
   and other Unicode spaces
-- any content after #(pound sign) is comment, which will be ignored
+- 'pair chars' can help to set special characters in an item. Supported pair chars includes:
+    + `' pair to self`
+    + `" pair to self`
+    + `( pair to )`
+
+  e.g.:
+  ```
+  'should be together' should be separated
+  'multiple   spaces in pair chars are reserved'
+  'half pair char" in another pair chars' is "ignored
+  ```
 
 The items in a config unit may have different meaning for different
 config purpose.
