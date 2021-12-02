@@ -25,7 +25,7 @@ const fs = require('fs');
 const { spawnSync } = require('child_process');
 const _ = require('lodash');
 const commander = require('commander');
-const cd = require('./cd');
+const cd = require('../../utils/cd');
 const parseQueryStr = require('../../utils/parseQueryStr');
 const parseHttpHeader = require('../../utils/parseHttpHeader');
 const semiParseConfigFile = require('../../utils/semiParseConfigFile');
@@ -129,7 +129,7 @@ class ResponseFile {
             const execResult = spawnSync(
                 'node',
                 [
-                    pathUtil.resolve(__dirname, './execJsFileHelper.js'),
+                    pathUtil.resolve(__dirname, '../../utils/execJsFileHelper.js'),
                     this.filePath,
                     JSON.stringify([{
                         method: this.req.method,

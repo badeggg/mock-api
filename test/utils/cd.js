@@ -1,7 +1,7 @@
 const tap = require('tap');
-const toNiceJson = require('../../testUtils/toNiceJson.js');
-const removePathPrefix = require('../../testUtils/removePathPrefix.js');
-const transWindowsPath = require('../../testUtils/transWindowsPath.js');
+const toNiceJson = require('../testUtils/toNiceJson.js');
+const removePathPrefix = require('../testUtils/removePathPrefix.js');
+const transWindowsPath = require('../testUtils/transWindowsPath.js');
 const pathUtil = require('path');
 
 function removeCdResultPathPrefix(result, prefix) {
@@ -27,8 +27,8 @@ tap.test('basic normal cd function', tap => {
             },
         },
     });
-    const cd = tap.mock('../../../src/middlewares/mapToRes/cd.js', {
-        '../../../src/config': {
+    const cd = tap.mock('../../src/utils/cd.js', {
+        '../../src/config': {
             fakeServicesBasePath,
         },
     });
@@ -52,8 +52,8 @@ tap.test('off all fake services', tap => {
             },
         },
     });
-    const cd = tap.mock('../../../src/middlewares/mapToRes/cd.js', {
-        '../../../src/config': {
+    const cd = tap.mock('../../src/utils/cd.js', {
+        '../../src/config': {
             fakeServicesBasePath,
         },
     });
@@ -72,8 +72,8 @@ tap.test('off a fake service and sub fake services', tap => {
             },
         },
     });
-    const cd = tap.mock('../../../src/middlewares/mapToRes/cd.js', {
-        '../../../src/config': {
+    const cd = tap.mock('../../src/utils/cd.js', {
+        '../../src/config': {
             fakeServicesBasePath,
         },
     });
@@ -90,8 +90,8 @@ tap.test('non-conventional path parameter', tap => {
             },
         },
     });
-    const cd = tap.mock('../../../src/middlewares/mapToRes/cd.js', {
-        '../../../src/config': {
+    const cd = tap.mock('../../src/utils/cd.js', {
+        '../../src/config': {
             fakeServicesBasePath,
         },
     });
@@ -102,8 +102,8 @@ tap.test('non-conventional path parameter', tap => {
 tap.test('no fake servives folder', tap => {
     const projectRoot = tap.testdir({});
     const fakeServicesBasePath = pathUtil.resolve(projectRoot, 'fake-services');
-    const cd = tap.mock('../../../src/middlewares/mapToRes/cd.js', {
-        '../../../src/config': {
+    const cd = tap.mock('../../src/utils/cd.js', {
+        '../../src/config': {
             fakeServicesBasePath,
         },
     });

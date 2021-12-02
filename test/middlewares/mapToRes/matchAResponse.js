@@ -626,7 +626,7 @@ tap.test('match function no fake servives folder', async tap => {
             + '\'/fake-services\' does not exist.\n',
     );
     match = tap.mock('../../../src/middlewares/mapToRes/matchAResponse.js', {
-        '../../../src/middlewares/mapToRes/cd.js': () => {
+        '../../../src/utils/cd.js': () => {
             throw new Error('common error');
         },
         '../../../src/utils/log.js': {

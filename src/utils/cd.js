@@ -1,7 +1,7 @@
 const fs = require('fs');
 const pathUtil = require('path');
 const _ = require('lodash');
-const config = require('../../config');
+const config = require('../config');
 
 function currentPathIsOff(currentPath) {
     return ( // turn off this fake service path

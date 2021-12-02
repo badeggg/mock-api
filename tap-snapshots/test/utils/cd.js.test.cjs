@@ -5,14 +5,14 @@
  * Make sure to inspect the output below.  Do not ignore changes!
  */
 'use strict'
-exports[`test/middlewares/mapToRes/cd.js TAP basic normal cd function > basic cd 1`] = `
+exports[`test/utils/cd.js TAP basic normal cd function > basic cd 1`] = `
 {
     "path": "/path/to/resource",
     "params": {}
 }
 `
 
-exports[`test/middlewares/mapToRes/cd.js TAP basic normal cd function > path parameters 1`] = `
+exports[`test/utils/cd.js TAP basic normal cd function > path parameters 1`] = `
 {
     "path": "/path/__name__/__email__",
     "params": {
@@ -22,14 +22,14 @@ exports[`test/middlewares/mapToRes/cd.js TAP basic normal cd function > path par
 }
 `
 
-exports[`test/middlewares/mapToRes/cd.js TAP basic normal cd function > root service path 1`] = `
+exports[`test/utils/cd.js TAP basic normal cd function > root service path 1`] = `
 {
     "path": "",
     "params": {}
 }
 `
 
-exports[`test/middlewares/mapToRes/cd.js TAP basic normal cd function > should trim prefix and postfix / 1`] = `
+exports[`test/utils/cd.js TAP basic normal cd function > should trim prefix and postfix / 1`] = `
 {
     "path": "/path/to/resource",
     "params": {}
