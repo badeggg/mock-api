@@ -317,7 +317,10 @@ tap.test('class RuleParser', async tap => {
     get ?query=value -q query1=cd -q query2=22           # repeat same options
     ## multiple queries options, quick res-file-path just after quick config
     GET ?query=1 _param=90 ./response --url-queries query=2 query=3
-    GET -f ./response # the last item is regard as a quick res-file and removed, so error occur
+    GET -f              ./response_cfg_is_last_item1 # the last item is the value of formal response file option
+    GET --res-file-path ./response_cfg_is_last_item2 # the last item is the value of formal response file option
+    GET                 ./response_cfg_is_last_item3 # the last item is quick config response file path
+                        ./response_cfg_is_last_item4 # the last/first item is quick config response file path
     GET -t -c 300     # empty delay time
     GET -q -c 300     # empty query, '-c' and '300' are reagrd as query
     GET -c 300 -q     # empty query
@@ -332,6 +335,10 @@ tap.test('class RuleParser', async tap => {
             'fake-api-path': {
                 map: mapFileContent,
                 response: '{"name": "badeggg"}',
+                response_cfg_is_last_item1: '{"name": "badeggg"}',
+                response_cfg_is_last_item2: '{"name": "badeggg"}',
+                response_cfg_is_last_item3: '{"name": "badeggg"}',
+                response_cfg_is_last_item4: '{"name": "badeggg"}',
                 'ok.js': `
                     module.exports = function(){ return 123; }
                 `,

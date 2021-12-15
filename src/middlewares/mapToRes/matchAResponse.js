@@ -266,6 +266,11 @@ class RuleParser {
             responsePathStrInx = justAfterQuickItemsIndex;
         } else if (this.ruleLine.length
             && this.ruleLine[this.ruleLine.length - 1].startsWith('./')
+            && (this.ruleLine.length - 2 < 0
+                || (this.ruleLine[this.ruleLine.length - 2] !== '-f'
+                    && this.ruleLine[this.ruleLine.length - 2] !== '--res-file-path'
+                )
+            )
         ) {
             responsePathStrInx = this.ruleLine.length - 1;
         }
