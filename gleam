@@ -75,3 +75,5 @@ need a review of this list
 - config file format should not use json, cause it's too annoying to comment out
   maybe the dedicated config format is fine
 - edit github page: about, tags
+- check header overriding of express and custom
+- binary data of http
