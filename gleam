@@ -1,3 +1,4 @@
+need a review of this list
 ---- gleam ---- ✓ ✔ ✗ ✘ 🌠 ✵ ☆ ✦ ✧ ✭
 - easy use
 - should with reservation
@@ -22,7 +23,7 @@
 - allow to response non-json
 - response content-type
 - want see mock-api error logs?
-  + log file
+  + log file  fake-services/.log ? name by timestamp
 - standalone usage
   + maybe a custom 'fake-services' folder name should be enabled
 - some log may be useful
@@ -68,6 +69,9 @@
   simulating big file download progress
 - off only current
 - review http method, CONNECT for example
-- todo: able config to not config.log, this is useful when `npx mock | sleep 0.5 & node start.js`
+- todo: able config to not console.log, this is useful when `npx mock | sleep 0.5 & node start.js`
 - on (off)
 - timeout shoule can be led to proxy404
+- config file format should not use json, cause it's too annoying to comment out
+  maybe the dedicated config format is fine
+- edit github page: about, tags
