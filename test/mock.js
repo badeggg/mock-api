@@ -95,7 +95,11 @@ tap.test('try next plus one port when current port is not available', async tap 
     }
     const mock = tap.mock('../src/mock.js', {
         '../src/utils/log.js': {
-            info: (msg) => infoMsgs.push('info: ' + removePortNumber(msg)),
+            info: (msg) => infoMsgs.push('info: '
+                + removeEscapeSGR(
+                    removePortNumber(msg)
+                ),
+            ),
         },
     });
     const mockServer = await mock();
@@ -153,7 +157,11 @@ tap.test('general doubt cases as a whole', async tap => {
     const mock = tap.mock('../src/mock.js', {
         '../src/utils/getProjectRoot.js': () => fakeServicesDir,
         '../src/utils/log.js': {
-            info: (msg) => infoMsgs.push('info: ' + removePortNumber(msg)),
+            info: (msg) => infoMsgs.push('info: '
+                + removeEscapeSGR(
+                    removePortNumber(msg)
+                ),
+            ),
             warn: (msg) => warnMsgs.push('warn: ' + msg),
             error: (msg) => errorMsgs.push('error: ' + msg),
         },

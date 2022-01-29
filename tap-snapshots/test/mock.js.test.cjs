@@ -37,7 +37,7 @@ Array []
 
 exports[`test/mock.js TAP general doubt cases as a whole > log infos 1`] = `
 Array [
-  "info: \\u001b[32mMock-api listening on: xxxx\\u001b[39m",
+  "info: Mock-api listening on: xxxx",
 ]
 `
 
@@ -116,6 +116,6 @@ Object {
 
 exports[`test/mock.js TAP try next plus one port when current port is not available > log infos 1`] = `
 Array [
-  "info: \\u001b[32mMock-api listening on: xxxx\\u001b[39m",
+  "info: Mock-api listening on: xxxx",
 ]
 `
