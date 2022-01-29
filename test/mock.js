@@ -6,6 +6,7 @@ const tap = require('tap');
 const axios = require('axios');
 const isPortInUse = require('../src/utils/isPortInUse.js');
 const removePathPrefix = require('./testUtils/removePathPrefix.js');
+const removeEscapeSGR = require('./testUtils/removeEscapeSGR.js');
 const obscureErrorStack = require('./testUtils/obscureErrorStack.js');
 const _  = require('lodash');
 
@@ -27,7 +28,12 @@ tap.test('basic general function', async tap => {
         '../src/utils/getProjectRoot.js': () => fakeServicesDir,
         '../src/utils/log.js': {
             info: (msg) => infoMsgs.push('info: '
-                + removePathPrefix(removePortNumber(msg), fakeServicesDir)
+                + removePathPrefix(
+                    removeEscapeSGR(
+                        removePortNumber(msg)
+                    ),
+                    fakeServicesDir
+                )
             ),
             warn: (msg) => warningMsgs.push('warning: '
                 + removePathPrefix(msg, fakeServicesDir)

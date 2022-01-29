@@ -7,7 +7,7 @@
 'use strict'
 exports[`test/mock.js TAP basic general function > log infos 1`] = `
 Array [
-  "info: \\u001b[32mMock-api listening on: xxxx\\u001b[39m",
+  "info: Mock-api listening on: xxxx",
 ]
 `
 
