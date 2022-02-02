@@ -17,12 +17,6 @@ Array [
 ]
 `
 
-exports[`test/mock.js TAP cover proxy error > log errors 1`] = `
-Array [
-  "error: Error: connect ECONNREFUSED 127.0.0.1:80",
-]
-`
-
 exports[`test/mock.js TAP cover proxy error > must match snapshot 1`] = `
 Failed to proxy 404. connect ECONNREFUSED 127.0.0.1:80
 `

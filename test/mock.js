@@ -339,7 +339,7 @@ tap.test('cover proxy error', async tap => {
     let errorMsgs = [];
     const mock = tap.mock('../src/mock.js', {
         '../src/utils/getProjectRoot.js': () => fakeServicesDir,
-        '../src/config/getProxy404.js': () => ['.*', 'google.com'],
+        '../src/config/getProxy404.js': () => [['.*', 'google.com']], // Bad proxy 404 target
         '../src/utils/log.js': {
             info: () => {},
             error: (msg) => errorMsgs.push('error: ' + msg),
@@ -360,7 +360,8 @@ tap.test('cover proxy error', async tap => {
     }
 
     mockServer.close();
-    tap.matchSnapshot(errorMsgs, 'log errors');
+    tap.equal(errorMsgs.length, 1);
+    tap.match(errorMsgs[0], 'ECONNREFUSED');
 });
 
 tap.test('clear mockingLocation when quit', async tap => {
