@@ -69,7 +69,6 @@ tap.test('basic general function', async tap => {
     tap.matchSnapshot(warningMsgs, 'log warnings');
 
     mockServer.close();
-    tap.end();
 });
 
 tap.test('try next plus one port when current port is not available', async tap => {
@@ -109,7 +108,6 @@ tap.test('try next plus one port when current port is not available', async tap 
         portHolderServer.close();
     mockServer.close();
     tap.matchSnapshot(infoMsgs, 'log infos');
-    tap.end();
 });
 
 tap.test('general doubt cases as a whole', async tap => {
@@ -619,7 +617,6 @@ tap.test('response js result as a whole', async tap => {
     tap.matchSnapshot(errorMsgs, 'log errors');
 
     mockServer.close();
-    tap.end();
 });
 
 tap.test('no fake servives folder', async tap => {
@@ -660,5 +657,4 @@ tap.test('no fake servives folder', async tap => {
     ]);
 
     mockServer.close();
-    tap.end();
 });
