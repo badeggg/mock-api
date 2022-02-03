@@ -4,8 +4,9 @@ const pathUtil = require('path');
 module.exports = function() {
     let ret;
     let tryPath = process.cwd();
+    const pathRoot = pathUtil.parse(tryPath).root;
 
-    while(tryPath !== '/') {
+    while(tryPath !== pathRoot) {
         /**
          * If a directory has 'package.json' file and 'node_modules' folder, we assume it is
          * the project root directory. In most cases, this rule should work fine.

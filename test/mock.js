@@ -356,7 +356,7 @@ tap.test('cover proxy error', async tap => {
     } catch (err) {
         tap.equal(err.response.status, 502, 'should response 502');
         tap.ok(err.response.data.startsWith('Failed to proxy 404.'));
-        tap.matchSnapshot(err.response.data);
+        tap.match(err.response.data, 'ECONNREFUSED');
     }
 
     mockServer.close();
