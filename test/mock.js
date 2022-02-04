@@ -10,6 +10,8 @@ const removeEscapeSGR = require('./testUtils/removeEscapeSGR.js');
 const obscureErrorStack = require('./testUtils/obscureErrorStack.js');
 const _  = require('lodash');
 
+tap.setTimeout(60 * 1000);
+
 function removePortNumber(msg) {
     return msg.replace(/(?<=listening on: )\d+/, 'xxxx');
 }
