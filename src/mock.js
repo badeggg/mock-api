@@ -24,14 +24,14 @@ async function tillListen(tryPort) {
     }
 }
 
-module.exports = async () => {
+module.exports = async (tryPort = 3000) => {
     const REQUEST_MAX_JSON_SIZE = '10mb'; // todo, to make it configurable
     const REQUEST_MAX_URLENCODED_SIZE = '10mb'; // todo, to make it configurable
     app.use(express.json({limit: REQUEST_MAX_JSON_SIZE}));
     app.use(express.urlencoded({limit: REQUEST_MAX_URLENCODED_SIZE, extended: false,}));
     app.use(mapToRes);
 
-    const server = await tillListen(3000);
+    const server = await tillListen(tryPort);
     const listenOnPort = server.address().port;
     const mockingLocation = `http://localhost:${listenOnPort}`;
     fs.writeFileSync(
