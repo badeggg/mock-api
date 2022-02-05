@@ -3,13 +3,18 @@ const tap = require('tap');
 const _ = require('lodash');
 const pathUtil = require('path');
 const removePathPrefix = require('../../testUtils/removePathPrefix.js');
+const transWindowsPath = require('../../testUtils/transWindowsPath.js');
 const obscureErrorStack = require('../../testUtils/obscureErrorStack.js');
 
 function trimCfg(cfg, prefix) {
     if (cfg && cfg.resBody)
-        cfg.resBody = removePathPrefix(obscureErrorStack(cfg.resBody), prefix);
+        cfg.resBody = transWindowsPath(
+            removePathPrefix(obscureErrorStack(cfg.resBody), prefix)
+        );
     if (cfg && cfg.resFilePath)
-        cfg.resFilePath = removePathPrefix(cfg.resFilePath, prefix);
+        cfg.resFilePath = transWindowsPath(
+            removePathPrefix(cfg.resFilePath, prefix)
+        );
     const resHeadersNeedTrim = [
         'Mock-Big-Js-File-Self',
         'Mock-Not-Validated-Json-File',
@@ -18,8 +23,9 @@ function trimCfg(cfg, prefix) {
     ];
     resHeadersNeedTrim.forEach(header => {
         if (cfg && cfg.resHeaders && cfg.resHeaders[header])
-            cfg.resHeaders[header] =
-                removePathPrefix(cfg.resHeaders[header], prefix);
+            cfg.resHeaders[header] = transWindowsPath(
+                removePathPrefix(cfg.resHeaders[header], prefix)
+            );
     });
     return cfg;
 }
@@ -111,10 +117,14 @@ tap.test('class ResponseFile', async tap => {
             },
         },
         '../../../src/utils/log.js': {
-            warn: (msg) => warningMsgs.push('warning: ' + removePathPrefix(msg, fakeServicesDir)),
-            error: (msg) => errorMsgs.push('error: ' + removePathPrefix(
-                obscureErrorStack(msg),
-                pathUtil.resolve(fakeServicesDir, '../../../../../')
+            warn: (msg) => warningMsgs.push('warning: ' + transWindowsPath(
+                removePathPrefix(msg, fakeServicesDir)
+            )),
+            error: (msg) => errorMsgs.push('error: ' + transWindowsPath(
+                removePathPrefix(
+                    obscureErrorStack(msg),
+                    pathUtil.resolve(fakeServicesDir, '../../../../../')
+                )
             )),
         },
     }).ResponseFile;
@@ -350,8 +360,12 @@ tap.test('class RuleParser', async tap => {
     let warningMsgs = [];
     const RuleParser = tap.mock('../../../src/middlewares/mapToRes/matchAResponse.js', {
         '../../../src/utils/log.js': {
-            error: (msg) => errorMsgs.push('error: ' + removePathPrefix(msg, fakeServicesDir)),
-            warn: (msg) => warningMsgs.push('warning: ' + removePathPrefix(msg, fakeServicesDir)),
+            error: (msg) => errorMsgs.push('error: ' + transWindowsPath(
+                removePathPrefix(msg, fakeServicesDir)
+            )),
+            warn: (msg) => warningMsgs.push('warning: ' + transWindowsPath(
+                removePathPrefix(msg, fakeServicesDir)
+            )),
         },
     }).RuleParser;
     const semiParseConfigFile = require('../../../src/utils/semiParseConfigFile');
@@ -428,9 +442,15 @@ tap.test('class Matcher', async tap => {
     let errorMsgs = [];
     const Matcher = tap.mock('../../../src/middlewares/mapToRes/matchAResponse.js', {
         '../../../src/utils/log.js': {
-            info: (msg) => infoMsgs.push('info: ' + removePathPrefix(msg, fakeServicesDir)),
-            warn: (msg) => warningMsgs.push('warning: ' + removePathPrefix(msg, fakeServicesDir)),
-            error: (msg) => errorMsgs.push('error: ' + removePathPrefix(msg, fakeServicesDir)),
+            info: (msg) => infoMsgs.push('info: ' + transWindowsPath(
+                removePathPrefix(msg, fakeServicesDir)
+            )),
+            warn: (msg) => warningMsgs.push('warning: ' + transWindowsPath(
+                removePathPrefix(msg, fakeServicesDir)
+            )),
+            error: (msg) => errorMsgs.push('error: ' + transWindowsPath(
+                removePathPrefix(msg, fakeServicesDir)
+            )),
         },
     }).Matcher;
     const cdResults = {
@@ -599,7 +619,9 @@ tap.test('match function no fake servives folder', async tap => {
     const matchResult = match(reqs.general);
     tap.equal(matchResult.statusCode, 404);
     tap.equal(
-        removePathPrefix(matchResult.resBody, projectRoot),
+        transWindowsPath(
+            removePathPrefix(matchResult.resBody, projectRoot)
+        ),
         '\'fake-services\' folder does not exist in your project.\n'
             + '\'/fake-services\' does not exist.\n',
     );

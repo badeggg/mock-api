@@ -2,6 +2,7 @@ const pathUtil = require('path');
 const tap = require('tap');
 const toNiceJson = require('../testUtils/toNiceJson.js');
 const removePathPrefix = require('../testUtils/removePathPrefix.js');
+const transWindowsPath = require('../testUtils/transWindowsPath.js');
 
 tap.test('normal parse function', tap => {
     const configFileContent = `
@@ -103,7 +104,9 @@ tap.test('config file path is not ok', tap => {
     let errorMsgs = [];
     const semiParseConfigFile = tap.mock('../../src/utils/semiParseConfigFile.js', {
         '../../src/utils/log.js': {
-            error: (msg) => errorMsgs.push('error: ' + removePathPrefix(msg, configFolder)),
+            error: (msg) => errorMsgs.push('error: ' + transWindowsPath(
+                removePathPrefix(msg, configFolder)
+            )),
         },
     });
     let configFilePath = pathUtil.resolve(configFolder, 'config');
@@ -130,7 +133,9 @@ tap.test('config file is not readable', tap => {
             },
         },
         '../../src/utils/log.js': {
-            error: (msg) => errorMsgs.push('error: ' + removePathPrefix(msg, configFolder)),
+            error: (msg) => errorMsgs.push('error: ' + transWindowsPath(
+                removePathPrefix(msg, configFolder)
+            )),
         },
     });
 

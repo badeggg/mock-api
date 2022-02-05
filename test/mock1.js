@@ -6,6 +6,7 @@ const tap = require('tap');
 const axios = require('axios');
 const isPortInUse = require('../src/utils/isPortInUse.js');
 const removePathPrefix = require('./testUtils/removePathPrefix.js');
+const transWindowsPath = require('./testUtils/transWindowsPath.js');
 const removeEscapeSGR = require('./testUtils/removeEscapeSGR.js');
 
 function removePortNumber(msg) {
@@ -26,15 +27,19 @@ tap.test('basic general function', async tap => {
         '../src/utils/getProjectRoot.js': () => fakeServicesDir,
         '../src/utils/log.js': {
             info: (msg) => infoMsgs.push('info: '
-                + removePathPrefix(
-                    removeEscapeSGR(
-                        removePortNumber(msg)
-                    ),
-                    fakeServicesDir
+                + transWindowsPath(
+                    removePathPrefix(
+                        removeEscapeSGR(
+                            removePortNumber(msg)
+                        ),
+                        fakeServicesDir
+                    )
                 )
             ),
             warn: (msg) => warningMsgs.push('warning: '
-                + removePathPrefix(msg, fakeServicesDir)
+                + transWindowsPath(
+                    removePathPrefix(msg, fakeServicesDir)
+                )
             ),
         },
     });
@@ -400,7 +405,9 @@ tap.test('error log on clear mockingLocation when quit', async tap => {
                     fs.unlinkSync(mockingLocationPath);
                     process.kill(assist.pid);
                 } else if (m.startsWith('error: ')) {
-                    resolve(removePathPrefix(m, __dirname));
+                    resolve(transWindowsPath(
+                        removePathPrefix(m, __dirname)
+                    ));
                 }
             });
         }),

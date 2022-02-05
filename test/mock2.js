@@ -2,6 +2,7 @@ const pathUtil = require('path');
 const tap = require('tap');
 const axios = require('axios');
 const removePathPrefix = require('./testUtils/removePathPrefix.js');
+const transWindowsPath = require('./testUtils/transWindowsPath.js');
 const obscureErrorStack = require('./testUtils/obscureErrorStack.js');
 const _  = require('lodash');
 
@@ -98,12 +99,16 @@ tap.test('response js result as a whole', { timeout: 60 * 1000 }, async tap => {
         '../src/utils/log.js': {
             info: () => {},
             warn: (msg) => warningMsgs.push('warning: '
-                + removePathPrefix(msg, fakeServicesDir)
+                + transWindowsPath(
+                    removePathPrefix(msg, fakeServicesDir)
+                )
             ),
             error: (msg) => errorMsgs.push(
-                'error: ' + removePathPrefix(
-                    obscureErrorStack(msg),
-                    pathUtil.resolve(fakeServicesDir, '../../')
+                'error: ' + transWindowsPath(
+                    removePathPrefix(
+                        obscureErrorStack(msg),
+                        pathUtil.resolve(fakeServicesDir, '../../')
+                    )
                 )
             ),
         },
@@ -204,9 +209,11 @@ tap.test('response js result as a whole', { timeout: 60 * 1000 }, async tap => {
     tap.matchSnapshot(responses[11].data, 'js export symbol');
     tap.matchSnapshot(responses[12].data, 'js export objHasFunc');
     tap.matchSnapshot(
-        removePathPrefix(
-            obscureErrorStack(responses[13].data),
-            pathUtil.resolve(fakeServicesDir, '../../')
+        transWindowsPath(
+            removePathPrefix(
+                obscureErrorStack(responses[13].data),
+                pathUtil.resolve(fakeServicesDir, '../../')
+            )
         ),
         'bad.js result'
     );
@@ -226,7 +233,9 @@ tap.test('no fake servives folder', async tap => {
             info: () => {},
             warn: () => {},
             error: (msg) => errorMsgs.push(
-                'error: ' + removePathPrefix(msg, projectRoot),
+                'error: ' + transWindowsPath(
+                    removePathPrefix(msg, projectRoot)
+                ),
             ),
         },
     });
@@ -243,7 +252,9 @@ tap.test('no fake servives folder', async tap => {
         await axios.request(options);
     } catch (err) {
         tap.equal(
-            removePathPrefix(err.response.data, projectRoot),
+            transWindowsPath(
+                removePathPrefix(err.response.data, projectRoot)
+            ),
             '\'fake-services\' folder does not exist in your project.\n'
                 + '\'/fake-services\' does not exist.\n'
         );

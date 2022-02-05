@@ -1,10 +1,13 @@
 const tap = require('tap');
 const toNiceJson = require('../../testUtils/toNiceJson.js');
 const removePathPrefix = require('../../testUtils/removePathPrefix.js');
+const transWindowsPath = require('../../testUtils/transWindowsPath.js');
 const pathUtil = require('path');
 
 function removeCdResultPathPrefix(result, prefix) {
-    result.path = removePathPrefix(result.path, prefix);
+    result.path = transWindowsPath(
+        removePathPrefix(result.path, prefix)
+    );
     return result;
 }
 
@@ -109,7 +112,9 @@ tap.test('no fake servives folder', tap => {
             try {
                 cd('/');
             } catch (e) {
-                e.message = removePathPrefix(e.message, projectRoot);
+                e.message = transWindowsPath(
+                    removePathPrefix(e.message, projectRoot)
+                );
                 throw e;
             }
         },
