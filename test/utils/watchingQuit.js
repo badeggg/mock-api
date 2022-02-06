@@ -25,7 +25,11 @@ tap.test('self exit', async tap => {
     );
 });
 
-tap.test('signaled quit', async tap => {
+tap.test('linux signaled quit', async tap => {
+    if (process.platform === 'win32') {
+        tap.pass('Refuse to test signal details for windows');
+        return;
+    }
     function toEval() {
         const watchingQuit = require('../../src/utils/watchingQuit.js');
         watchingQuit((code) => process.send(`assist quit with code ${code}`));
