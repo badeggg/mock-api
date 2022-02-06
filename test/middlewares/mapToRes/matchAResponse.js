@@ -103,7 +103,7 @@ tap.test('class ResponseFile', async tap => {
         fs: {
             ...fs,
             statSync: (filePath) => {
-                const pathParts = filePath.split('/');
+                const pathParts = transWindowsPath(filePath).split('/');
                 const fileName = pathParts[pathParts.length - 1];
                 switch(fileName) {
                 case 'bigFile':
