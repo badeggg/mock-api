@@ -1,3 +1,9 @@
+/**
+ * Separate test suit for src/mock.js in multiple files, because executing a big collection
+ * of test suit take longer time, plus tapjs's timeout setting seems not working.
+ * @zhaoxuxu @2022-2-7
+ */
+
 const child_process = require('child_process');
 const fs = require('fs');
 const net = require('net');

@@ -139,7 +139,7 @@ class ResponseFile {
                     }]),
                 ],
             );
-            const { jsResult, meetWithErr, argv } = JSON.parse(execResult.stdout);
+            const { jsResult, meetWithErr } = JSON.parse(execResult.stdout);
             if (meetWithErr) {
                 log.error(jsResult);
                 return {
