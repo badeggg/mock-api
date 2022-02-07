@@ -22,7 +22,7 @@
 
 const pathUtil = require('path');
 const fs = require('fs');
-const { execFileSync } = require('child_process');
+const { spawnSync } = require('child_process');
 const _ = require('lodash');
 const commander = require('commander');
 const cd = require('./cd');
@@ -126,9 +126,10 @@ class ResponseFile {
                 },
             });
         } else {
-            const execResult = execFileSync(
-                pathUtil.resolve(__dirname, './execJsFileHelper.js'),
+            const execResult = spawnSync(
+                'node',
                 [
+                    pathUtil.resolve(__dirname, './execJsFileHelper.js'),
                     this.filePath,
                     JSON.stringify([{
                         method: this.req.method,
@@ -138,7 +139,7 @@ class ResponseFile {
                     }]),
                 ],
             );
-            const { jsResult, meetWithErr } = JSON.parse(execResult);
+            const { jsResult, meetWithErr, argv } = JSON.parse(execResult.stdout);
             if (meetWithErr) {
                 log.error(jsResult);
                 return {
