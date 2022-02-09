@@ -66,6 +66,25 @@ tap.test('linux signaled quit', async tap => {
     });
 });
 
+tap.test('windows has no signal, test suit for coverage issue', async tap => {
+    if (process.platform !== 'win32') {
+        tap.passing();
+        return;
+    }
+    function toEval() {
+        const watchingQuit = require('../../src/utils/watchingQuit.js');
+        watchingQuit((code) => process.send(`assist quit with code ${code}`));
+        process.emit('SIGINT', 'SIGINT', 999);
+    }
+    const assist = child_process.fork(assistPath, [`(${toEval.toString()})()`]);
+    tap.resolveMatch(
+        new Promise(resolve => {
+            assist.on('message', m => resolve(m));
+        }),
+        `assist quit with code ${999}`,
+    );
+});
+
 tap.test('covered signals', async tap => {
     const coveredSignals = require('../../src/utils/watchingQuit.js').coveredSignals;
     tap.matchSnapshot(coveredSignals);
