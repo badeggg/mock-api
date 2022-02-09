@@ -382,7 +382,14 @@ tap.test('clear mockingLocation when quit', async tap => {
             assist.on('message', m => {
                 if (m === 'started') {
                     resolve(fs.existsSync(mockingLocationPath));
-                    process.kill(assist.pid);
+                    /**
+                     * Windows platform does not have signal machanism. 'assist' will exit
+                     * by self after some delaying time.
+                     * @zhaoxuxu @2022-2-9
+                     */
+                    if (process.platform !== 'win32') {
+                        process.kill(assist.pid);
+                    }
                 }
             });
         }),
@@ -409,7 +416,14 @@ tap.test('error log on clear mockingLocation when quit', async tap => {
             assist.on('message', m => {
                 if (m === 'started') {
                     fs.unlinkSync(mockingLocationPath);
-                    process.kill(assist.pid);
+                    /**
+                     * Windows platform does not have signal machanism. 'assist' will exit
+                     * by self after some delaying time.
+                     * @zhaoxuxu @2022-2-9
+                     */
+                    if (process.platform !== 'win32') {
+                        process.kill(assist.pid);
+                    }
                 } else if (m.startsWith('error: ')) {
                     resolve(transWindowsPath(
                         removePathPrefix(m, __dirname)

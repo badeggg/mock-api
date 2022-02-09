@@ -9,4 +9,14 @@ const mock = tap.mock('../src/mock.js', {
 });
 
 mock()
-    .then(() => process.send('started'));
+    .then(() => process.send('started'))
+    .then(() => {
+        /**
+         * Windows platform does not have signal machanism. 'assist' will exit
+         * by self after some delaying time.
+         * @zhaoxuxu @2022-2-9
+         */
+        if (process.platform === 'win32') {
+            setTimeout(process.exit, 800);
+        }
+    });
