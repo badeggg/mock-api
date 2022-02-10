@@ -1,6 +1,7 @@
 # mock-api
 [![Version npm](https://img.shields.io/npm/v/@badeggg/mock-api.svg?logo=npm)](https://www.npmjs.com/package/@badeggg/mock-api)
 [![CI test](https://github.com/badeggg/mock-api/actions/workflows/ci-test.yml/badge.svg)](https://github.com/badeggg/mock-api/actions)
+[![Coverage Status](https://coveralls.io/repos/github/badeggg/mock-api/badge.svg?branch=master)](https://coveralls.io/github/badeggg/mock-api?branch=master)
 
 A **least dependent**, **localized**, **with version control** and **effect immediately** http
 api mock tool for front-end project, nodejs back-end project, or even general back-end project
