@@ -536,6 +536,5 @@ config purpose.
 
 ## Await features...
 - websocket
-- windows support
 
 [Back To Top](#mock-api)
