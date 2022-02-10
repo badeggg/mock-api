@@ -341,7 +341,10 @@ tap.test('no proxy404 file case as a whole', async tap => {
     mockServer.close();
 });
 
-tap.test('cover proxy error', async tap => {
+tap.test('cover proxy error on non-win-server', async tap => {
+    if (process.platform === 'win32') {
+        return;
+    }
     const fakeServicesDir = tap.testdir({
         'fake-services': {},
     });
@@ -355,6 +358,55 @@ tap.test('cover proxy error', async tap => {
         },
     });
     const mockServer = await mock(3040);
+    const mockingLocation = `http://localhost:${mockServer.address().port}`;
+
+    try {
+        await axios.request({
+            url: mockingLocation + '/404',
+            method: 'GET',
+        });
+    } catch (err) {
+        tap.equal(err.response.status, 502, 'should response 502');
+        tap.ok(err.response.data.startsWith('Failed to proxy 404.'));
+        tap.match(err.response.data, 'ECONNREFUSED');
+    }
+
+    mockServer.close();
+    tap.equal(errorMsgs.length, 1);
+    tap.match(errorMsgs[0], 'ECONNREFUSED');
+});
+
+tap.test('cover proxy error on win-server', async tap => {
+    /**
+     * On windows server host, `proxy.web()` of http-proxy never throw an error.
+     * So we mock it.
+     */
+    if (process.platform !== 'win32') {
+        return;
+    }
+    const fakeServicesDir = tap.testdir({
+        'fake-services': {},
+    });
+    let errorMsgs = [];
+    const mock = tap.mock('../src/mock.js', {
+        '../src/utils/getProjectRoot.js': () => fakeServicesDir,
+        '../src/config/getProxy404.js': () => [['.*', 'google.com']], // Bad proxy 404 target
+        '../src/utils/log.js': {
+            info: () => {},
+            error: (msg) => errorMsgs.push('error: ' + msg),
+        },
+        'http-proxy': {
+            createProxyServer: () => {
+                return {
+                    once: () => {},
+                    web: (req, res, options, callback) => {
+                        callback(new Error('ECONNREFUSED'));
+                    },
+                };
+            },
+        },
+    });
+    const mockServer = await mock(3041);
     const mockingLocation = `http://localhost:${mockServer.address().port}`;
 
     try {
