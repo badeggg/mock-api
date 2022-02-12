@@ -485,3 +485,47 @@ tap.test('error log on clear mockingLocation when quit', async tap => {
         }),
     );
 });
+
+tap.test('no fake servives folder', async tap => {
+    const projectRoot = tap.testdir({});
+    let errorMsgs = [];
+    const mock = tap.mock('../src/mock.js', {
+        '../src/utils/getProjectRoot.js': () => projectRoot,
+        '../src/utils/log.js': {
+            info: () => {},
+            warn: () => {},
+            error: (msg) => errorMsgs.push(
+                'error: ' + transWindowsPath(
+                    removePathPrefix(msg, projectRoot)
+                ),
+            ),
+        },
+    });
+
+    const mockServer = await mock(3060);
+
+    const mockingLocation = `http://localhost:${mockServer.address().port}`;
+
+    const options = {
+        url: mockingLocation,
+        method: 'GET',
+    };
+    try {
+        await axios.request(options);
+    } catch (err) {
+        tap.equal(
+            transWindowsPath(
+                removePathPrefix(err.response.data, projectRoot)
+            ),
+            '\'fake-services\' folder does not exist in your project.\n'
+                + '\'/fake-services\' does not exist.\n'
+        );
+        tap.equal(err.response.status, 404);
+    }
+    tap.match(errorMsgs, [
+        '\'fake-services\' folder does not exist in your project.\n'
+            + '\'/fake-services\' does not exist.\n',
+    ]);
+
+    mockServer.close();
+});

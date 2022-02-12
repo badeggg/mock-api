@@ -1,9 +1,3 @@
-/**
- * Separate test suit for src/mock.js in multiple files, because executing a big collection
- * of test suits take longer time, plus tapjs's timeout setting seems not working.
- * @zhaoxuxu @2022-2-7
- */
-
 const pathUtil = require('path');
 const tap = require('tap');
 const axios = require('axios');
@@ -12,65 +6,39 @@ const transWindowsPath = require('./testUtils/transWindowsPath.js');
 const obscureErrorStack = require('./testUtils/obscureErrorStack.js');
 const _  = require('lodash');
 
-/**
- * Spawning child process may consume considerable more time and resource when together in
- * a single subtest.
- * @zhaoxuxu @2022-2-7
- */
-tap.test('response js result as a whole 1', async tap => {
+tap.test('response js result as a whole 2', async tap => {
     const fakeServicesDir = tap.testdir({
         'fake-services': {
             'fake-api-path': {
-                'ok.js': `
-                    const obj1 = {a: 1};
-                    const obj2 = {a: 2};
-                    module.exports = (req) => {
-                        return {
-                            ...obj1,
-                            name: req.query.name,
-                        };
-                    };
+                'exportNum.js': `
+                    module.exports = 1;
                 `,
-                'bad.js': `
-                    const a = 90;
-                    module.exports = () => {
-                        a = 8;
-                        return a;
-                    };
+                'exportStr.js': `
+                    module.exports = 'str';
                 `,
-                'undefined.js': `
-                    module.exports = () => {
-                        return;
-                    };
+                'exportObj.js': `
+                    module.exports = {a: 12};
                 `,
-                'string.js': `
-                    module.exports = () => {
-                        return 'string';
-                    };
+                'exportArr.js': `
+                    module.exports = [1, null, {a: 56}];
                 `,
-                'number.js': `
-                    module.exports = () => {
-                        return 123;
-                    };
+                'exportNull.js': `
+                    module.exports = null;
                 `,
-                'null.js': `
-                    module.exports = () => {
-                        return null;
-                    };
+                'exportSymbol.js': `
+                    module.exports = Symbol();
                 `,
-                'function.js': `
-                    module.exports = () => {
-                        return () => {console.log('foo')};
-                    };
+                'exportObjHasFunc.js': `
+                    module.exports = {fn: () => {}};
                 `,
                 map: `
-                    GET ?name=badeggg   -r ./ok.js
-                    GET ?name=badeggg1  -r ./undefined.js
-                    GET ?name=badeggg2  -r ./string.js
-                    GET ?name=badeggg3  -r ./number.js
-                    GET ?name=badeggg4  -r ./null.js
-                    GET ?name=badeggg5  -r ./function.js
-                    GET ?name=badegggXX -r ./bad.js
+                    GET ?name=badeggg  -r ./exportNum.js
+                    GET ?name=badeggg1 -r ./exportStr.js
+                    GET ?name=badeggg2 -r ./exportObj.js
+                    GET ?name=badeggg3 -r ./exportArr.js
+                    GET ?name=badeggg4 -r ./exportNull.js
+                    GET ?name=badeggg5 -r ./exportSymbol.js
+                    GET ?name=badeggg6 -r ./exportObjHasFunc.js
                 `,
             },
         },
@@ -97,7 +65,7 @@ tap.test('response js result as a whole 1', async tap => {
         },
     });
 
-    const mockServer = await mock(3050);
+    const mockServer = await mock(3051);
 
     const mockingLocation = `http://localhost:${mockServer.address().port}`;
 
@@ -110,6 +78,7 @@ tap.test('response js result as a whole 1', async tap => {
     const responses = await Promise.all([
         (() => {
             const options = _.cloneDeep(optionsTemplate);
+            options.params.name = 'badeggg';
             return axios.request(options);
         })(),
         (() => {
@@ -139,25 +108,17 @@ tap.test('response js result as a whole 1', async tap => {
         })(),
         (() => {
             const options = _.cloneDeep(optionsTemplate);
-            options.params.name = 'badegggXX';
+            options.params.name = 'badeggg6';
             return axios.request(options);
         })(),
     ]);
-    tap.matchSnapshot(responses[0].data, 'ok.js result');
-    tap.equal(responses[1].data, '');
-    tap.equal(responses[2].data, 'string');
-    tap.equal(responses[3].data, 123);
-    tap.equal(responses[4].data, null);
-    tap.matchSnapshot(responses[5].data, 'function.js result');
-    tap.matchSnapshot(
-        transWindowsPath(
-            removePathPrefix(
-                obscureErrorStack(responses[6].data),
-                pathUtil.resolve(fakeServicesDir, '../../')
-            )
-        ),
-        'bad.js result'
-    );
+    tap.matchSnapshot(responses[0].data, 'js export number');
+    tap.matchSnapshot(responses[1].data, 'js export string');
+    tap.matchSnapshot(responses[2].data, 'js export object');
+    tap.matchSnapshot(responses[3].data, 'js export array');
+    tap.matchSnapshot(responses[4].data, 'js export null');
+    tap.matchSnapshot(responses[5].data, 'js export symbol');
+    tap.matchSnapshot(responses[6].data, 'js export objHasFunc');
 
     tap.matchSnapshot(warningMsgs, 'log warnings');
     tap.matchSnapshot(errorMsgs, 'log errors');
