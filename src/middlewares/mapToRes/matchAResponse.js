@@ -22,6 +22,7 @@
 
 const pathUtil = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
 const { spawnSync } = require('child_process');
 const _ = require('lodash');
 const commander = require('commander');
@@ -126,20 +127,31 @@ class ResponseFile {
                 },
             });
         } else {
-            const execResult = spawnSync(
+            const communicateBoundaryId = crypto.createHash('sha256')
+                .update('badeggg' + new Date().getTime() + Math.random())
+                .digest('hex');
+            const { stdout } = spawnSync(
                 'node',
                 [
                     pathUtil.resolve(__dirname, '../../utils/execJsFileHelper.js'),
                     this.filePath,
-                    JSON.stringify([{
+                    JSON.stringify({
                         method: this.req.method,
                         query: this.req.query,
                         params: this.req.params,
                         body: this.req.body,
-                    }]),
+                    }),
+                    communicateBoundaryId,
                 ],
             );
-            const { jsResult, meetWithErr } = JSON.parse(execResult.stdout);
+            const execResultStart = stdout.indexOf(communicateBoundaryId)
+                + communicateBoundaryId.length;
+            const execResultEnd = stdout.lastIndexOf(communicateBoundaryId);
+            const execResult = stdout.slice(execResultStart, execResultEnd);
+            process.stdout.write(stdout.slice(0, execResultStart - communicateBoundaryId.length));
+            process.stdout.write(stdout.slice(execResultEnd + communicateBoundaryId.length));
+            const { jsResult, meetWithErr } = JSON.parse(execResult);
+            let response;
             if (meetWithErr) {
                 log.error(jsResult);
                 return {
@@ -149,9 +161,44 @@ class ResponseFile {
                         'Mock-Error-Invalid-Js-File': this.filePath,
                     },
                 };
+            } else if (_.isPlainObject(jsResult) && jsResult.isMetaBox) {
+                /**
+                 * A meta box js result:
+                 * {
+                 *      isMetaBox: true,
+                 *      shouldEscapeBuferRecover: true,
+                 *      response: 'response content',
+                 * }
+                 */
+                response = jsResult.response;
+                if (
+                    !jsResult.shouldEscapeBuferRecover
+                    && _.isPlainObject(response)
+                    && response.type === 'Buffer'
+                    && _.isArray(response.data)
+                ) {
+                    response = Buffer.from(response.data);
+                }
+            } else {
+                response = jsResult;
+                if (
+                    _.isPlainObject(response)
+                    && response.type === 'Buffer'
+                    && _.isArray(response.data)
+                ) {
+                    response = Buffer.from(response.data);
+                }
             }
-            if (jsResult && !_.isPlainObject(jsResult) && !_.isArray(jsResult)) {
-                const resBody = jsResult.toString();
+
+            if (response instanceof Buffer) {
+                const resBody = response;
+                return {
+                    shouldUseExpressSendFile: false,
+                    resBody,
+                };
+            }
+            if (response && !_.isPlainObject(response) && !_.isArray(response)) {
+                const resBody = response.toString();
                 return {
                     shouldUseExpressSendFile: false,
                     resBody,
@@ -160,7 +207,7 @@ class ResponseFile {
                     },
                 };
             }
-            const resBody = JSON.stringify(jsResult);
+            const resBody = JSON.stringify(response);
             return {
                 shouldUseExpressSendFile: false,
                 resBody,
