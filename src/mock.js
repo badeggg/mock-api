@@ -7,6 +7,8 @@ const express = require('express');
 const chalk = require('chalk');
 const WSServer = require('ws').Server;
 const mapToRes = require('./middlewares/mapToRes');
+const wsConnection = require('./websocket/connection.js');
+const wsUpgrade = require('./websocket/upgrade.js');
 const projectRoot = require('./utils/getProjectRoot.js')();
 const isPortInUse = require('./utils/isPortInUse.js');
 const log = require('./utils/log.js');
@@ -37,8 +39,10 @@ const httpApp = function() {
 
 module.exports = async (tryPort = 3000) => {
     const server = http.createServer();
-    const wss = new WSServer({ server });
+    const wss = new WSServer({ noServer: true });
+    wss.on('connection', wsConnection);
     server.on('request', httpApp());
+    server.on('upgrade', (req, socket, head) => wsUpgrade(req, socket, head, wss));
 
     const listenOnPort = await tillListen(server, tryPort);
 
