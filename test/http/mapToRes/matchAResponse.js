@@ -99,7 +99,7 @@ tap.test('class ResponseFile', async tap => {
 
     let errorMsgs = [];
     let warningMsgs = [];
-    const ResponseFile = tap.mock('../../../src/middlewares/mapToRes/matchAResponse.js', {
+    const ResponseFile = tap.mock('../../../src/http/mapToRes/matchAResponse.js', {
         fs: {
             ...fs,
             statSync: (filePath) => {
@@ -358,7 +358,7 @@ tap.test('class RuleParser', async tap => {
     fakeServicesDir = pathUtil.resolve(fakeServicesDir, './fake-services');
     let errorMsgs = [];
     let warningMsgs = [];
-    const RuleParser = tap.mock('../../../src/middlewares/mapToRes/matchAResponse.js', {
+    const RuleParser = tap.mock('../../../src/http/mapToRes/matchAResponse.js', {
         '../../../src/utils/log.js': {
             error: (msg) => errorMsgs.push('error: ' + transWindowsPath(
                 removePathPrefix(msg, fakeServicesDir)
@@ -440,7 +440,7 @@ tap.test('class Matcher', async tap => {
     let infoMsgs = [];
     let warningMsgs = [];
     let errorMsgs = [];
-    const Matcher = tap.mock('../../../src/middlewares/mapToRes/matchAResponse.js', {
+    const Matcher = tap.mock('../../../src/http/mapToRes/matchAResponse.js', {
         '../../../src/utils/log.js': {
             info: (msg) => infoMsgs.push('info: ' + transWindowsPath(
                 removePathPrefix(msg, fakeServicesDir)
@@ -577,7 +577,7 @@ tap.test('match function', async tap => {
         },
     });
     fakeServicesDir = pathUtil.resolve(fakeServicesDir, './fake-services');
-    const match = tap.mock('../../../src/middlewares/mapToRes/matchAResponse.js', {
+    const match = tap.mock('../../../src/http/mapToRes/matchAResponse.js', {
         '../../../src/config': {
             fakeServicesBasePath: fakeServicesDir,
         },
@@ -602,7 +602,7 @@ tap.test('match function', async tap => {
 tap.test('match function no fake servives folder', async tap => {
     const projectRoot = tap.testdir({});
     const fakeServicesBasePath = pathUtil.resolve(projectRoot, 'fake-services');
-    let match = tap.mock('../../../src/middlewares/mapToRes/matchAResponse.js', {
+    let match = tap.mock('../../../src/http/mapToRes/matchAResponse.js', {
         '../../../src/config': {
             fakeServicesBasePath,
         },
@@ -625,7 +625,7 @@ tap.test('match function no fake servives folder', async tap => {
         '\'fake-services\' folder does not exist in your project.\n'
             + '\'/fake-services\' does not exist.\n',
     );
-    match = tap.mock('../../../src/middlewares/mapToRes/matchAResponse.js', {
+    match = tap.mock('../../../src/http/mapToRes/matchAResponse.js', {
         '../../../src/utils/cd.js': () => {
             throw new Error('common error');
         },

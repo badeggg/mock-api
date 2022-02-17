@@ -5,7 +5,7 @@
  * Make sure to inspect the output below.  Do not ignore changes!
  */
 'use strict'
-exports[`test/middlewares/mapToRes/matchAResponse.js TAP class Matcher > log errors 1`] = `
+exports[`test/http/mapToRes/matchAResponse.js TAP class Matcher > log errors 1`] = `
 Array [
   "error: Bad response-file config './response' in map '/on-implicit-response-file/map', file '/on-implicit-response-file/response' does not exist or is not a file.",
   "error: No explicit resFilePath config in ruleLine  in map file /on-implicit-response-file/map, and no fine implicit response file.",
@@ -23,18 +23,18 @@ Array [
 ]
 `
 
-exports[`test/middlewares/mapToRes/matchAResponse.js TAP class Matcher > log infos 1`] = `
+exports[`test/http/mapToRes/matchAResponse.js TAP class Matcher > log infos 1`] = `
 Array [
   "info: Failed to eval request body with body args key 'typo.email' configured in map '/general/map'.",
   "info: Failed to eval request body with body args key 'typo.email' configured in map '/general/map'.",
 ]
 `
 
-exports[`test/middlewares/mapToRes/matchAResponse.js TAP class Matcher > log warnings 1`] = `
+exports[`test/http/mapToRes/matchAResponse.js TAP class Matcher > log warnings 1`] = `
 Array []
 `
 
-exports[`test/middlewares/mapToRes/matchAResponse.js TAP class Matcher > match result list 1`] = `
+exports[`test/http/mapToRes/matchAResponse.js TAP class Matcher > match result list 1`] = `
 Array [
   Object {
     "bodyArgs": Object {
@@ -153,7 +153,7 @@ Array [
 ]
 `
 
-exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > big json file 1`] = `
+exports[`test/http/mapToRes/matchAResponse.js TAP class ResponseFile > big json file 1`] = `
 Object {
   "resFilePath": "/fake-api-path/bigJsonFile",
   "resHeaders": Object {
@@ -164,14 +164,14 @@ Object {
 }
 `
 
-exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > image file 1`] = `
+exports[`test/http/mapToRes/matchAResponse.js TAP class ResponseFile > image file 1`] = `
 Object {
   "resFilePath": "/fake-api-path/image.png",
   "shouldUseExpressSendFile": true,
 }
 `
 
-exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > invalid json file 1`] = `
+exports[`test/http/mapToRes/matchAResponse.js TAP class ResponseFile > invalid json file 1`] = `
 Object {
   "resFilePath": "/fake-api-path/invalid.json",
   "resHeaders": Object {
@@ -181,7 +181,7 @@ Object {
 }
 `
 
-exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > js export object 1`] = `
+exports[`test/http/mapToRes/matchAResponse.js TAP class ResponseFile > js export object 1`] = `
 Object {
   "resBody": "{\\"name\\":\\"小明\\"}",
   "resHeaders": Object {
@@ -191,7 +191,7 @@ Object {
 }
 `
 
-exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > js export undefined 1`] = `
+exports[`test/http/mapToRes/matchAResponse.js TAP class ResponseFile > js export undefined 1`] = `
 Object {
   "resBody": undefined,
   "resHeaders": Object {
@@ -201,7 +201,7 @@ Object {
 }
 `
 
-exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > json file 1`] = `
+exports[`test/http/mapToRes/matchAResponse.js TAP class ResponseFile > json file 1`] = `
 Object {
   "resFilePath": "/fake-api-path/json.json",
   "resHeaders": Object {
@@ -211,7 +211,7 @@ Object {
 }
 `
 
-exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > json without extension 1`] = `
+exports[`test/http/mapToRes/matchAResponse.js TAP class ResponseFile > json without extension 1`] = `
 Object {
   "resFilePath": "/fake-api-path/jsonNoExt",
   "resHeaders": Object {
@@ -221,25 +221,25 @@ Object {
 }
 `
 
-exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > log errors 1`] = `
+exports[`test/http/mapToRes/matchAResponse.js TAP class ResponseFile > log errors 1`] = `
 Array [
-  "error: Response file '/test/middlewares/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/bigFile' is too big, max acceptable size is 524288000, got 524288001.",
+  "error: Response file '/test/http/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/bigFile' is too big, max acceptable size is 524288000, got 524288001.",
   String(
-    error: Failed to execute js script '/test/middlewares/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/bad.js'.
+    error: Failed to execute js script '/test/http/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/bad.js'.
     TypeError: Assignment to constant variable.
         at ...
         at ...
   ),
-  "error: /test/middlewares/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/notExistFile does not exist or is not a file.",
-  "error: /test/middlewares/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path does not exist or is not a file.",
+  "error: /test/http/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/notExistFile does not exist or is not a file.",
+  "error: /test/http/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path does not exist or is not a file.",
   "error: Empty \\"filePath\\" arg for \\"ResponseFile\\" constructor.",
-  "error: /test/middlewares/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/notExistFile does not exist or is not a file.",
-  "error: /test/middlewares/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/notExistFile does not exist or is not a file.",
-  "error: /test/middlewares/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/notExistFile does not exist or is not a file.",
+  "error: /test/http/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/notExistFile does not exist or is not a file.",
+  "error: /test/http/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/notExistFile does not exist or is not a file.",
+  "error: /test/http/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/notExistFile does not exist or is not a file.",
 ]
 `
 
-exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > log warnings 1`] = `
+exports[`test/http/mapToRes/matchAResponse.js TAP class ResponseFile > log warnings 1`] = `
 Array [
   "warning: Invalid json file '/fake-api-path/plainTextNoExt'.",
   "warning: Invalid json file '/fake-api-path/invalid.json'.",
@@ -248,7 +248,7 @@ Array [
 ]
 `
 
-exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > plain text without extension 1`] = `
+exports[`test/http/mapToRes/matchAResponse.js TAP class ResponseFile > plain text without extension 1`] = `
 Object {
   "resFilePath": "/fake-api-path/plainTextNoExt",
   "resHeaders": Object {
@@ -258,7 +258,7 @@ Object {
 }
 `
 
-exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > return js result 1`] = `
+exports[`test/http/mapToRes/matchAResponse.js TAP class ResponseFile > return js result 1`] = `
 Object {
   "resBody": "{\\"query\\":{\\"a\\":1},\\"a\\":1}",
   "resHeaders": Object {
@@ -268,7 +268,7 @@ Object {
 }
 `
 
-exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > return js result but js file is too big 1`] = `
+exports[`test/http/mapToRes/matchAResponse.js TAP class ResponseFile > return js result but js file is too big 1`] = `
 Object {
   "resFilePath": "/fake-api-path/big.js",
   "resHeaders": Object {
@@ -278,22 +278,22 @@ Object {
 }
 `
 
-exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > return js result but js is not valid 1`] = `
+exports[`test/http/mapToRes/matchAResponse.js TAP class ResponseFile > return js result but js is not valid 1`] = `
 Object {
   "resBody": String(
-    Failed to execute js script '/test/middlewares/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/bad.js'.
+    Failed to execute js script '/test/http/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/bad.js'.
     TypeError: Assignment to constant variable.
         at ...
         at ...
   ),
   "resHeaders": Object {
-    "Mock-Error-Invalid-Js-File": "/test/middlewares/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/bad.js",
+    "Mock-Error-Invalid-Js-File": "/test/http/mapToRes/tap-testdir-matchAResponse-class-ResponseFile/fake-services/fake-api-path/bad.js",
   },
   "shouldUseExpressSendFile": false,
 }
 `
 
-exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > return js result correctly even after js file changed 1`] = `
+exports[`test/http/mapToRes/matchAResponse.js TAP class ResponseFile > return js result correctly even after js file changed 1`] = `
 Object {
   "resBody": "12",
   "resHeaders": Object {
@@ -303,7 +303,7 @@ Object {
 }
 `
 
-exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > return js result empty 1`] = `
+exports[`test/http/mapToRes/matchAResponse.js TAP class ResponseFile > return js result empty 1`] = `
 Object {
   "resBody": "null",
   "resHeaders": Object {
@@ -313,7 +313,7 @@ Object {
 }
 `
 
-exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > return js result primitive 1`] = `
+exports[`test/http/mapToRes/matchAResponse.js TAP class ResponseFile > return js result primitive 1`] = `
 Object {
   "resBody": "string",
   "resHeaders": Object {
@@ -323,14 +323,14 @@ Object {
 }
 `
 
-exports[`test/middlewares/mapToRes/matchAResponse.js TAP class ResponseFile > return js result with empty request argument 1`] = `
+exports[`test/http/mapToRes/matchAResponse.js TAP class ResponseFile > return js result with empty request argument 1`] = `
 Object {
   "resFilePath": "/fake-api-path/ok.js",
   "shouldUseExpressSendFile": true,
 }
 `
 
-exports[`test/middlewares/mapToRes/matchAResponse.js TAP class RuleParser > log errors 1`] = `
+exports[`test/http/mapToRes/matchAResponse.js TAP class RuleParser > log errors 1`] = `
 Array [
   "error: Bad status code config 'x22' in map '/fake-api-path/map'.",
   "error: Bad status code config '600' in map '/fake-api-path/map'.",
@@ -348,11 +348,11 @@ Array [
 ]
 `
 
-exports[`test/middlewares/mapToRes/matchAResponse.js TAP class RuleParser > log warnings 1`] = `
+exports[`test/http/mapToRes/matchAResponse.js TAP class RuleParser > log warnings 1`] = `
 Array []
 `
 
-exports[`test/middlewares/mapToRes/matchAResponse.js TAP class RuleParser > parsed rule lines 1`] = `
+exports[`test/http/mapToRes/matchAResponse.js TAP class RuleParser > parsed rule lines 1`] = `
 Array [
   Object {
     "bodyArgs": Object {},
@@ -996,7 +996,7 @@ Array [
 ]
 `
 
-exports[`test/middlewares/mapToRes/matchAResponse.js TAP match function > match function result 1`] = `
+exports[`test/http/mapToRes/matchAResponse.js TAP match function > match function result 1`] = `
 Object {
   "bodyArgs": Object {},
   "pathParams": Object {},

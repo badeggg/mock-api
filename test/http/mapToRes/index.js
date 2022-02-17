@@ -5,14 +5,16 @@
  * Since the mocked modules, some logic is not covered, e.g. doProxy function.
  * We mocked those modules here for reason that it will be way complicated if they are
  * real for testing ---- most logic in src/mock.js may need rewrite in this file.
- * The completion test suit for src/middlewares/mapToRes/index.js is in test/mock/js.
- * @zhaoxuxu @2021-6-2
+ * The completion test suit for src/http/mapToRes/index.js is in test/mockx.js.
+ *
+ * @zhaoxuxu @2021-6-2  write
+ * @zhaoxuxu @2022-2-17 update
  */
 const tap = require('tap');
 
 tap.test('code logic only', async tap => {
-    const mapToRes = tap.mock('../../../src/middlewares/mapToRes/index.js', {
-        '../../../src/middlewares/mapToRes/matchAResponse.js': (req) => {
+    const mapToRes = tap.mock('../../../src/http/mapToRes/index.js', {
+        '../../../src/http/mapToRes/matchAResponse.js': (req) => {
             switch (req) {
             case 'NORMAL':
                 return {
@@ -48,7 +50,7 @@ tap.test('code logic only', async tap => {
                 };
             }
         },
-        '../../../src/middlewares/mapToRes/matchAProxy404.js': req => null,
+        '../../../src/http/mapToRes/matchAProxy404.js': req => null,
     });
     const reqs = {
         normal: 'NORMAL',

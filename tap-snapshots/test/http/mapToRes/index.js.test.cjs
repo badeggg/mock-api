@@ -5,13 +5,13 @@
  * Make sure to inspect the output below.  Do not ignore changes!
  */
 'use strict'
-exports[`test/middlewares/mapToRes/index.js TAP code logic only > 404 headers 1`] = `
+exports[`test/http/mapToRes/index.js TAP code logic only > 404 headers 1`] = `
 Object {
   "From-Mocking-Fake-Service": "true",
 }
 `
 
-exports[`test/middlewares/mapToRes/index.js TAP code logic only > normal headers 1`] = `
+exports[`test/http/mapToRes/index.js TAP code logic only > normal headers 1`] = `
 Object {
   "Access-Control-Allow-Origin": "*",
   "Content-Type": "application/json; charset=UTF-8",

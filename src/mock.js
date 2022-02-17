@@ -6,7 +6,7 @@ const fs = require('fs');
 const express = require('express');
 const chalk = require('chalk');
 const WSServer = require('ws').Server;
-const mapToRes = require('./middlewares/mapToRes');
+const httpMapToRes = require('./http/mapToRes');
 const wsConnection = require('./websocket/connection.js');
 const wsUpgrade = require('./websocket/upgrade.js');
 const projectRoot = require('./utils/getProjectRoot.js')();
@@ -33,7 +33,7 @@ const httpApp = function() {
     const REQUEST_MAX_URLENCODED_SIZE = '10mb'; // todo, to make it configurable
     app.use(express.json({limit: REQUEST_MAX_JSON_SIZE}));
     app.use(express.urlencoded({limit: REQUEST_MAX_URLENCODED_SIZE, extended: false,}));
-    app.use(mapToRes);
+    app.use(httpMapToRes);
     return app;
 };
 

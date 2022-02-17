@@ -23,7 +23,7 @@ tap.test('basic general match', tap => {
             'https://www.google.com/'
         ]
     ];
-    const matchAProxy404 = tap.mock('../../../src/middlewares/mapToRes/matchAProxy404.js', {
+    const matchAProxy404 = tap.mock('../../../src/http/mapToRes/matchAProxy404.js', {
         '../../../src/config/index.js': {
             getProxy404: () => proxy404,
         },
@@ -43,7 +43,7 @@ tap.test('null match', tap => {
             'https://nodejs.org/'
         ],
     ];
-    const matchAProxy404 = tap.mock('../../../src/middlewares/mapToRes/matchAProxy404.js', {
+    const matchAProxy404 = tap.mock('../../../src/http/mapToRes/matchAProxy404.js', {
         '../../../src/config/index.js': {
             getProxy404: () => proxy404,
         },
