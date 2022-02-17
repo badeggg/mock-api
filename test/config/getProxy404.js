@@ -10,6 +10,11 @@ tap.test('find proxy404 file, parse it and return result', tap => {
     /req   http://server/req  third and other items are ignored
     https://www.google.com/
     nodejs.org # invalid url target, only domain
+    http google https://www.google.com/
+    hTtp google https://www.google.com/
+    HTTP google https://www.google.com/
+    ws https://www.google.com/
+    WS google https://www.google.com/
     `;
     const fakeServicesBasePath = tap.testdir({
         proxy404: proxy404Content,

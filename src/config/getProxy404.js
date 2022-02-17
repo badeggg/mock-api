@@ -14,6 +14,17 @@ module.exports = function() {
         const semiParsedCfg = semiParseConfigFile(proxy404CfgFile);
 
         semiParsedCfg.forEach(cfgUnit => {
+            let isWebsocket;
+            if (cfgUnit[0].toUpperCase() === 'HTTP') {
+                isWebsocket = false;
+                cfgUnit = cfgUnit.slice(1);
+            } else if (cfgUnit[0].toUpperCase() === 'WS') {
+                isWebsocket = true;
+                cfgUnit = cfgUnit.slice(1);
+            } else {
+                isWebsocket = false;
+            }
+
             let regStr = '';
             let target = '';
             if (cfgUnit.length === 1) {
@@ -31,7 +42,7 @@ module.exports = function() {
                 log.error(err.toString());
                 return;
             }
-            proxy404.push([regStr, target]);
+            proxy404.push([isWebsocket, regStr, target]);
         });
     }
 

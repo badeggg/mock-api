@@ -8,23 +8,53 @@
 exports[`test/config/getProxy404.js TAP find proxy404 file, parse it and return result > parsed proxy404 result 1`] = `
 [
     [
+        false,
         "nodejs",
         "https://nodejs.org/"
     ],
     [
+        false,
         "bing",
         "https://cn.bing.com/"
     ],
     [
+        false,
         "/api",
         "http://api-server/api"
     ],
     [
+        false,
         "/req",
         "http://server/req"
     ],
     [
+        false,
         ".*",
+        "https://www.google.com/"
+    ],
+    [
+        false,
+        "google",
+        "https://www.google.com/"
+    ],
+    [
+        false,
+        "google",
+        "https://www.google.com/"
+    ],
+    [
+        false,
+        "google",
+        "https://www.google.com/"
+    ],
+    [
+        true,
+        ".*",
+        "https://www.google.com/"
+    ],
+    [
+        true,
+        "google",
         "https://www.google.com/"
     ]
 ]

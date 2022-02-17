@@ -351,7 +351,7 @@ tap.test('cover proxy error on non-win-server', async tap => {
     let errorMsgs = [];
     const mock = tap.mock('../src/mock.js', {
         '../src/utils/getProjectRoot.js': () => fakeServicesDir,
-        '../src/config/getProxy404.js': () => [['.*', 'google.com']], // Bad proxy 404 target
+        '../src/config/getProxy404.js': () => [[false, '.*', 'google.com']], // Bad proxy 404 target
         '../src/utils/log.js': {
             info: () => {},
             error: (msg) => errorMsgs.push('error: ' + msg),
