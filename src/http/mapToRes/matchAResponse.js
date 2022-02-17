@@ -27,8 +27,8 @@ const { spawnSync } = require('child_process');
 const _ = require('lodash');
 const commander = require('commander');
 const cd = require('../../utils/cd');
-const parseQueryStr = require('../../utils/parseQueryStr');
-const parseHttpHeader = require('../../utils/parseHttpHeader');
+const parseQueryStr = require('./parseQueryStr');
+const parseHttpHeaderStr = require('./parseHttpHeaderStr');
 const semiParseConfigFile = require('../../utils/semiParseConfigFile');
 const log = require('../../utils/log.js');
 
@@ -133,7 +133,7 @@ class ResponseFile {
             const { stdout } = spawnSync(
                 'node',
                 [
-                    pathUtil.resolve(__dirname, '../../utils/execJsFileHelper.js'),
+                    pathUtil.resolve(__dirname, './execJsFileHelper.js'),
                     this.filePath,
                     JSON.stringify({
                         method: this.req.method,
@@ -367,7 +367,7 @@ class RuleParser {
         return _.merge(previous, parseQueryStr(value));
     }
     _commanderParseResHeaders(value, previous) {
-        return _.merge(previous, parseHttpHeader(value));
+        return _.merge(previous, parseHttpHeaderStr(value));
     }
     _commanderParseStatusCode(value) {
         if (!value.match(/^\d{3}$/)) {

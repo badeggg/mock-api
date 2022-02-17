@@ -50,7 +50,7 @@ tap.test('code logic only', async tap => {
                 };
             }
         },
-        '../../../src/http/mapToRes/matchAProxy404.js': req => null,
+        '../../../src/common/matchAProxy404.js': req => null,
     });
     const reqs = {
         normal: 'NORMAL',

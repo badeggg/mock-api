@@ -1,4 +1,4 @@
-const getProxy404 = require('../../config/index.js').getProxy404;
+const getProxy404 = require('../config/index.js').getProxy404;
 
 function match(req) {
     const proxy404 = getProxy404();

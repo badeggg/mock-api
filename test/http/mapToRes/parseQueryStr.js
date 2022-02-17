@@ -1,5 +1,5 @@
 const tap = require('tap');
-const parseQueryStr = require('../../src/utils/parseQueryStr');
+const parseQueryStr = require('../../../src/http/mapToRes/parseQueryStr');
 
 tap.equal(parseQueryStr(), false);
 tap.same(parseQueryStr('sdsd=12'), { sdsd: '12' });

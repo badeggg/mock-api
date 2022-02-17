@@ -1,6 +1,6 @@
 const queryString = require('query-string');
 const matchAResponse = require('./matchAResponse');
-const matchAProxy404 = require('./matchAProxy404');
+const matchAProxy404 = require('../../common/matchAProxy404');
 const httpProxy = require('http-proxy');
 const proxy = httpProxy.createProxyServer({});
 const log = require('../../utils/log.js');
