@@ -27,6 +27,7 @@ const { spawnSync } = require('child_process');
 const _ = require('lodash');
 const commander = require('commander');
 const cd = require('../../utils/cd');
+const parseTimeStr = require('../../utils/parseTimeStr');
 const parseQueryStr = require('./parseQueryStr');
 const parseHttpHeaderStr = require('./parseHttpHeaderStr');
 const semiParseConfigFile = require('../../utils/semiParseConfigFile');
@@ -166,13 +167,13 @@ class ResponseFile {
                  * A meta box js result:
                  * {
                  *      isMetaBox: true,
-                 *      shouldEscapeBuferRecover: true,
+                 *      responseShouldEscapeBuferRecover: true,
                  *      response: 'response content',
                  * }
                  */
                 response = jsResult.response;
                 if (
-                    !jsResult.shouldEscapeBuferRecover
+                    !jsResult.responseShouldEscapeBuferRecover
                     && _.isPlainObject(response)
                     && response.type === 'Buffer'
                     && _.isArray(response.data)
@@ -399,16 +400,12 @@ class RuleParser {
         return resFilePath;
     }
     _commanderParseDelayTime(value) {
-        let time;
-        if (value.match(/^\d+(ms)?$/))
-            time = parseInt(value);
-        if (value.match(/^\d+(s)$/))
-            time = parseInt(value) * 1000;
-        if (Number.isSafeInteger(time))
-            return time;
-
-        log.error(`Bad deplay time config '${value}' in map '${this.mapFilePath}'.`);
-        return 0;
+        const time = parseTimeStr(value);
+        if (time === false) {
+            log.error(`Bad delay time config '${value}' in map '${this.mapFilePath}'.`);
+            return 0;
+        }
+        return time;
     }
 }
 

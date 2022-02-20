@@ -5,21 +5,33 @@
  * response content. The js script should export the desired response content or a function
  * which returns the response content. If the export is a function, it will receive an
  * argument. Argument is websocket response trigger information, which is an object contains
- * { event, message, query, params, lineageArgs }.
+ * { triggerName, currentMessage, request, query, params, lineageArg }.
  *
  * The reasons that we need this helper are 1) we do not want any cache for the js script
  * so that every change in it will take effect immediately, and 2) we do not want 'outer'
  * js code bother mock-api self.
  *
  * @zhaoxuxu @2021-2-14 write
- * @zhaoxuxu @2022-2-16 update
+ * @zhaoxuxu @2022-2-20 update
  */
 
+const _ = require('lodash');
 const jsFilePath = process.argv[2];
 
 process.on('message', triggerInfo => {
     let jsResult;
     let meetWithErr = false;
+    if (triggerInfo.currentMessage) { // currentMessage must be a 'Buffer' if exist
+        triggerInfo.currentMessage = Buffer.from(triggerInfo.currentMessage);
+    }
+    if (
+        !triggerInfo.lineageArgShouldEscapeBuferRecover
+        && _.isPlainObject(triggerInfo.lineageArg)
+        && triggerInfo.lineageArg.type === 'Buffer'
+        && _.isArray(triggerInfo.lineageArg.data)
+    ) {
+        triggerInfo.lineageArg = Buffer.from(triggerInfo.lineageArg.data);
+    }
     try {
         const script = require(jsFilePath);
         if (typeof script === 'function') {
@@ -39,6 +51,7 @@ process.on('message', triggerInfo => {
     const ret = JSON.stringify({
         jsResult,
         meetWithErr,
+        triggerInfo,
     });
     process.send(ret);
 });

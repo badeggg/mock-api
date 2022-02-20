@@ -1,6 +1,8 @@
 const url = require('url');
 const _ = require('lodash');
 const cd = require('../utils/cd');
+const httpProxy = require('http-proxy');
+const proxy = httpProxy.createProxyServer({});
 const log = require('../utils/log.js');
 
 module.exports = (req, socket, head, wss) => {
@@ -24,8 +26,14 @@ module.exports = (req, socket, head, wss) => {
         }
         throw err;
     }
-    // if (!cdResult)
-    //     return null;
+    if (!cdResult) {
+        proxy.ws(req, socket, head);
+        return;
+    }
 
     req.params = _.cloneDeep(cdResult.params);
+
+    wss.handleUpgrade(req, socket, head, function done(ws) {
+        wss.emit('connection', ws, req, cdResult);
+    });
 };
