@@ -117,8 +117,8 @@ tap.test('code logic only', async tap => {
     tap.equal(resTestNoAnyMatch.code,    404,  'status code');
     tap.matchSnapshot(resTestNoAnyMatch.headers, '404 headers');
     tap.equal(resTestNoAnyMatch.body,
-        'Not Found.<br>\n'
-        + 'You may need set a proxy404 file in fake-services folder.<br>\n'
+        'No proxy 404 match found.<br>\n'
+        + 'You need a proper proxy404 file in fake-services folder.<br>\n'
         + 'Refer https://github.com/badeggg/mock-api#proxy-404'
     );
 

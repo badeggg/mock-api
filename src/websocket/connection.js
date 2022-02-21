@@ -4,14 +4,11 @@ const _ = require('lodash');
 const log = require('../utils/log.js');
 const parseTimeStr = require('../utils/parseTimeStr.js');
 
-const WS_IMPLICIT_RESPONSE_FILE_NAME = 'ws-response.js'; // todo to make it configurable
-
-module.exports = (ws, req, cdResult) => {
-    const filePath = pathUtil.resolve(cdResult.path, WS_IMPLICIT_RESPONSE_FILE_NAME);
+module.exports = (ws, req, wsResponseFilePath) => {
     const helperProcess = fork(
         pathUtil.resolve(__dirname, './execJsFileHelperWs.js'),
         [
-            filePath,
+            wsResponseFilePath,
         ],
     );
 
@@ -21,7 +18,7 @@ module.exports = (ws, req, cdResult) => {
 
     ws.on('error', (err) => {
         helperProcess.kill();
-        ws.close(1011, `Server error. ${err.code}`);
+        ws.close(3999, `SERVER-UNEXPECTED-CONDITION. ${err.code}`);
     });
 
     ws.on('open', () => {
@@ -63,7 +60,7 @@ module.exports = (ws, req, cdResult) => {
             log.error(jsResult);
             response = jsResult;
             ws.send(response);
-            ws.close(1011, 'Internal server error. Failed to execute ./ws-response.js.');
+            ws.close(3998, 'JS-SCRIPT-ERROR. Failed to execute ./ws-response.js.');
             return;
         } else if (_.isPlainObject(jsResult) && jsResult.isMetaBox) {
             /**

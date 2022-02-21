@@ -49,6 +49,7 @@ function cd(path) {
             + `'${config.fakeServicesBasePath}' does not exist.\n`
         );
         err.name = 'NO-FAKE-SERVIVES-FOLDER';
+        err.wsCloseCode = 3997;
         throw err;
     }
     let current = {path: config.fakeServicesBasePath, params: {}};
