@@ -15,7 +15,14 @@ module.exports = (ws, req, cdResult) => {
         ],
     );
 
-    // todo ws.on
+    ws.on('close', () => {
+        helperProcess.kill();
+    });
+
+    ws.on('error', (err) => {
+        helperProcess.kill();
+        ws.close(1011, `Server error. ${err.code}`);
+    });
 
     ws.on('open', () => {
         const triggerInfo = {
@@ -26,7 +33,8 @@ module.exports = (ws, req, cdResult) => {
             params: req.params,
             lineageArg: null,
         };
-        helperProcess.send(JSON.stringify(triggerInfo));
+        if (!helperProcess.killed)
+            helperProcess.send(JSON.stringify(triggerInfo));
     });
 
     ws.on('message', currentMessage => {
@@ -38,17 +46,19 @@ module.exports = (ws, req, cdResult) => {
             params: req.params,
             lineageArg: null,
         };
-        helperProcess.send(triggerInfo));
+        if (!helperProcess.killed)
+            helperProcess.send(triggerInfo);
     });
 
     helperProcess.on('message', execResult => {
         if (ws.readyState !== 1) {
-            log.error('The connection is closing or has closed.');
+            log.error('The connection is closing or has been closed.');
             return;
         }
         const { jsResult, meetWithErr } = JSON.parse(execResult);
+        let action = 'SEND';
         let response;
-        let delaySend = 0;
+        let actionDelay = 0;
         if (meetWithErr) {
             log.error(jsResult);
             response = jsResult;
@@ -62,15 +72,30 @@ module.exports = (ws, req, cdResult) => {
              *      isMetaBox: true,
              *      responseShouldEscapeBuferRecover: true,
              *      response: 'response content',
-             *      delaySend: 500,
-             *      action: 'SEND', // SEND | PING | PONG | CLOSE // todo
+             *      actionDelay: 500,
+             *      action: 'SEND', // 'SEND' | 'PING' | 'PONG' | 'CLOSE'
              *      selfTrigger: {
-             *          delayTrigger: 500,
+             *          triggerDelay: 500,
              *          lineageArg: 'what ws-response.js want to heritage',
              *          lineageArgShouldEscapeBuferRecover: false,
              *      } | [{}],
              * }
              */
+            if (
+                jsResult.action
+                && jsResult.action !== 'SEND'
+                && jsResult.action !== 'PING'
+                && jsResult.action !== 'PONG'
+                && jsResult.action !== 'CLOSE'
+            ) {
+                log.error(`Bad action property result '${jsResult.action}' `
+                    + 'when trigger ./ws-response.js '
+                    + `with ${JSON.stringify(jsResult.triggerInfo)}. `
+                    + 'Will use default action "SEND".');
+                action = 'SEND';
+            } else {
+                action = jsResult.action || 'SEND';
+            }
             response = jsResult.response;
             if (
                 !jsResult.responseShouldEscapeBuferRecover
@@ -80,13 +105,13 @@ module.exports = (ws, req, cdResult) => {
             ) {
                 response = Buffer.from(response.data);
             }
-            if (jsResult.delaySend) {
-                delaySend = parseTimeStr(jsResult.delaySend);
-                if (delaySend === false) {
-                    log.error(`Bad delaySend time property result '${jsResult.delaySend}' `
-                        + `when trigger ./ws-response.js `
+            if (jsResult.actionDelay) {
+                actionDelay = parseTimeStr(jsResult.actionDelay);
+                if (actionDelay === false) {
+                    log.error(`Bad actionDelay time property result '${jsResult.actionDelay}' `
+                        + 'when trigger ./ws-response.js '
                         + `with ${JSON.stringify(jsResult.triggerInfo)}. `
-                        + 'Will not delay send.');
+                        + 'Will not delay action.');
                 }
             }
 
@@ -100,31 +125,33 @@ module.exports = (ws, req, cdResult) => {
                     lineageArg: selfTrigger.lineageArg,
                     lineageArgShouldEscapeBuferRecover: selfTrigger.lineageArgShouldEscapeBuferRecover,
                 };
-                let delayTrigger = 0;
-                delayTrigger = parseTimeStr(jsResult.delayTrigger);
-                if (delayTrigger === false) {
+                let triggerDelay = 0;
+                triggerDelay = parseTimeStr(jsResult.triggerDelay);
+                if (triggerDelay === false) {
                     log.error(
-                        `Bad self delayTrigger time property '${selfTrigger.delayTrigger}' `
-                        + `when trigger ./ws-response.js `
+                        `Bad self triggerDelay time property '${selfTrigger.triggerDelay}' `
+                        + 'when trigger ./ws-response.js '
                         + `with ${JSON.stringify(jsResult.triggerInfo)}. `
-                        + 'Will not delay self trigger.');
+                        + 'Will not delay self triggering.');
                 }
-                if (delayTrigger) {
+                if (triggerDelay) {
                     setTimeout(() => {
-                        helperProcess.send(triggerInfo);
-                    }, delayTrigger);
+                        if (!helperProcess.killed)
+                            helperProcess.send(triggerInfo);
+                    }, triggerDelay);
                 } else {
-                    helperProcess.send(triggerInfo);
+                    if (!helperProcess.killed)
+                        helperProcess.send(triggerInfo);
                 }
             }
             if (jsResult.selfTrigger) {
-                if (_.isPlainObject(selfTrigger)) {
-                    handleSingleSelfTrigger(selfTrigger);
-                } else if (_.isArray(selfTrigger)) {
-                    selfTrigger.forEach(handleSingleSelfTrigger);
+                if (_.isPlainObject(jsResult.selfTrigger)) {
+                    handleSingleSelfTrigger(jsResult.selfTrigger);
+                } else if (_.isArray(jsResult.selfTrigger)) {
+                    jsResult.selfTrigger.forEach(handleSingleSelfTrigger);
                 } else {
                     log.error(`Bad selfTrigger property result '${jsResult.selfTrigger}' `
-                        + `when trigger ./ws-response.js `
+                        + 'when trigger ./ws-response.js '
                         + `with ${JSON.stringify(jsResult.triggerInfo)}. `
                         + 'Refer doc for details.'); // todo
                 }
@@ -140,11 +167,33 @@ module.exports = (ws, req, cdResult) => {
             }
         }
 
-        if (response) {
-            if (delaySend) {
-                setTimeout(() => ws.send(response), delaySend);
+        if (action === 'SEND') {
+            if (response) {
+                if (actionDelay) {
+                    setTimeout(() => ws.send(response), actionDelay);
+                } else {
+                    ws.send(response);
+                }
+            }
+        } else if (action === 'PING') {
+            if (actionDelay) {
+                setTimeout(() => ws.ping(response), actionDelay);
             } else {
-                ws.send(response);
+                ws.ping(response);
+            }
+        } else if (action === 'PONG') {
+            if (actionDelay) {
+                setTimeout(() => ws.pong(response), actionDelay);
+            } else {
+                ws.pong(response);
+            }
+        } else if (action === 'CLOSE') {
+            let code = response.code || 1000;
+            let reason = response.reason || '';
+            if (actionDelay) {
+                setTimeout(() => ws.close(code, reason), actionDelay);
+            } else {
+                ws.close(code, reason);
             }
         }
     });

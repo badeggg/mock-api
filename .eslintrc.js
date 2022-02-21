@@ -29,5 +29,6 @@ module.exports = {
             }
         ],
         'no-constant-condition': 'off',
+        'no-inner-declarations': 'off',
     }
 };
