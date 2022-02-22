@@ -2,7 +2,10 @@ const pathUtil = require('path');
 const { fork } = require('child_process');
 const _ = require('lodash');
 const log = require('../utils/log.js');
+const isValidWsStatusCode = require('../utils/isValidWsStatusCode.js');
 const parseTimeStr = require('../utils/parseTimeStr.js');
+
+const MAX_CLOSE_REASON_BYTE_LENGTH = 123;
 
 module.exports = (ws, req, wsResponseFilePath) => {
     const helperProcess = fork(
@@ -166,6 +169,7 @@ module.exports = (ws, req, wsResponseFilePath) => {
 
         if (action === 'SEND') {
             if (response) {
+                response = JSON.stringify(response);
                 if (actionDelay) {
                     setTimeout(() => ws.send(response), actionDelay);
                 } else {
@@ -173,20 +177,34 @@ module.exports = (ws, req, wsResponseFilePath) => {
                 }
             }
         } else if (action === 'PING') {
+            response = JSON.stringify(response);
             if (actionDelay) {
                 setTimeout(() => ws.ping(response), actionDelay);
             } else {
                 ws.ping(response);
             }
         } else if (action === 'PONG') {
+            response = JSON.stringify(response);
             if (actionDelay) {
                 setTimeout(() => ws.pong(response), actionDelay);
             } else {
                 ws.pong(response);
             }
         } else if (action === 'CLOSE') {
-            let code = response.code || 1000;
-            let reason = response.reason || '';
+            let code = response && response.code ? response.code : 1000;
+            let reason = response && response.reason ? response.reason : '';
+            reason += '';
+            if (typeof code !== 'number' || !isValidWsStatusCode(code)) {
+                log.error(`Invalid websocket close code number '${code}'. `
+                    + 'Will close with code 1000.');
+                code = 1000;
+            }
+            if (Buffer.from(reason).byteLength > MAX_CLOSE_REASON_BYTE_LENGTH) {
+                log.warn('Close reason message must not be greater than 123 bytes. '
+                    + `Got reason '${reason}'. `
+                    + 'Will close with empty reason.');
+                reason = '';
+            }
             if (actionDelay) {
                 setTimeout(() => ws.close(code, reason), actionDelay);
             } else {
