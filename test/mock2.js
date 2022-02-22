@@ -17,7 +17,7 @@ const _  = require('lodash');
  * a single subtest.
  * @zhaoxuxu @2022-2-7
  */
-tap.test('response js result as a whole 1', async tap => {
+tap.test('response js result 1, export a function', async tap => {
     const fakeServicesDir = tap.testdir({
         'fake-services': {
             'fake-api-path': {

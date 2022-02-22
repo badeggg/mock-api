@@ -6,7 +6,7 @@ const transWindowsPath = require('./testUtils/transWindowsPath.js');
 const obscureErrorStack = require('./testUtils/obscureErrorStack.js');
 const _  = require('lodash');
 
-tap.test('response js result as a whole 2', async tap => {
+tap.test('response js result 2, export the response', async tap => {
     const fakeServicesDir = tap.testdir({
         'fake-services': {
             'fake-api-path': {
