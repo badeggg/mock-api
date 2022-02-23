@@ -61,6 +61,7 @@ tap.test('class ResponseFile', async tap => {
                         return null;
                     };
                 `,
+                'empty.js':      '',
                 'bad.js':           `
                     const a = 1;
                     a = 2
@@ -120,6 +121,14 @@ tap.test('class ResponseFile', async tap => {
                         response,
                     };
                 `,
+                'debug.js':       `
+                    const response = Buffer.from([1,2,3]);
+                    console.log('debug: ', response);
+                    module.exports = response;
+                    setTimeout(() => {
+                        console.log('timeout log');
+                    }, 500);
+                `,
             },
         },
     });
@@ -137,6 +146,7 @@ tap.test('class ResponseFile', async tap => {
     const okJs              = pathUtil.resolve(basePath, 'ok.js');
     const retPrimitiveJs    = pathUtil.resolve(basePath, 'retPrimitive.js');
     const retEmptyJs        = pathUtil.resolve(basePath, 'retEmpty.js');
+    const emptyJs           = pathUtil.resolve(basePath, 'empty.js');
     const badJs             = pathUtil.resolve(basePath, 'bad.js');
     const bigJs             = pathUtil.resolve(basePath, 'big.js');
     const objJs             = pathUtil.resolve(basePath, 'obj.js');
@@ -149,6 +159,7 @@ tap.test('class ResponseFile', async tap => {
     const metaBox3Js        = pathUtil.resolve(basePath, 'metaBox3.js');
     const metaBox4Js        = pathUtil.resolve(basePath, 'metaBox4.js');
     const metaBox5Js        = pathUtil.resolve(basePath, 'metaBox5.js');
+    const debugJs           = pathUtil.resolve(basePath, 'debug.js');
 
     let errorMsgs = [];
     let warningMsgs = [];
@@ -250,6 +261,13 @@ tap.test('class ResponseFile', async tap => {
             fakeServicesDir
         ),
         'return js result empty'
+    );
+    tap.matchSnapshot(
+        trimCfg(
+            new ResponseFile(emptyJs, true).generateResCfg(),
+            fakeServicesDir
+        ),
+        'empty js file'
     );
     tap.matchSnapshot(
         trimCfg(
@@ -367,6 +385,18 @@ tap.test('class ResponseFile', async tap => {
     tap.equal(new ResponseFile(notExistFile).generateExpressSendFileResCfg(), null);
     tap.matchSnapshot(errorMsgs, 'log errors');
     tap.matchSnapshot(warningMsgs, 'log warnings');
+
+    const ResponseFile1 = tap.mock('../../../src/http/mapToRes/matchAResponse.js', {
+        process: {
+            ...process,
+            stdout: {
+                write: (out) => stdouts.push('stdouts: ' + out),
+            },
+        },
+    }).ResponseFile;
+    let stdouts = [];
+    new ResponseFile1(debugJs, true).generateResCfg(),
+    tap.matchSnapshot(stdouts, 'stdouts');
 });
 
 tap.test('class RuleParser', async tap => {

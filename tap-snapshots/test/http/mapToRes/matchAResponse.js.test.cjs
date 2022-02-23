@@ -164,6 +164,16 @@ Object {
 }
 `
 
+exports[`test/http/mapToRes/matchAResponse.js TAP class ResponseFile > empty js file 1`] = `
+Object {
+  "resBody": "{}",
+  "resHeaders": Object {
+    "Content-Type": "application/json; charset=UTF-8",
+  },
+  "shouldUseExpressSendFile": false,
+}
+`
+
 exports[`test/http/mapToRes/matchAResponse.js TAP class ResponseFile > image file 1`] = `
 Object {
   "resFilePath": "/fake-api-path/image.png",
@@ -396,6 +406,13 @@ Object {
   "resFilePath": "/fake-api-path/ok.js",
   "shouldUseExpressSendFile": true,
 }
+`
+
+exports[`test/http/mapToRes/matchAResponse.js TAP class ResponseFile > stdouts 1`] = `
+Array [
+  "stdouts: debug:  <Buffer 01 02 03>\\n",
+  "stdouts: timeout log\\n",
+]
 `
 
 exports[`test/http/mapToRes/matchAResponse.js TAP class RuleParser > log errors 1`] = `

@@ -22,6 +22,7 @@
 
 const pathUtil = require('path');
 const fs = require('fs');
+const process = require('process');
 const crypto = require('crypto');
 const { spawnSync } = require('child_process');
 const _ = require('lodash');
