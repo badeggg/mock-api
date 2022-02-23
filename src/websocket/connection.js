@@ -8,12 +8,33 @@ const parseTimeStr = require('../utils/parseTimeStr.js');
 const MAX_CLOSE_REASON_BYTE_LENGTH = 123;
 
 module.exports = (ws, req, wsResponseFilePath) => {
+    const prunedReq = {
+        complete: req.complete,
+        headers: req.headers,
+        httpVersion: req.httpVersion,
+        method: req.method,
+        rawHeaders: req.rawHeaders,
+        rawTrailers: req.rawTrailers,
+        trailers: req.trailers,
+        url: req.url,
+    };
     const helperProcess = fork(
         pathUtil.resolve(__dirname, './execJsFileHelperWs.js'),
         [
             wsResponseFilePath,
         ],
     );
+
+    const initTriggerInfo = {
+        triggerName: 'WS-OPEN',
+        currentMessage: null,
+        request: prunedReq,
+        query: req.query,
+        params: req.params,
+        lineageArg: null,
+    };
+    if (!helperProcess.killed)
+        helperProcess.send(JSON.stringify(initTriggerInfo));
 
     ws.on('close', () => {
         helperProcess.kill();
@@ -24,24 +45,11 @@ module.exports = (ws, req, wsResponseFilePath) => {
         ws.close(3999, `SERVER-UNEXPECTED-CONDITION. ${err.code}`);
     });
 
-    ws.on('open', () => {
-        const triggerInfo = {
-            triggerName: 'WS-OPEN',
-            currentMessage: null,
-            request: req,
-            query: req.query,
-            params: req.params,
-            lineageArg: null,
-        };
-        if (!helperProcess.killed)
-            helperProcess.send(JSON.stringify(triggerInfo));
-    });
-
     ws.on('message', currentMessage => {
         const triggerInfo = {
             triggerName: 'WS-MESSAGE',
             currentMessage,
-            request: req,
+            request: prunedReq,
             query: req.query,
             params: req.params,
             lineageArg: null,
@@ -119,7 +127,7 @@ module.exports = (ws, req, wsResponseFilePath) => {
                 const triggerInfo = {
                     triggerName: 'SELF-TRIGGER',
                     currentMessage: null,
-                    request: req,
+                    request: prunedReq,
                     query: req.query,
                     params: req.params,
                     lineageArg: selfTrigger.lineageArg,
@@ -169,7 +177,8 @@ module.exports = (ws, req, wsResponseFilePath) => {
 
         if (action === 'SEND') {
             if (response) {
-                response = JSON.stringify(response);
+                if (!(response instanceof Buffer))
+                    response = JSON.stringify(response);
                 if (actionDelay) {
                     setTimeout(() => ws.send(response), actionDelay);
                 } else {
@@ -177,14 +186,16 @@ module.exports = (ws, req, wsResponseFilePath) => {
                 }
             }
         } else if (action === 'PING') {
-            response = JSON.stringify(response);
+            if (!(response instanceof Buffer))
+                response = JSON.stringify(response);
             if (actionDelay) {
                 setTimeout(() => ws.ping(response), actionDelay);
             } else {
                 ws.ping(response);
             }
         } else if (action === 'PONG') {
-            response = JSON.stringify(response);
+            if (!(response instanceof Buffer))
+                response = JSON.stringify(response);
             if (actionDelay) {
                 setTimeout(() => ws.pong(response), actionDelay);
             } else {
