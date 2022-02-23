@@ -181,6 +181,74 @@ Object {
 }
 `
 
+exports[`test/http/mapToRes/matchAResponse.js TAP class ResponseFile > js export a false metabox object 1`] = `
+Object {
+  "resBody": "{\\"isMetaBox\\":false,\\"responseShouldEscapeBufferRecover\\":true,\\"response\\":{\\"type\\":\\"Buffer\\",\\"data\\":[1,2,3]}}",
+  "resHeaders": Object {
+    "Content-Type": "application/json; charset=UTF-8",
+  },
+  "shouldUseExpressSendFile": false,
+}
+`
+
+exports[`test/http/mapToRes/matchAResponse.js TAP class ResponseFile > js export a metabox object 1`] = `
+Object {
+  "resBody": "{\\"type\\":\\"Buffer\\",\\"data\\":[1,2,3]}",
+  "resHeaders": Object {
+    "Content-Type": "application/json; charset=UTF-8",
+  },
+  "shouldUseExpressSendFile": false,
+}
+`
+
+exports[`test/http/mapToRes/matchAResponse.js TAP class ResponseFile > js export a metabox object with a buffer object 1`] = `
+Object {
+  "resBody": Buffer <0102 03  ...>,
+  "shouldUseExpressSendFile": false,
+}
+`
+
+exports[`test/http/mapToRes/matchAResponse.js TAP class ResponseFile > js export a metabox object with false responseShouldEscapeBufferRecover 1`] = `
+Object {
+  "resBody": Buffer <0102 03  ...>,
+  "shouldUseExpressSendFile": false,
+}
+`
+
+exports[`test/http/mapToRes/matchAResponse.js TAP class ResponseFile > js export a metabox object with modified buffer object 1`] = `
+Object {
+  "resBody": "{\\"type\\":\\"Buffer\\",\\"data\\":89}",
+  "resHeaders": Object {
+    "Content-Type": "application/json; charset=UTF-8",
+  },
+  "shouldUseExpressSendFile": false,
+}
+`
+
+exports[`test/http/mapToRes/matchAResponse.js TAP class ResponseFile > js export a metabox object with stringify object 1`] = `
+Object {
+  "resBody": "{\\"type\\":\\"Buffer\\",\\"data\\":[1,2,3]}",
+  "resHeaders": Object {
+    "Content-Type": "text/plain; charset=UTF-8",
+  },
+  "shouldUseExpressSendFile": false,
+}
+`
+
+exports[`test/http/mapToRes/matchAResponse.js TAP class ResponseFile > js export buffer 1`] = `
+Object {
+  "resBody": Buffer <6865 6c6c 6f  hello>,
+  "shouldUseExpressSendFile": false,
+}
+`
+
+exports[`test/http/mapToRes/matchAResponse.js TAP class ResponseFile > js export buffer1, non ascii 1`] = `
+Object {
+  "resBody": Buffer <6865 6c6c 6f20 e4bd a0e5 a5bd 20f0 9f91 8b  hello............>,
+  "shouldUseExpressSendFile": false,
+}
+`
+
 exports[`test/http/mapToRes/matchAResponse.js TAP class ResponseFile > js export object 1`] = `
 Object {
   "resBody": "{\\"name\\":\\"小明\\"}",

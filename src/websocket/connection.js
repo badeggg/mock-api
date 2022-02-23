@@ -70,14 +70,14 @@ module.exports = (ws, req, wsResponseFilePath) => {
              * A meta box js result:
              * {
              *      isMetaBox: true,
-             *      responseShouldEscapeBuferRecover: true,
+             *      responseShouldEscapeBufferRecover: true,
              *      response: 'response content',
              *      actionDelay: 500,
              *      action: 'SEND', // 'SEND' | 'PING' | 'PONG' | 'CLOSE'
              *      selfTrigger: {
              *          triggerDelay: 500,
              *          lineageArg: 'what ws-response.js want to heritage',
-             *          lineageArgShouldEscapeBuferRecover: false,
+             *          lineageArgShouldEscapeBufferRecover: false,
              *      } | [{}],
              * }
              */
@@ -98,7 +98,7 @@ module.exports = (ws, req, wsResponseFilePath) => {
             }
             response = jsResult.response;
             if (
-                !jsResult.responseShouldEscapeBuferRecover
+                !jsResult.responseShouldEscapeBufferRecover
                 && _.isPlainObject(response)
                 && response.type === 'Buffer'
                 && _.isArray(response.data)
@@ -123,7 +123,7 @@ module.exports = (ws, req, wsResponseFilePath) => {
                     query: req.query,
                     params: req.params,
                     lineageArg: selfTrigger.lineageArg,
-                    lineageArgShouldEscapeBuferRecover: selfTrigger.lineageArgShouldEscapeBuferRecover,
+                    lineageArgShouldEscapeBufferRecover: selfTrigger.lineageArgShouldEscapeBufferRecover,
                 };
                 let triggerDelay = 0;
                 triggerDelay = parseTimeStr(jsResult.triggerDelay);

@@ -25,7 +25,7 @@ process.on('message', triggerInfo => {
         triggerInfo.currentMessage = Buffer.from(triggerInfo.currentMessage);
     }
     if (
-        !triggerInfo.lineageArgShouldEscapeBuferRecover
+        !triggerInfo.lineageArgShouldEscapeBufferRecover
         && _.isPlainObject(triggerInfo.lineageArg)
         && triggerInfo.lineageArg.type === 'Buffer'
         && _.isArray(triggerInfo.lineageArg.data)

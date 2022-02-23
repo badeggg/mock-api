@@ -7,7 +7,7 @@ const transWindowsPath = require('../../testUtils/transWindowsPath.js');
 const obscureErrorStack = require('../../testUtils/obscureErrorStack.js');
 
 function trimCfg(cfg, prefix) {
-    if (cfg && cfg.resBody)
+    if (cfg && cfg.resBody && typeof cfg.resBody === 'string')
         cfg.resBody = transWindowsPath(
             removePathPrefix(obscureErrorStack(cfg.resBody), prefix)
         );
@@ -34,14 +34,14 @@ tap.test('class ResponseFile', async tap => {
     let fakeServicesDir = tap.testdir({
         'fake-services': {
             'fake-api-path': {
-                plainTextNoExt: 'plain text.',
-                jsonNoExt:      '{"name": "badeggg", "number": 100}',
-                'json.json':    '{"name": "badeggg", "number": 100}',
-                'invalid.json': '{name: "badeggg", "number": 100}',
-                'image.png':    'text here is fine',
-                bigFile:        'text here is fine',
-                bigJsonFile:    'text here is fine',
-                'ok.js':        `
+                plainTextNoExt:     'plain text.',
+                jsonNoExt:          '{"name": "badeggg", "number": 100}',
+                'json.json':        '{"name": "badeggg", "number": 100}',
+                'invalid.json':     '{name: "badeggg", "number": 100}',
+                'image.png':        'text here is fine',
+                bigFile:            'text here is fine',
+                bigJsonFile:        'text here is fine',
+                'ok.js':            `
                     const obj1 = {a: 1};
                     const obj2 = {a: 2};
                     module.exports = function(req) {
@@ -51,51 +51,104 @@ tap.test('class ResponseFile', async tap => {
                         };
                     };
                 `,
-                'retPrimitive.js': `
+                'retPrimitive.js':  `
                     module.exports = function() {
                         return 'string';
                     };
                 `,
-                'retEmpty.js': `
+                'retEmpty.js':      `
                     module.exports = function() {
                         return null;
                     };
                 `,
-                'bad.js':        `
+                'bad.js':           `
                     const a = 1;
                     a = 2
                     module.exports = function() {
                         return a;
                     };
                 `,
-                'big.js':         'text here is fine',
-                'obj.js':         `
+                'big.js':           'text here is fine',
+                'obj.js':           `
                     module.exports = {
                         name: '小明'
                     };
                 `,
-                'undefined.js':    'module.exports = undefined;',
+                'undefined.js':     'module.exports = undefined;',
+                'buffer.js':        'module.exports = Buffer.from("hello")',
+                'buffer1.js':       'module.exports = Buffer.from("hello 你好 👋")',
+                'metaBox.js':       `
+                    module.exports = {
+                        isMetaBox: true,
+                        responseShouldEscapeBufferRecover: true,
+                        response: Buffer.from([1,2,3]),
+                    };
+                `,
+                'metaBox1.js':       `
+                    module.exports = {
+                        isMetaBox: false,
+                        responseShouldEscapeBufferRecover: true,
+                        response: Buffer.from([1,2,3]),
+                    };
+                `,
+                'metaBox2.js':       `
+                    module.exports = {
+                        isMetaBox: true,
+                        responseShouldEscapeBufferRecover: 0,
+                        response: Buffer.from([1,2,3]),
+                    };
+                `,
+                'metaBox3.js':       `
+                    const response = JSON.stringify(Buffer.from([1,2,3]));
+                    module.exports = {
+                        isMetaBox: true,
+                        response,
+                    };
+                `,
+                'metaBox4.js':       `
+                    const response = JSON.parse(JSON.stringify(Buffer.from([1,2,3])));
+                    response.data = 89;
+                    module.exports = {
+                        isMetaBox: true,
+                        response,
+                    };
+                `,
+                'metaBox5.js':       `
+                    const response = JSON.parse(JSON.stringify(Buffer.from([1,2,3])));
+                    module.exports = {
+                        isMetaBox: true,
+                        response,
+                    };
+                `,
             },
         },
     });
     fakeServicesDir = pathUtil.resolve(fakeServicesDir, './fake-services');
-    const basePath       = pathUtil.resolve(fakeServicesDir, './fake-api-path/');
-    const plainTextNoExt = pathUtil.resolve(basePath, 'plainTextNoExt');
-    const jsonNoExt      = pathUtil.resolve(basePath, 'jsonNoExt');
-    const json           = pathUtil.resolve(basePath, 'json.json');
-    const invalidJson    = pathUtil.resolve(basePath, 'invalid.json');
-    const image          = pathUtil.resolve(basePath, 'image.png');
-    const bigFile        = pathUtil.resolve(basePath, 'bigFile');
-    const bigJsonFile    = pathUtil.resolve(basePath, 'bigJsonFile');
-    const notExistFile   = pathUtil.resolve(basePath, 'notExistFile');
-    const isNotFile      = basePath;
-    const okJs           = pathUtil.resolve(basePath, 'ok.js');
-    const retPrimitiveJs = pathUtil.resolve(basePath, 'retPrimitive.js');
-    const retEmptyJs     = pathUtil.resolve(basePath, 'retEmpty.js');
-    const badJs          = pathUtil.resolve(basePath, 'bad.js');
-    const bigJs          = pathUtil.resolve(basePath, 'big.js');
-    const objJs          = pathUtil.resolve(basePath, 'obj.js');
-    const undefinedJs    = pathUtil.resolve(basePath, 'undefined.js');
+    const basePath          = pathUtil.resolve(fakeServicesDir, './fake-api-path/');
+    const plainTextNoExt    = pathUtil.resolve(basePath, 'plainTextNoExt');
+    const jsonNoExt         = pathUtil.resolve(basePath, 'jsonNoExt');
+    const json              = pathUtil.resolve(basePath, 'json.json');
+    const invalidJson       = pathUtil.resolve(basePath, 'invalid.json');
+    const image             = pathUtil.resolve(basePath, 'image.png');
+    const bigFile           = pathUtil.resolve(basePath, 'bigFile');
+    const bigJsonFile       = pathUtil.resolve(basePath, 'bigJsonFile');
+    const notExistFile      = pathUtil.resolve(basePath, 'notExistFile');
+    const isNotFile         = basePath;
+    const okJs              = pathUtil.resolve(basePath, 'ok.js');
+    const retPrimitiveJs    = pathUtil.resolve(basePath, 'retPrimitive.js');
+    const retEmptyJs        = pathUtil.resolve(basePath, 'retEmpty.js');
+    const badJs             = pathUtil.resolve(basePath, 'bad.js');
+    const bigJs             = pathUtil.resolve(basePath, 'big.js');
+    const objJs             = pathUtil.resolve(basePath, 'obj.js');
+    const undefinedJs       = pathUtil.resolve(basePath, 'undefined.js');
+    const bufferJs          = pathUtil.resolve(basePath, 'buffer.js');
+    const buffer1Js         = pathUtil.resolve(basePath, 'buffer1.js');
+    const metaBoxJs         = pathUtil.resolve(basePath, 'metaBox.js');
+    const metaBox1Js        = pathUtil.resolve(basePath, 'metaBox1.js');
+    const metaBox2Js        = pathUtil.resolve(basePath, 'metaBox2.js');
+    const metaBox3Js        = pathUtil.resolve(basePath, 'metaBox3.js');
+    const metaBox4Js        = pathUtil.resolve(basePath, 'metaBox4.js');
+    const metaBox5Js        = pathUtil.resolve(basePath, 'metaBox5.js');
 
     let errorMsgs = [];
     let warningMsgs = [];
@@ -248,6 +301,62 @@ tap.test('class ResponseFile', async tap => {
             fakeServicesDir,
         ),
         'js export undefined'
+    );
+    tap.matchSnapshot(
+        trimCfg(
+            new ResponseFile(bufferJs, true).generateResCfg(),
+            fakeServicesDir,
+        ),
+        'js export buffer'
+    );
+    tap.matchSnapshot(
+        trimCfg(
+            new ResponseFile(buffer1Js, true).generateResCfg(),
+            fakeServicesDir,
+        ),
+        'js export buffer1, non ascii'
+    );
+    tap.matchSnapshot(
+        trimCfg(
+            new ResponseFile(metaBoxJs, true).generateResCfg(),
+            fakeServicesDir,
+        ),
+        'js export a metabox object'
+    );
+    tap.matchSnapshot(
+        trimCfg(
+            new ResponseFile(metaBox1Js, true).generateResCfg(),
+            fakeServicesDir,
+        ),
+        'js export a false metabox object'
+    );
+    tap.matchSnapshot(
+        trimCfg(
+            new ResponseFile(metaBox2Js, true).generateResCfg(),
+            fakeServicesDir,
+        ),
+        'js export a metabox object with false responseShouldEscapeBufferRecover'
+    );
+    tap.matchSnapshot(
+        trimCfg(
+            new ResponseFile(metaBox3Js, true).generateResCfg(),
+            fakeServicesDir,
+        ),
+        'js export a metabox object with stringify object'
+    );
+    tap.matchSnapshot(
+        trimCfg(
+            new ResponseFile(metaBox4Js, true).generateResCfg(),
+            fakeServicesDir,
+        ),
+        'js export a metabox object with modified buffer object'
+    );
+    tap.matchSnapshot(
+        trimCfg(
+            new ResponseFile(metaBox5Js, true).generateResCfg(),
+            fakeServicesDir,
+        ),
+        'js export a metabox object with a buffer object'
     );
     
     tap.equal(new ResponseFile(notExistFile).generateResCfg(), null);
