@@ -7,6 +7,14 @@ const parseTimeStr = require('../utils/parseTimeStr.js');
 
 const MAX_CLOSE_REASON_BYTE_LENGTH = 123;
 
+function toTransable(data) {
+    if (data instanceof Buffer)
+        return data;
+    if (typeof data === 'string')
+        return data;
+    return JSON.stringify(data);
+}
+
 module.exports = (ws, req, wsResponseFilePath) => {
     const prunedReq = {
         complete: req.complete,
@@ -91,6 +99,10 @@ module.exports = (ws, req, wsResponseFilePath) => {
              */
             if (
                 jsResult.action
+                && jsResult.action !== 'send'
+                && jsResult.action !== 'ping' // todo to test
+                && jsResult.action !== 'pong'
+                && jsResult.action !== 'close'
                 && jsResult.action !== 'SEND'
                 && jsResult.action !== 'PING'
                 && jsResult.action !== 'PONG'
@@ -175,33 +187,30 @@ module.exports = (ws, req, wsResponseFilePath) => {
             }
         }
 
-        if (action === 'SEND') {
+        if (action.toUpperCase() === 'SEND') {
             if (response) {
-                if (!(response instanceof Buffer))
-                    response = JSON.stringify(response);
+                response = toTransable(response);
                 if (actionDelay) {
                     setTimeout(() => ws.send(response), actionDelay);
                 } else {
                     ws.send(response);
                 }
             }
-        } else if (action === 'PING') {
-            if (!(response instanceof Buffer))
-                response = JSON.stringify(response);
+        } else if (action.toUpperCase() === 'PING') {
+            response = toTransable(response);
             if (actionDelay) {
                 setTimeout(() => ws.ping(response), actionDelay);
             } else {
                 ws.ping(response);
             }
-        } else if (action === 'PONG') {
-            if (!(response instanceof Buffer))
-                response = JSON.stringify(response);
+        } else if (action.toUpperCase() === 'PONG') {
+            response = toTransable(response);
             if (actionDelay) {
                 setTimeout(() => ws.pong(response), actionDelay);
             } else {
                 ws.pong(response);
             }
-        } else if (action === 'CLOSE') {
+        } else if (action.toUpperCase() === 'CLOSE') {
             let code = response && response.code ? response.code : 1000;
             let reason = response && response.reason ? response.reason : '';
             reason += '';
