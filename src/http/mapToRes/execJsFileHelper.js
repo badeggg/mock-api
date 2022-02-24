@@ -10,9 +10,11 @@
  * js code bother mock-api self.
  *
  * @zhaoxuxu @2021-7-24 write
- * @zhaoxuxu @2022-2-14 update
+ * @zhaoxuxu @2022-2-24 update
  */
 
+const _ = require('lodash');
+const normalizeBinObj = require('../../utils/normalizeBinObj.js');
 const jsFilePath = process.argv[2];
 const req = JSON.parse(process.argv[3]);
 const communicateBoundaryId = process.argv[4];
@@ -33,6 +35,11 @@ try {
     );
     jsResult = errStr;
     meetWithErr = true;
+}
+
+jsResult = normalizeBinObj(jsResult);
+if (_.isPlainObject(jsResult) && jsResult.isMetaBox && jsResult.response) {
+    jsResult.response = normalizeBinObj(jsResult.response);
 }
 
 const ret = JSON.stringify({

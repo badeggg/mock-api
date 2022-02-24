@@ -15,6 +15,10 @@ Array [
 ]
 `
 
+exports[`test/mock3.js TAP response js result 2, export the response > js export empty string 1`] = `
+
+`
+
 exports[`test/mock3.js TAP response js result 2, export the response > js export null 1`] = `
 null
 `
@@ -38,6 +42,10 @@ str
 `
 
 exports[`test/mock3.js TAP response js result 2, export the response > js export symbol 1`] = `
+
+`
+
+exports[`test/mock3.js TAP response js result 2, export the response > js export undefined 1`] = `
 
 `
 

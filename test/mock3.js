@@ -31,6 +31,12 @@ tap.test('response js result 2, export the response', async tap => {
                 'exportObjHasFunc.js': `
                     module.exports = {fn: () => {}};
                 `,
+                'exportEmptyStr.js': `
+                    module.exports = '';
+                `,
+                'exportUndefined.js': `
+                    module.exports = undefined;
+                `,
                 map: `
                     GET ?name=badeggg  -r ./exportNum.js
                     GET ?name=badeggg1 -r ./exportStr.js
@@ -39,6 +45,8 @@ tap.test('response js result 2, export the response', async tap => {
                     GET ?name=badeggg4 -r ./exportNull.js
                     GET ?name=badeggg5 -r ./exportSymbol.js
                     GET ?name=badeggg6 -r ./exportObjHasFunc.js
+                    GET ?name=badeggg7 -r ./exportEmptyStr.js
+                    GET ?name=badeggg8 -r ./exportUndefined.js
                 `,
             },
         },
@@ -111,6 +119,16 @@ tap.test('response js result 2, export the response', async tap => {
             options.params.name = 'badeggg6';
             return axios.request(options);
         })(),
+        (() => {
+            const options = _.cloneDeep(optionsTemplate);
+            options.params.name = 'badeggg7';
+            return axios.request(options);
+        })(),
+        (() => {
+            const options = _.cloneDeep(optionsTemplate);
+            options.params.name = 'badeggg8';
+            return axios.request(options);
+        })(),
     ]);
     tap.matchSnapshot(responses[0].data, 'js export number');
     tap.matchSnapshot(responses[1].data, 'js export string');
@@ -119,6 +137,8 @@ tap.test('response js result 2, export the response', async tap => {
     tap.matchSnapshot(responses[4].data, 'js export null');
     tap.matchSnapshot(responses[5].data, 'js export symbol');
     tap.matchSnapshot(responses[6].data, 'js export objHasFunc');
+    tap.matchSnapshot(responses[7].data, 'js export empty string');
+    tap.matchSnapshot(responses[8].data, 'js export undefined');
 
     tap.matchSnapshot(warningMsgs, 'log warnings');
     tap.matchSnapshot(errorMsgs, 'log errors');
