@@ -490,9 +490,9 @@ tap.test('websocket general cases', async tap => {
         }),
     ]);
 
-    tap.matchSnapshot(infoMsgs, 'log infos');
-    tap.matchSnapshot(warningMsgs, 'log warnings');
-    tap.matchSnapshot(errorMsgs, 'log errors');
+    tap.matchSnapshot(infoMsgs.sort(), 'log infos');
+    tap.matchSnapshot(warningMsgs.sort(), 'log warnings');
+    tap.matchSnapshot(errorMsgs.sort(), 'log errors');
 
     mockServer.close();
 });
