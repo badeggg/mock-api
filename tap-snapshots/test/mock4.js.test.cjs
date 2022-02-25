@@ -5,11 +5,31 @@
  * Make sure to inspect the output below.  Do not ignore changes!
  */
 'use strict'
-exports[`test/mock4.js TAP response js result 3, buffer | log | metaBox > js export buffer 1`] = `
+exports[`test/mock4.js TAP response js result 3, buffer | log | metaBox > js export ArrayBuffer 1`] = `
+Buffer <0000 2842 0000 0000  ..(B....>
+`
+
+exports[`test/mock4.js TAP response js result 3, buffer | log | metaBox > js export Buffer 1`] = `
 你好
 `
 
-exports[`test/mock4.js TAP response js result 3, buffer | log | metaBox > js export buffer with debug log 1`] = `
+exports[`test/mock4.js TAP response js result 3, buffer | log | metaBox > js export Buffer with debug log 1`] = `
+Buffer <0102 03  ...>
+`
+
+exports[`test/mock4.js TAP response js result 3, buffer | log | metaBox > js export DataView 1`] = `
+Buffer <0000 2842 0000 0000  ..(B....>
+`
+
+exports[`test/mock4.js TAP response js result 3, buffer | log | metaBox > js export TypedArray 1`] = `
+Buffer <0000 2842 0000 0000  ..(B....>
+`
+
+exports[`test/mock4.js TAP response js result 3, buffer | log | metaBox > js export func which return Buffer 1`] = `
+你好
+`
+
+exports[`test/mock4.js TAP response js result 3, buffer | log | metaBox > js export metaBox 1`] = `
 Object {
   "data": Array [
     1,
@@ -18,14 +38,6 @@ Object {
   ],
   "type": "Buffer",
 }
-`
-
-exports[`test/mock4.js TAP response js result 3, buffer | log | metaBox > js export func which return buffer 1`] = `
-你好
-`
-
-exports[`test/mock4.js TAP response js result 3, buffer | log | metaBox > js export metaBox 1`] = `
-
 `
 
 exports[`test/mock4.js TAP response js result 3, buffer | log | metaBox > log stdout 1`] = `

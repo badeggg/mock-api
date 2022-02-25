@@ -6,10 +6,10 @@ tap.test('response js result 3, buffer | log | metaBox', async tap => {
     const fakeServicesDir = tap.testdir({
         'fake-services': {
             'fake-api-path': {
-                'buffer.js': `
+                'Buffer.js': `
                     module.exports = Buffer.from('你好');
                 `,
-                'bufferFunc.js': `
+                'BufferFunc.js': `
                     module.exports = () => {
                         return Buffer.from('你好');
                     };
@@ -21,7 +21,22 @@ tap.test('response js result 3, buffer | log | metaBox', async tap => {
                         response: Buffer.from([1,2,3]),
                     };
                 `,
-                'bufferLog.js': `
+                'TypedArray.js': `
+                    const float32 = new Float32Array(2);
+                    float32[0] = 42;
+                    module.exports = float32;
+                `,
+                'ArrayBuffer.js': `
+                    const float32 = new Float32Array(2);
+                    float32[0] = 42;
+                    module.exports = float32.buffer;
+                `,
+                'DataView.js': `
+                    const float32 = new Float32Array(2);
+                    float32[0] = 42;
+                    module.exports = new DataView(float32.buffer);
+                `,
+                'BufferLog.js': `
                     module.exports = () => {
                         console.log('debug log');
                         setTimeout(() => {
@@ -31,10 +46,13 @@ tap.test('response js result 3, buffer | log | metaBox', async tap => {
                     };
                 `,
                 map: `
-                    GET ?name=badeggg  -r ./buffer.js
-                    GET ?name=badeggg1 -r ./bufferFunc.js
+                    GET ?name=badeggg  -r ./Buffer.js
+                    GET ?name=badeggg1 -r ./BufferFunc.js
                     GET ?name=badeggg2 -r ./metaBox.js
-                    GET ?name=badeggg3 -r ./bufferLog.js
+                    GET ?name=badeggg3 -r ./TypedArray.js
+                    GET ?name=badeggg4 -r ./ArrayBuffer.js
+                    GET ?name=badeggg5 -r ./DataView.js
+                    GET ?name=badegggx -r ./BufferLog.js # better at last
                 `,
             },
         },
@@ -89,11 +107,29 @@ tap.test('response js result 3, buffer | log | metaBox', async tap => {
             options.params.name = 'badeggg3';
             return axios.request(options);
         })(),
+        (() => {
+            const options = _.cloneDeep(optionsTemplate);
+            options.params.name = 'badeggg4';
+            return axios.request(options);
+        })(),
+        (() => {
+            const options = _.cloneDeep(optionsTemplate);
+            options.params.name = 'badeggg5';
+            return axios.request(options);
+        })(),
+        (() => {
+            const options = _.cloneDeep(optionsTemplate);
+            options.params.name = 'badegggx';
+            return axios.request(options);
+        })(),
     ]);
-    tap.matchSnapshot(responses[0].data, 'js export buffer');
-    tap.matchSnapshot(responses[1].data, 'js export func which return buffer');
-    tap.matchSnapshot(responses[2].data, 'js export buffer with debug log');
-    tap.matchSnapshot(responses[3].data, 'js export metaBox');
+    tap.matchSnapshot(responses[0].data, 'js export Buffer');
+    tap.matchSnapshot(responses[1].data, 'js export func which return Buffer');
+    tap.matchSnapshot(responses[2].data, 'js export metaBox');
+    tap.matchSnapshot(Buffer.from(responses[3].data), 'js export TypedArray');
+    tap.matchSnapshot(Buffer.from(responses[4].data), 'js export ArrayBuffer');
+    tap.matchSnapshot(Buffer.from(responses[5].data), 'js export DataView');
+    tap.matchSnapshot(Buffer.from(responses[6].data), 'js export Buffer with debug log');
 
     tap.matchSnapshot(stdouts, 'log stdout');
 
