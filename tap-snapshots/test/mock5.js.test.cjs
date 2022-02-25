@@ -5,6 +5,35 @@
  * Make sure to inspect the output below.  Do not ignore changes!
  */
 'use strict'
+exports[`test/mock5.js TAP websocket general cases > isMetaBox 0 1`] = `
+Buffer <6973 4d65 7461 426f 7820 7472 7565  isMetaBox.true>
+`
+
+exports[`test/mock5.js TAP websocket general cases > isMetaBox 1 1`] = `
+Buffer <
+  0000: 7b22 6973 4d65 7461 426f 7822 3a66 616c 7365 2c22 7265 7370 6f6e 7365 223a 2269  {"isMetaBox":false,"response":"i
+  0020: 734d 6574 6142 6f78 2066 616c 7365 227d                                          sMetaBox.false"}
+>
+`
+
+exports[`test/mock5.js TAP websocket general cases > isMetaBox 2 1`] = `
+Buffer <
+  0000: 7b22 6973 4d65 7461 426f 7822 3a30 2c22 7265 7370 6f6e 7365 223a 2269 734d 6574  {"isMetaBox":0,"response":"isMet
+  0020: 6142 6f78 2030 227d                                                              aBox.0"}
+>
+`
+
+exports[`test/mock5.js TAP websocket general cases > isMetaBox 3 1`] = `
+Buffer <
+  0000: 7b22 6973 4d65 7461 426f 7822 3a6e 756c 6c2c 2272 6573 706f 6e73 6522 3a22 6973  {"isMetaBox":null,"response":"is
+  0020: 4d65 7461 426f 7820 6e75 6c6c 227d                                               MetaBox.null"}
+>
+`
+
+exports[`test/mock5.js TAP websocket general cases > isMetaBox 4 1`] = `
+Buffer <6973 4d65 7461 426f 7820 31  isMetaBox.1>
+`
+
 exports[`test/mock5.js TAP websocket general cases > log errors 1`] = `
 Array []
 `
@@ -17,9 +46,9 @@ Array [
 
 exports[`test/mock5.js TAP websocket general cases > log warnings 1`] = `
 Array [
+  "warning: Close reason message must not be greater than 123 bytes. Got reason '旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭1'. Will close with empty reason.",
   "warning: Ping data must not be greater than 125 bytes. Got data '\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000'. Will ping with empty data.",
   "warning: Pong data must not be greater than 125 bytes. Got data '\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000'. Will pong with empty data.",
-  "warning: Close reason message must not be greater than 123 bytes. Got reason '旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭1'. Will close with empty reason.",
 ]
 `
 

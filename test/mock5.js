@@ -251,6 +251,40 @@ tap.test('websocket general cases', async tap => {
                     };
                 `,
             },
+            'isMetaBox': {
+                'ws-response.js': `
+                    let count = 0;
+                    module.exports = () => {
+                        switch (count++) {
+                            case 0:
+                                return {
+                                    isMetaBox: true,
+                                    response: 'isMetaBox true',
+                                };
+                            case 1:
+                                return {
+                                    isMetaBox: false,
+                                    response: 'isMetaBox false',
+                                };
+                            case 2:
+                                return {
+                                    isMetaBox: 0,
+                                    response: 'isMetaBox 0',
+                                };
+                            case 3:
+                                return {
+                                    isMetaBox: null,
+                                    response: 'isMetaBox null',
+                                };
+                            case 4:
+                                return {
+                                    isMetaBox: 1,
+                                    response: 'isMetaBox 1',
+                                };
+                        }
+                    };
+                `,
+            },
         },
     });
     let infoMsgs = [];
@@ -408,6 +442,20 @@ tap.test('websocket general cases', async tap => {
                 tap.equal(code, 3335, 'close code 3335');
                 tap.equal(reason.toString(), '', 'close reason byte length 124');
                 resolve();
+            });
+        }),
+        new Promise(resolve => {
+            const wsc = new WebSocket(mockingLocation + '/isMetaBox');
+            let count = 0;
+            wsc.on('message', (msg) => {
+                tap.matchSnapshot(msg, `isMetaBox ${count}`);
+                count++;
+                if (count <= 4) {
+                    wsc.send();
+                } else {
+                    wsc.close();
+                    resolve();
+                }
             });
         }),
     ]);
