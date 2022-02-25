@@ -53,17 +53,21 @@ module.exports = (ws, req, wsResponseFilePath) => {
         ws.close(3999, `SERVER-UNEXPECTED-CONDITION. ${err.code}`);
     });
 
-    ws.on('message', currentMessage => {
+    ws.on('message', (currentMessage, isBinary) => {
+        if (!isBinary) {
+            currentMessage = currentMessage.toString();
+        }
         const triggerInfo = {
             triggerName: 'WS-MESSAGE',
             currentMessage,
+            currentMessageIsBinary: isBinary,
             request: prunedReq,
             query: req.query,
             params: req.params,
             lineageArg: null,
         };
         if (!helperProcess.killed)
-            helperProcess.send(triggerInfo);
+            helperProcess.send(JSON.stringify(triggerInfo));
     });
 
     helperProcess.on('message', execResult => {
@@ -75,6 +79,7 @@ module.exports = (ws, req, wsResponseFilePath) => {
         let action = 'SEND';
         let response;
         let actionDelay = 0;
+        let insistSendEmpty = false;
         if (meetWithErr) {
             log.error(jsResult);
             response = jsResult;
@@ -86,21 +91,22 @@ module.exports = (ws, req, wsResponseFilePath) => {
              * A meta box js result:
              * {
              *      isMetaBox: true,
-             *      responseShouldEscapeBufferRecover: true,
+             *      responseEscapeBufferRecover: true,
              *      response: 'response content',
+             *      insistSendEmpty: false,
              *      actionDelay: 500,
              *      action: 'SEND', // 'SEND' | 'PING' | 'PONG' | 'CLOSE'
              *      selfTrigger: {
              *          triggerDelay: 500,
              *          lineageArg: 'what ws-response.js want to heritage',
-             *          lineageArgShouldEscapeBufferRecover: false,
+             *          lineageArgEscapeBufferRecover: false,
              *      } | [{}],
              * }
              */
             if (
                 jsResult.action
                 && jsResult.action !== 'send'
-                && jsResult.action !== 'ping' // todo to test
+                && jsResult.action !== 'ping'
                 && jsResult.action !== 'pong'
                 && jsResult.action !== 'close'
                 && jsResult.action !== 'SEND'
@@ -116,15 +122,21 @@ module.exports = (ws, req, wsResponseFilePath) => {
             } else {
                 action = jsResult.action || 'SEND';
             }
+
             response = jsResult.response;
             if (
-                !jsResult.responseShouldEscapeBufferRecover
+                !jsResult.responseEscapeBufferRecover
                 && _.isPlainObject(response)
                 && response.type === 'Buffer'
                 && _.isArray(response.data)
             ) {
                 response = Buffer.from(response.data);
             }
+
+            insistSendEmpty = jsResult.insistSendEmpty === undefined
+                ? false
+                : Boolean(insistSendEmpty);
+
             if (jsResult.actionDelay) {
                 actionDelay = parseTimeStr(jsResult.actionDelay);
                 if (actionDelay === false) {
@@ -143,7 +155,7 @@ module.exports = (ws, req, wsResponseFilePath) => {
                     query: req.query,
                     params: req.params,
                     lineageArg: selfTrigger.lineageArg,
-                    lineageArgShouldEscapeBufferRecover: selfTrigger.lineageArgShouldEscapeBufferRecover,
+                    lineageArgEscapeBufferRecover: selfTrigger.lineageArgEscapeBufferRecover,
                 };
                 let triggerDelay = 0;
                 triggerDelay = parseTimeStr(jsResult.triggerDelay);
@@ -157,11 +169,11 @@ module.exports = (ws, req, wsResponseFilePath) => {
                 if (triggerDelay) {
                     setTimeout(() => {
                         if (!helperProcess.killed)
-                            helperProcess.send(triggerInfo);
+                            helperProcess.send(JSON.stringify(triggerInfo));
                     }, triggerDelay);
                 } else {
                     if (!helperProcess.killed)
-                        helperProcess.send(triggerInfo);
+                        helperProcess.send(JSON.stringify(triggerInfo));
                 }
             }
             if (jsResult.selfTrigger) {
@@ -188,7 +200,7 @@ module.exports = (ws, req, wsResponseFilePath) => {
         }
 
         if (action.toUpperCase() === 'SEND') {
-            if (response) {
+            if (response || insistSendEmpty) {
                 response = toTransable(response);
                 if (actionDelay) {
                     setTimeout(() => ws.send(response), actionDelay);

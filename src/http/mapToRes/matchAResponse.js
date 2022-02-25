@@ -168,13 +168,13 @@ class ResponseFile {
                  * A meta box js result:
                  * {
                  *      isMetaBox: true,
-                 *      responseShouldEscapeBufferRecover: true,
+                 *      responseEscapeBufferRecover: true,
                  *      response: 'response content',
                  * }
                  */
                 response = jsResult.response;
                 if (
-                    !jsResult.responseShouldEscapeBufferRecover
+                    !jsResult.responseEscapeBufferRecover
                     && _.isPlainObject(response)
                     && response.type === 'Buffer'
                     && _.isArray(response.data)

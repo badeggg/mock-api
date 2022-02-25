@@ -17,7 +17,7 @@ tap.test('response js result 3, buffer | log | metaBox', async tap => {
                 'metaBox.js': `
                     module.exports = {
                         isMetaBox: true,
-                        responseShouldEscapeBufferRecover: true,
+                        responseEscapeBufferRecover: true,
                         response: Buffer.from([1,2,3]),
                     };
                 `,

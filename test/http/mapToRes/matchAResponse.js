@@ -81,21 +81,21 @@ tap.test('class ResponseFile', async tap => {
                 'metaBox.js':       `
                     module.exports = {
                         isMetaBox: true,
-                        responseShouldEscapeBufferRecover: true,
+                        responseEscapeBufferRecover: true,
                         response: Buffer.from([1,2,3]),
                     };
                 `,
                 'metaBox1.js':       `
                     module.exports = {
                         isMetaBox: false,
-                        responseShouldEscapeBufferRecover: true,
+                        responseEscapeBufferRecover: true,
                         response: Buffer.from([1,2,3]),
                     };
                 `,
                 'metaBox2.js':       `
                     module.exports = {
                         isMetaBox: true,
-                        responseShouldEscapeBufferRecover: 0,
+                        responseEscapeBufferRecover: 0,
                         response: Buffer.from([1,2,3]),
                     };
                 `,
@@ -353,7 +353,7 @@ tap.test('class ResponseFile', async tap => {
             new ResponseFile(metaBox2Js, true).generateResCfg(),
             fakeServicesDir,
         ),
-        'js export a metabox object with false responseShouldEscapeBufferRecover'
+        'js export a metabox object with false responseEscapeBufferRecover'
     );
     tap.matchSnapshot(
         trimCfg(

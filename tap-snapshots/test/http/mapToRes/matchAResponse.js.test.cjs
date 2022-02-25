@@ -193,7 +193,7 @@ Object {
 
 exports[`test/http/mapToRes/matchAResponse.js TAP class ResponseFile > js export a false metabox object 1`] = `
 Object {
-  "resBody": "{\\"isMetaBox\\":false,\\"responseShouldEscapeBufferRecover\\":true,\\"response\\":{\\"type\\":\\"Buffer\\",\\"data\\":[1,2,3]}}",
+  "resBody": "{\\"isMetaBox\\":false,\\"responseEscapeBufferRecover\\":true,\\"response\\":{\\"type\\":\\"Buffer\\",\\"data\\":[1,2,3]}}",
   "resHeaders": Object {
     "Content-Type": "application/json; charset=UTF-8",
   },
@@ -218,7 +218,7 @@ Object {
 }
 `
 
-exports[`test/http/mapToRes/matchAResponse.js TAP class ResponseFile > js export a metabox object with false responseShouldEscapeBufferRecover 1`] = `
+exports[`test/http/mapToRes/matchAResponse.js TAP class ResponseFile > js export a metabox object with false responseEscapeBufferRecover 1`] = `
 Object {
   "resBody": Buffer <0102 03  ...>,
   "shouldUseExpressSendFile": false,

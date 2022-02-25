@@ -22,11 +22,12 @@ const jsFilePath = process.argv[2];
 process.on('message', triggerInfo => {
     let jsResult;
     let meetWithErr = false;
-    if (triggerInfo.currentMessage) { // currentMessage must be a 'Buffer' if exist
+    triggerInfo = JSON.parse(triggerInfo);
+    if (triggerInfo.currentMessageIsBinary) {
         triggerInfo.currentMessage = Buffer.from(triggerInfo.currentMessage);
     }
     if (
-        !triggerInfo.lineageArgShouldEscapeBufferRecover
+        !triggerInfo.lineageArgEscapeBufferRecover
         && _.isPlainObject(triggerInfo.lineageArg)
         && triggerInfo.lineageArg.type === 'Buffer'
         && _.isArray(triggerInfo.lineageArg.data)

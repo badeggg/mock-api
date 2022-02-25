@@ -18,3 +18,67 @@ Array [
 exports[`test/mock5.js TAP websocket general cases > log warnings 1`] = `
 Array []
 `
+
+exports[`test/mock5.js TAP websocket general cases > ping empty msg 0 1`] = `
+Buffer <30  0>
+`
+
+exports[`test/mock5.js TAP websocket general cases > ping empty msg 1 1`] = `
+Buffer <6e75 6c6c  null>
+`
+
+exports[`test/mock5.js TAP websocket general cases > ping empty msg 2 1`] = `
+Buffer <>
+`
+
+exports[`test/mock5.js TAP websocket general cases > ping empty msg 3 1`] = `
+Buffer <6661 6c73 65  false>
+`
+
+exports[`test/mock5.js TAP websocket general cases > ping empty msg 4 1`] = `
+Buffer <>
+`
+
+exports[`test/mock5.js TAP websocket general cases > ping empty msg 5 1`] = `
+Buffer <>
+`
+
+exports[`test/mock5.js TAP websocket general cases > ping empty msg 6 1`] = `
+Buffer <>
+`
+
+exports[`test/mock5.js TAP websocket general cases > ping empty msg 7 1`] = `
+Buffer <>
+`
+
+exports[`test/mock5.js TAP websocket general cases > pong empty msg 0 1`] = `
+Buffer <30  0>
+`
+
+exports[`test/mock5.js TAP websocket general cases > pong empty msg 1 1`] = `
+Buffer <6e75 6c6c  null>
+`
+
+exports[`test/mock5.js TAP websocket general cases > pong empty msg 2 1`] = `
+Buffer <>
+`
+
+exports[`test/mock5.js TAP websocket general cases > pong empty msg 3 1`] = `
+Buffer <6661 6c73 65  false>
+`
+
+exports[`test/mock5.js TAP websocket general cases > pong empty msg 4 1`] = `
+Buffer <>
+`
+
+exports[`test/mock5.js TAP websocket general cases > pong empty msg 5 1`] = `
+Buffer <>
+`
+
+exports[`test/mock5.js TAP websocket general cases > pong empty msg 6 1`] = `
+Buffer <>
+`
+
+exports[`test/mock5.js TAP websocket general cases > pong empty msg 7 1`] = `
+Buffer <>
+`
