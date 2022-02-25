@@ -285,6 +285,22 @@ tap.test('websocket general cases', async tap => {
                     };
                 `,
             },
+            'insistSendEmpty': {
+                'ws-response.js': `
+                    module.exports = (triggerInfo) => {
+                        if (triggerInfo.currentMessage === 'get send empty') {
+                            return null;
+                        }
+                        if (triggerInfo.currentMessage === 'get send insist empty') {
+                            return {
+                                isMetaBox: true,
+                                insistSendEmpty: true,
+                                response: undefined,
+                            };
+                        }
+                    };
+                `,
+            },
         },
     });
     let infoMsgs = [];
@@ -456,6 +472,20 @@ tap.test('websocket general cases', async tap => {
                     wsc.close();
                     resolve();
                 }
+            });
+        }),
+        new Promise(resolve => {
+            const wsc = new WebSocket(mockingLocation + '/insistSendEmpty');
+            wsc.on('open', () => {
+                wsc.send('get send insist empty');
+            });
+            wsc.on('message', (msg) => {
+                tap.equal(msg.toString(), '', 'insistSendEmpty');
+                wsc.send();
+                setTimeout(() => {
+                    wsc.close();
+                    resolve();
+                }, 500);
             });
         }),
     ]);

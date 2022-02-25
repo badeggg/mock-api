@@ -136,7 +136,7 @@ module.exports = (ws, req, wsResponseFilePath) => {
 
             insistSendEmpty = jsResult.insistSendEmpty === undefined
                 ? false
-                : Boolean(insistSendEmpty);
+                : Boolean(jsResult.insistSendEmpty);
 
             if (jsResult.actionDelay) {
                 actionDelay = parseTimeStr(jsResult.actionDelay);
