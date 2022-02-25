@@ -16,37 +16,29 @@ tap.test('response js result 2, export the response', async tap => {
                 'exportStr.js': `
                     module.exports = 'str';
                 `,
-                'exportObj.js': `
-                    module.exports = {a: 12};
-                `,
-                'exportArr.js': `
-                    module.exports = [1, null, {a: 56}];
-                `,
                 'exportNull.js': `
                     module.exports = null;
                 `,
                 'exportSymbol.js': `
                     module.exports = Symbol();
                 `,
+                'exportObj.js': `
+                    module.exports = {a: 12};
+                `,
+                'exportArr.js': `
+                    module.exports = [1, null, {a: 56}];
+                `,
                 'exportObjHasFunc.js': `
                     module.exports = {fn: () => {}};
-                `,
-                'exportEmptyStr.js': `
-                    module.exports = '';
-                `,
-                'exportUndefined.js': `
-                    module.exports = undefined;
                 `,
                 map: `
                     GET ?name=badeggg  -r ./exportNum.js
                     GET ?name=badeggg1 -r ./exportStr.js
-                    GET ?name=badeggg2 -r ./exportObj.js
-                    GET ?name=badeggg3 -r ./exportArr.js
-                    GET ?name=badeggg4 -r ./exportNull.js
-                    GET ?name=badeggg5 -r ./exportSymbol.js
+                    GET ?name=badeggg2 -r ./exportNull.js
+                    GET ?name=badeggg3 -r ./exportSymbol.js
+                    GET ?name=badeggg4 -r ./exportObj.js
+                    GET ?name=badeggg5 -r ./exportArr.js
                     GET ?name=badeggg6 -r ./exportObjHasFunc.js
-                    GET ?name=badeggg7 -r ./exportEmptyStr.js
-                    GET ?name=badeggg8 -r ./exportUndefined.js
                 `,
             },
         },
@@ -119,26 +111,14 @@ tap.test('response js result 2, export the response', async tap => {
             options.params.name = 'badeggg6';
             return axios.request(options);
         })(),
-        (() => {
-            const options = _.cloneDeep(optionsTemplate);
-            options.params.name = 'badeggg7';
-            return axios.request(options);
-        })(),
-        (() => {
-            const options = _.cloneDeep(optionsTemplate);
-            options.params.name = 'badeggg8';
-            return axios.request(options);
-        })(),
     ]);
-    tap.matchSnapshot(responses[0].data, 'js export number');
-    tap.matchSnapshot(responses[1].data, 'js export string');
-    tap.matchSnapshot(responses[2].data, 'js export object');
-    tap.matchSnapshot(responses[3].data, 'js export array');
-    tap.matchSnapshot(responses[4].data, 'js export null');
-    tap.matchSnapshot(responses[5].data, 'js export symbol');
+    tap.equal(responses[0].data, 1,     'js export number');
+    tap.equal(responses[1].data, 'str', 'js export string');
+    tap.equal(responses[2].data, null,  'js export null');
+    tap.equal(responses[3].data, '',    'js export symbol');
+    tap.matchSnapshot(responses[4].data, 'js export object');
+    tap.matchSnapshot(responses[5].data, 'js export array');
     tap.matchSnapshot(responses[6].data, 'js export objHasFunc');
-    tap.matchSnapshot(responses[7].data, 'js export empty string');
-    tap.matchSnapshot(responses[8].data, 'js export undefined');
 
     tap.matchSnapshot(warningMsgs, 'log warnings');
     tap.matchSnapshot(errorMsgs, 'log errors');

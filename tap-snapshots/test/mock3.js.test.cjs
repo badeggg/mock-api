@@ -15,18 +15,6 @@ Array [
 ]
 `
 
-exports[`test/mock3.js TAP response js result 2, export the response > js export empty string 1`] = `
-
-`
-
-exports[`test/mock3.js TAP response js result 2, export the response > js export null 1`] = `
-null
-`
-
-exports[`test/mock3.js TAP response js result 2, export the response > js export number 1`] = `
-1
-`
-
 exports[`test/mock3.js TAP response js result 2, export the response > js export objHasFunc 1`] = `
 Object {}
 `
@@ -35,18 +23,6 @@ exports[`test/mock3.js TAP response js result 2, export the response > js export
 Object {
   "a": 12,
 }
-`
-
-exports[`test/mock3.js TAP response js result 2, export the response > js export string 1`] = `
-str
-`
-
-exports[`test/mock3.js TAP response js result 2, export the response > js export symbol 1`] = `
-
-`
-
-exports[`test/mock3.js TAP response js result 2, export the response > js export undefined 1`] = `
-
 `
 
 exports[`test/mock3.js TAP response js result 2, export the response > log errors 1`] = `

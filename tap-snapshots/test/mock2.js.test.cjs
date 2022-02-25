@@ -12,10 +12,6 @@ TypeError: Assignment to constant variable.
     at ...
 `
 
-exports[`test/mock2.js TAP response js result 1, export a function > function.js result 1`] = `
-
-`
-
 exports[`test/mock2.js TAP response js result 1, export a function > log errors 1`] = `
 Array [
   String(

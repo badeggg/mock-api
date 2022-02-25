@@ -58,6 +58,11 @@ tap.test('response js result 1, export a function', async tap => {
                         return null;
                     };
                 `,
+                'emptyString.js': `
+                    module.exports = () => {
+                        return '';
+                    };
+                `,
                 'function.js': `
                     module.exports = () => {
                         return () => {console.log('foo')};
@@ -69,7 +74,8 @@ tap.test('response js result 1, export a function', async tap => {
                     GET ?name=badeggg2  -r ./string.js
                     GET ?name=badeggg3  -r ./number.js
                     GET ?name=badeggg4  -r ./null.js
-                    GET ?name=badeggg5  -r ./function.js
+                    GET ?name=badeggg5  -r ./emptyString.js
+                    GET ?name=badeggg6  -r ./function.js
                     GET ?name=badegggXX -r ./bad.js
                 `,
             },
@@ -139,20 +145,26 @@ tap.test('response js result 1, export a function', async tap => {
         })(),
         (() => {
             const options = _.cloneDeep(optionsTemplate);
+            options.params.name = 'badeggg6';
+            return axios.request(options);
+        })(),
+        (() => {
+            const options = _.cloneDeep(optionsTemplate);
             options.params.name = 'badegggXX';
             return axios.request(options);
         })(),
     ]);
-    tap.matchSnapshot(responses[0].data, 'ok.js result');
-    tap.equal(responses[1].data, '');
-    tap.equal(responses[2].data, 'string');
-    tap.equal(responses[3].data, 123);
-    tap.equal(responses[4].data, null);
-    tap.matchSnapshot(responses[5].data, 'function.js result');
+    tap.matchSnapshot(responses[0].data,    'ok.js result');
+    tap.equal(responses[1].data, '',        'return undefined');
+    tap.equal(responses[2].data, 'string',  'return a string');
+    tap.equal(responses[3].data, 123,       'return a number');
+    tap.equal(responses[4].data, null,      'return null');
+    tap.equal(responses[5].data, '',        'return empty string');
+    tap.equal(responses[6].data, '',        'return a function');
     tap.matchSnapshot(
         transWindowsPath(
             removePathPrefix(
-                obscureErrorStack(responses[6].data),
+                obscureErrorStack(responses[7].data),
                 pathUtil.resolve(fakeServicesDir, '../../')
             )
         ),
