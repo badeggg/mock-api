@@ -185,6 +185,72 @@ tap.test('websocket general cases', async tap => {
                     };
                 `,
             },
+            'actionByteLengthLimit': {
+                'ws-response.js': `
+                    let count = 0;
+                    module.exports = () => {
+                        switch (count++) {
+                            case 0:
+                                return {
+                                    isMetaBox: true,
+                                    action: 'ping',
+                                    response: new ArrayBuffer(125),
+                                };
+                            case 1:
+                                return {
+                                    isMetaBox: true,
+                                    action: 'ping',
+                                    response: new ArrayBuffer(126),
+                                };
+                            case 2:
+                                return {
+                                    isMetaBox: true,
+                                    action: 'pong',
+                                    response: new ArrayBuffer(125),
+                                };
+                            case 3:
+                                return {
+                                    isMetaBox: true,
+                                    action: 'pong',
+                                    response: new ArrayBuffer(126),
+                                };
+                            case 4:
+                                return {
+                                    isMetaBox: true,
+                                    action: 'send',
+                                    response: new ArrayBuffer(126),
+                                };
+                            case 5:
+                                return {
+                                    isMetaBox: true,
+                                    action: 'send',
+                                    response: new ArrayBuffer(1 * 1024 * 1024),
+                                };
+                            case 6:
+                                return {
+                                    isMetaBox: true,
+                                    action: 'close',
+                                    response: {
+                                        code: 3334,
+                                        reason: '旭'.repeat(41),
+                                    },
+                                };
+                        }
+                    };
+                `,
+            },
+            'closeByteLengthLimit': {
+                'ws-response.js': `
+                    module.exports = {
+                        isMetaBox: true,
+                        action: 'CLOSE',
+                        response: {
+                            code: 3335,
+                            reason: '旭'.repeat(41) + '1',
+                        },
+                    };
+                `,
+            },
         },
     });
     let infoMsgs = [];
@@ -267,7 +333,7 @@ tap.test('websocket general cases', async tap => {
             });
             wsc.on('close', (code, reason) => {
                 tap.equal(count, 7);
-                tap.equal(code, 3333);
+                tap.equal(code, 3333, 'close code 3333');
                 tap.equal(reason.toString(), 'close');
                 resolve();
             });
@@ -283,7 +349,7 @@ tap.test('websocket general cases', async tap => {
                     wsc.send();
                 } else {
                     wsc.close();
-                    resolve()
+                    resolve();
                 }
             });
         }),
@@ -298,8 +364,50 @@ tap.test('websocket general cases', async tap => {
                     wsc.send();
                 } else {
                     wsc.close();
-                    resolve()
+                    resolve();
                 }
+            });
+        }),
+        new Promise(resolve => {
+            const wsc = new WebSocket(mockingLocation + '/actionByteLengthLimit');
+            let count = 0;
+            wsc.on('ping', (msg) => {
+                if (count === 0)
+                    tap.equal(msg.byteLength, 125, 'ping byte length 125');
+                if (count === 1)
+                    tap.equal(msg.byteLength, 0, 'ping byte length 126');
+                wsc.send();
+                count++;
+            });
+            wsc.on('pong', (msg) => {
+                if (count === 2)
+                    tap.equal(msg.byteLength, 125, 'pong byte length 125');
+                if (count === 3)
+                    tap.equal(msg.byteLength, 0, 'pong byte length 126');
+                wsc.send();
+                count++;
+            });
+            wsc.on('message', (msg) => {
+                if (count === 4)
+                    tap.equal(msg.byteLength, 126, 'send byte length 126');
+                if (count === 5)
+                    tap.equal(msg.byteLength, 1 * 1024 * 1024, 'send byte length 1m');
+                wsc.send();
+                count++;
+            });
+            wsc.on('close', (code, reason) => {
+                tap.equal(count, 6);
+                tap.equal(code, 3334, 'close code 3334');
+                tap.equal(reason.toString(), '旭'.repeat(41), 'close reason byte length 123');
+                resolve();
+            });
+        }),
+        new Promise(resolve => {
+            const wsc = new WebSocket(mockingLocation + '/closeByteLengthLimit');
+            wsc.on('close', (code, reason) => {
+                tap.equal(code, 3335, 'close code 3335');
+                tap.equal(reason.toString(), '', 'close reason byte length 124');
+                resolve();
             });
         }),
     ]);

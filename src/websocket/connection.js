@@ -6,6 +6,7 @@ const isValidWsStatusCode = require('../utils/isValidWsStatusCode.js');
 const parseTimeStr = require('../utils/parseTimeStr.js');
 
 const MAX_CLOSE_REASON_BYTE_LENGTH = 123;
+const MAX_PING_PONG_DATA_BYTE_LENGTH = 125;
 
 function toTransable(data) {
     if (data instanceof Buffer)
@@ -210,6 +211,13 @@ module.exports = (ws, req, wsResponseFilePath) => {
             }
         } else if (action.toUpperCase() === 'PING') {
             response = toTransable(response);
+            if (response && Buffer.from(response).byteLength > MAX_PING_PONG_DATA_BYTE_LENGTH) {
+                log.warn('Ping data must not be greater than '
+                    + `${MAX_PING_PONG_DATA_BYTE_LENGTH} bytes. `
+                    + `Got data '${response}'. `
+                    + 'Will ping with empty data.');
+                response = '';
+            }
             if (actionDelay) {
                 setTimeout(() => ws.ping(response), actionDelay);
             } else {
@@ -217,6 +225,13 @@ module.exports = (ws, req, wsResponseFilePath) => {
             }
         } else if (action.toUpperCase() === 'PONG') {
             response = toTransable(response);
+            if (response && Buffer.from(response).byteLength > MAX_PING_PONG_DATA_BYTE_LENGTH) {
+                log.warn('Pong data must not be greater than '
+                    + `${MAX_PING_PONG_DATA_BYTE_LENGTH} bytes. `
+                    + `Got data '${response}'. `
+                    + 'Will pong with empty data.');
+                response = '';
+            }
             if (actionDelay) {
                 setTimeout(() => ws.pong(response), actionDelay);
             } else {
@@ -225,14 +240,15 @@ module.exports = (ws, req, wsResponseFilePath) => {
         } else if (action.toUpperCase() === 'CLOSE') {
             let code = response && response.code ? response.code : 1000;
             let reason = response && response.reason ? response.reason : '';
-            reason += '';
+            reason = toTransable(reason);
             if (typeof code !== 'number' || !isValidWsStatusCode(code)) {
                 log.error(`Invalid websocket close code number '${code}'. `
                     + 'Will close with code 1000.');
                 code = 1000;
             }
-            if (Buffer.from(reason).byteLength > MAX_CLOSE_REASON_BYTE_LENGTH) {
-                log.warn('Close reason message must not be greater than 123 bytes. '
+            if (response && Buffer.from(reason).byteLength > MAX_CLOSE_REASON_BYTE_LENGTH) {
+                log.warn('Close reason message must not be greater than '
+                    + `${MAX_CLOSE_REASON_BYTE_LENGTH} bytes. `
                     + `Got reason '${reason}'. `
                     + 'Will close with empty reason.');
                 reason = '';
