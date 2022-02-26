@@ -1,3 +1,4 @@
+const pathUtil = require('path');
 const tap = require('tap');
 const WebSocket = require('ws');
 const transWindowsPath = require('./testUtils/transWindowsPath.js');
@@ -301,6 +302,13 @@ tap.test('websocket general cases', async tap => {
                     };
                 `,
             },
+            'badJs': {
+                'ws-response.js': `
+                    const a = 90;
+                    a = 99;
+                    module.exports = a;
+                `,
+            },
         },
     });
     let infoMsgs = [];
@@ -313,18 +321,24 @@ tap.test('websocket general cases', async tap => {
                 + transWindowsPath(
                     removePathPrefix(
                         removeEscapeSGR(msg),
-                        fakeServicesDir
+                        pathUtil.resolve(fakeServicesDir, '../../')
                     )
                 )
             ),
             warn: (msg) => warningMsgs.push('warning: '
                 + transWindowsPath(
-                    removePathPrefix(msg, fakeServicesDir)
+                    removePathPrefix(
+                        msg,
+                        pathUtil.resolve(fakeServicesDir, '../../')
+                    )
                 )
             ),
             error: (msg) => warningMsgs.push('error: '
                 + transWindowsPath(
-                    removePathPrefix(msg, fakeServicesDir)
+                    removePathPrefix(
+                        msg,
+                        pathUtil.resolve(fakeServicesDir, '../../')
+                    )
                 )
             ),
         },
@@ -486,6 +500,31 @@ tap.test('websocket general cases', async tap => {
                     wsc.close();
                     resolve();
                 }, 500);
+            });
+        }),
+        new Promise(resolve => {
+            const wsc = new WebSocket(mockingLocation + '/badJs');
+            wsc.on('message', (msg, isBin) => {
+                tap.equal(isBin, false, 'JS-SCRIPT-ERROR message is text string');
+                tap.match(msg.toString(), 'Failed to execute js script',
+                    'JS-SCRIPT-ERROR message string brief');
+                tap.matchSnapshot(
+                    transWindowsPath(
+                        removePathPrefix(
+                            msg.toString(),
+                            pathUtil.resolve(fakeServicesDir, '../../')
+                        )
+                    ),
+                    'JS-SCRIPT-ERROR detail'
+                );
+            });
+            wsc.on('close', (code, reason) => {
+                tap.equal(code, 3998, 'JS-SCRIPT-ERROR close code');
+                tap.equal(reason.toString(),
+                    'JS-SCRIPT-ERROR. Failed to execute ./ws-response.js.');
+                tap.equal(reason instanceof Buffer, true, 'reason is Buffer type');
+                wsc.close();
+                resolve();
             });
         }),
     ]);

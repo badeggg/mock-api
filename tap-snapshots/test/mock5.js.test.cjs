@@ -5,6 +5,21 @@
  * Make sure to inspect the output below.  Do not ignore changes!
  */
 'use strict'
+exports[`test/mock5.js TAP websocket general cases > JS-SCRIPT-ERROR detail 1`] = `
+Failed to execute js script '/test/tap-testdir-mock5-websocket-general-cases/fake-services/badJs/ws-response.js'.
+TypeError: Assignment to constant variable.
+    at Object.<anonymous> (/test/tap-testdir-mock5-websocket-general-cases/fake-services/badJs/ws-response.js:3:23)
+    at Module._compile (node:internal/modules/cjs/loader:1101:14)
+    at Module.replacementCompile (/node_modules/append-transform/index.js:60:13)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1153:10)
+    at Object.<anonymous> (/node_modules/append-transform/index.js:64:4)
+    at Module.load (node:internal/modules/cjs/loader:981:32)
+    at Function.Module._load (node:internal/modules/cjs/loader:822:12)
+    at Module.require (node:internal/modules/cjs/loader:1005:19)
+    at require (node:internal/modules/cjs/helpers:102:18)
+    at process.<anonymous> (/src/websocket/execJsFileHelperWs.js:16:1234)
+`
+
 exports[`test/mock5.js TAP websocket general cases > isMetaBox 0 1`] = `
 Buffer <6973 4d65 7461 426f 7820 7472 7565  isMetaBox.true>
 `
@@ -46,6 +61,20 @@ Array [
 
 exports[`test/mock5.js TAP websocket general cases > log warnings 1`] = `
 Array [
+  String(
+    error: Failed to execute js script '/test/tap-testdir-mock5-websocket-general-cases/fake-services/badJs/ws-response.js'.
+    TypeError: Assignment to constant variable.
+        at Object.<anonymous> (/test/tap-testdir-mock5-websocket-general-cases/fake-services/badJs/ws-response.js:3:23)
+        at Module._compile (node:internal/modules/cjs/loader:1101:14)
+        at Module.replacementCompile (/node_modules/append-transform/index.js:60:13)
+        at Module._extensions..js (node:internal/modules/cjs/loader:1153:10)
+        at Object.<anonymous> (/node_modules/append-transform/index.js:64:4)
+        at Module.load (node:internal/modules/cjs/loader:981:32)
+        at Function.Module._load (node:internal/modules/cjs/loader:822:12)
+        at Module.require (node:internal/modules/cjs/loader:1005:19)
+        at require (node:internal/modules/cjs/helpers:102:18)
+        at process.<anonymous> (/src/websocket/execJsFileHelperWs.js:16:1234)
+  ),
   "warning: Close reason message must not be greater than 123 bytes. Got reason '旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭旭1'. Will close with empty reason.",
   "warning: Ping data must not be greater than 125 bytes. Got data '\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000'. Will ping with empty data.",
   "warning: Pong data must not be greater than 125 bytes. Got data '\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000\\u0000'. Will pong with empty data.",
