@@ -62,6 +62,12 @@ tap.test('websocket general cases', async tap => {
                             case 7:
                                 return {
                                     isMetaBox: true,
+                                    action: 'senD',
+                                    response: 'bad action',
+                                };
+                            case 8:
+                                return {
+                                    isMetaBox: true,
                                     action: 'close',
                                     response: {
                                         code: 3333,
@@ -376,6 +382,8 @@ tap.test('websocket general cases', async tap => {
                     tap.equal(msg.toString(), 'send');
                 if (count === 2)
                     tap.equal(msg.toString(), 'SEND');
+                if (count === 7)
+                    tap.equal(msg.toString(), 'bad action');
                 wsc.send();
                 count++;
             });
@@ -396,7 +404,7 @@ tap.test('websocket general cases', async tap => {
                 count++;
             });
             wsc.on('close', (code, reason) => {
-                tap.equal(count, 7);
+                tap.equal(count, 8);
                 tap.equal(code, 3333, 'close code 3333');
                 tap.equal(reason.toString(), 'close');
                 resolve();

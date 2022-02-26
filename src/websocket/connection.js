@@ -117,7 +117,7 @@ module.exports = (ws, req, wsResponseFilePath) => {
             ) {
                 log.error(`Bad action property result '${jsResult.action}' `
                     + 'when trigger ./ws-response.js '
-                    + `with ${JSON.stringify(jsResult.triggerInfo)}. `
+                    + `with triggerInfo '${JSON.stringify(jsResult.triggerInfo)}'. `
                     + 'Will use default action "SEND".');
                 action = 'SEND';
             } else {
@@ -143,7 +143,7 @@ module.exports = (ws, req, wsResponseFilePath) => {
                 if (actionDelay === false) {
                     log.error(`Bad actionDelay time property result '${jsResult.actionDelay}' `
                         + 'when trigger ./ws-response.js '
-                        + `with ${JSON.stringify(jsResult.triggerInfo)}. `
+                        + `with triggerInfo '${JSON.stringify(jsResult.triggerInfo)}'. `
                         + 'Will not delay action.');
                 }
             }
@@ -164,7 +164,7 @@ module.exports = (ws, req, wsResponseFilePath) => {
                     log.error(
                         `Bad self triggerDelay time property '${selfTrigger.triggerDelay}' `
                         + 'when trigger ./ws-response.js '
-                        + `with ${JSON.stringify(jsResult.triggerInfo)}. `
+                        + `with triggerInfo '${JSON.stringify(jsResult.triggerInfo)}'. `
                         + 'Will not delay self triggering.');
                 }
                 if (triggerDelay) {
@@ -185,7 +185,7 @@ module.exports = (ws, req, wsResponseFilePath) => {
                 } else {
                     log.error(`Bad selfTrigger property result '${jsResult.selfTrigger}' `
                         + 'when trigger ./ws-response.js '
-                        + `with ${JSON.stringify(jsResult.triggerInfo)}. `
+                        + `with triggerInfo '${JSON.stringify(jsResult.triggerInfo)}'. `
                         + 'Refer doc for details.'); // todo
                 }
             }
