@@ -159,13 +159,12 @@ module.exports = (ws, req, wsResponseFilePath) => {
                     lineageArgEscapeBufferRecover: selfTrigger.lineageArgEscapeBufferRecover,
                 };
                 let triggerDelay = 0;
-                if (jsResult.triggerDelay) {
-                    triggerDelay = parseTimeStr(jsResult.triggerDelay);
+                if (selfTrigger.triggerDelay) {
+                    triggerDelay = parseTimeStr(selfTrigger.triggerDelay);
                     if (triggerDelay === false) {
                         log.error(
                             `Bad self triggerDelay time property '${selfTrigger.triggerDelay}' `
-                            + 'when trigger ./ws-response.js '
-                            + `with triggerInfo '${JSON.stringify(jsResult.triggerInfo)}'. `
+                            + 'when trigger ./ws-response.js. '
                             + 'Will not delay self triggering.');
                     }
                 }

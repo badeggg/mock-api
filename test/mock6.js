@@ -59,6 +59,47 @@ tap.test('websocket self trigger cases', async tap => {
                     };
                 `,
             },
+            'selfTriggerDelay': {
+                'ws-response.js': `
+                    module.exports = (triggerInfo) => {
+                        if (triggerInfo.triggerName === 'WS-OPEN') {
+                            return {
+                                isMetaBox: true,
+                                response: 'ws open response',
+                                selfTrigger: {
+                                    triggerDelay: '33ss',
+                                    lineageArg: 'no delay trigger'
+                                },
+                            };
+                        } else if (triggerInfo.triggerName === 'SELF-TRIGGER'
+                            && triggerInfo.lineageArg === 'no delay trigger') {
+                            return {
+                                isMetaBox: true,
+                                response: 'no delay self triggered',
+                                selfTrigger: {
+                                    triggerDelay: 1000,
+                                    lineageArg: 'delay 1000ms trigger',
+                                },
+                            };
+                        } else if (triggerInfo.triggerName === 'SELF-TRIGGER'
+                            && triggerInfo.lineageArg === 'delay 1000ms trigger') {
+                            return {
+                                isMetaBox: true,
+                                response: 'delay 1000ms self triggered',
+                                selfTrigger: {
+                                    lineageArg: 'close',
+                                },
+                            };
+                        } else if (triggerInfo.triggerName === 'SELF-TRIGGER'
+                            && triggerInfo.lineageArg === 'close') {
+                            return {
+                                isMetaBox: true,
+                                action: 'close',
+                            };
+                        }
+                    };
+                `,
+            },
         },
     });
     let infoMsgs = [];
@@ -130,6 +171,23 @@ tap.test('websocket self trigger cases', async tap => {
                     wsc.close();
                     resolve();
                 }
+            });
+        }),
+        new Promise(resolve => {
+            const wsc = new WebSocket(mockingLocation + '/selfTriggerDelay');
+            let obj = {};
+            wsc.on('message', (msg) => {
+                obj[msg.toString()] = new Date().getTime();
+            });
+            wsc.on('close', () => {
+                tap.equal(
+                    Math.abs(obj['no delay self triggered'] - obj['ws open response']) < 100,
+                    true, 'bad self trigger delay');
+                tap.equal(
+                    Math.abs(obj['delay 1000ms self triggered'] - 1000
+                        - obj['ws open response']) < 100,
+                    true, 'delay 1000ms self triggered');
+                resolve();
             });
         }),
     ]);
