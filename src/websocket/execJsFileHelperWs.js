@@ -58,7 +58,6 @@ process.on('message', triggerInfo => {
     const ret = JSON.stringify({
         jsResult,
         meetWithErr,
-        triggerInfo,
     });
     process.send(ret);
 });

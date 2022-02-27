@@ -71,8 +71,8 @@ Array [
 
 exports[`test/mock5.js TAP websocket general cases > log warnings 1`] = `
 Array [
-  "error: Bad action property result 'senD' when trigger ./ws-response.js with triggerInfo 'undefined'. Will use default action \\"SEND\\".",
-  "error: Bad actionDelay time property result '1000ss' when trigger ./ws-response.js with triggerInfo 'undefined'. Will not delay action.",
+  "error: Bad action property result 'senD' when trigger ./ws-response.js. Will use default action \\"SEND\\".",
+  "error: Bad actionDelay time property result '1000ss' when trigger ./ws-response.js. Will not delay action.",
   String(
     error: Failed to execute js script '/test/tap-testdir-mock5-websocket-general-cases/fake-services/badJs/ws-response.js'.
     TypeError: Assignment to constant variable.

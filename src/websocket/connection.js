@@ -116,8 +116,7 @@ module.exports = (ws, req, wsResponseFilePath) => {
                 && jsResult.action !== 'CLOSE'
             ) {
                 log.error(`Bad action property result '${jsResult.action}' `
-                    + 'when trigger ./ws-response.js '
-                    + `with triggerInfo '${JSON.stringify(jsResult.triggerInfo)}'. `
+                    + 'when trigger ./ws-response.js. '
                     + 'Will use default action "SEND".');
                 action = 'SEND';
             } else {
@@ -142,8 +141,7 @@ module.exports = (ws, req, wsResponseFilePath) => {
                 actionDelay = parseTimeStr(jsResult.actionDelay);
                 if (actionDelay === false) {
                     log.error(`Bad actionDelay time property result '${jsResult.actionDelay}' `
-                        + 'when trigger ./ws-response.js '
-                        + `with triggerInfo '${JSON.stringify(jsResult.triggerInfo)}'. `
+                        + 'when trigger ./ws-response.js. '
                         + 'Will not delay action.');
                 }
             }
@@ -186,7 +184,6 @@ module.exports = (ws, req, wsResponseFilePath) => {
                 } else {
                     log.error(`Bad selfTrigger property result '${jsResult.selfTrigger}' `
                         + 'when trigger ./ws-response.js '
-                        + `with triggerInfo '${JSON.stringify(jsResult.triggerInfo)}'. `
                         + 'Refer doc for details.'); // todo
                 }
             }

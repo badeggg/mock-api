@@ -18,6 +18,7 @@ Array [
 exports[`test/mock6.js TAP websocket self trigger cases > log warnings 1`] = `
 Array [
   "error: Bad self triggerDelay time property '33ss' when trigger ./ws-response.js. Will not delay self triggering.",
+  "error: Bad selfTrigger property result '1' when trigger ./ws-response.js Refer doc for details.",
 ]
 `
 

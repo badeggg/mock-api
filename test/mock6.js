@@ -135,6 +135,21 @@ tap.test('websocket self trigger cases', async tap => {
                     };
                 `,
             },
+            'selfTriggerBad': {
+                'ws-response.js': `
+                    module.exports = (triggerInfo) => {
+                        if (triggerInfo.triggerName === 'WS-MESSAGE') {
+                            return {
+                                isMetaBox: true,
+                                response: 'ws-open',
+                                selfTrigger: 1,
+                            };
+                        } else if (triggerInfo.triggerName === 'SELF-TRIGGER'){
+                            return 'will not be returned';
+                        }
+                    };
+                `,
+            },
         },
     });
     let infoMsgs = [];
@@ -232,6 +247,17 @@ tap.test('websocket self trigger cases', async tap => {
                 tap.equal(msg.toString(), 'self trigger array item' + count
                     , 'self trigger array item' + count);
                 count++;
+            });
+            wsc.on('close', () => {
+                resolve();
+            });
+        }),
+        new Promise(resolve => {
+            const wsc = new WebSocket(mockingLocation + '/selfTriggerBad');
+            wsc.on('open', wsc.send);
+            wsc.on('message', (msg) => {
+                tap.equal(msg.toString(), 'ws-open', 'self trigger bad');
+                setTimeout(() => wsc.close(), 500);
             });
             wsc.on('close', () => {
                 resolve();
