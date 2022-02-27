@@ -403,6 +403,17 @@ tap.test('websocket general cases', async tap => {
                     };
                 `,
             },
+            'closeCodeBad': {
+                'ws-response.js': `
+                    module.exports = {
+                        isMetaBox: true,
+                        action: 'close',
+                        response: {
+                            code: 999,
+                        },
+                    };
+                `,
+            },
         },
     });
     let infoMsgs = [];
@@ -711,6 +722,12 @@ tap.test('websocket general cases', async tap => {
             });
             wsc.on('close', () => {
                 tap.matchSnapshot(arr, 'triggerInfo');
+                resolve();
+            });
+        }),
+        new Promise(resolve => {
+            const wsc = new WebSocket(mockingLocation + '/closeCodeBad');
+            wsc.on('close', () => {
                 resolve();
             });
         }),
