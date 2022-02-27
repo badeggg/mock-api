@@ -100,6 +100,41 @@ tap.test('websocket self trigger cases', async tap => {
                     };
                 `,
             },
+            'selfTriggerArray': {
+                'ws-response.js': `
+                    module.exports = (triggerInfo) => {
+                        if (triggerInfo.triggerName === 'WS-OPEN') {
+                            return {
+                                isMetaBox: true,
+                                response: null,
+                                selfTrigger: [
+                                    {
+                                        lineageArg: 'self trigger array item0',
+                                    },
+                                    {
+                                        lineageArg: 'self trigger array item1',
+                                    },
+                                    {
+                                        lineageArg: 'self trigger array item2',
+                                    },
+                                    {
+                                        lineageArg: 'close',
+                                    },
+                                ],
+                            };
+                        } else if (triggerInfo.triggerName === 'SELF-TRIGGER'
+                            && triggerInfo.lineageArg !== 'close') {
+                            return triggerInfo.lineageArg;
+                        } else if (triggerInfo.triggerName === 'SELF-TRIGGER'
+                            && triggerInfo.lineageArg === 'close') {
+                            return {
+                                isMetaBox: true,
+                                action: 'close',
+                            };
+                        }
+                    };
+                `,
+            },
         },
     });
     let infoMsgs = [];
@@ -187,6 +222,18 @@ tap.test('websocket self trigger cases', async tap => {
                     Math.abs(obj['delay 1000ms self triggered'] - 1000
                         - obj['ws open response']) < 100,
                     true, 'delay 1000ms self triggered');
+                resolve();
+            });
+        }),
+        new Promise(resolve => {
+            const wsc = new WebSocket(mockingLocation + '/selfTriggerArray');
+            let count = 0;
+            wsc.on('message', (msg) => {
+                tap.equal(msg.toString(), 'self trigger array item' + count
+                    , 'self trigger array item' + count);
+                count++;
+            });
+            wsc.on('close', () => {
                 resolve();
             });
         }),

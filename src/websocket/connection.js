@@ -73,7 +73,7 @@ module.exports = (ws, req, wsResponseFilePath) => {
 
     helperProcess.on('message', execResult => {
         if (ws.readyState !== 1) {
-            log.error('The connection is closing or has been closed.');
+            log.error('The connection is not ready or is closing or has been closed.');
             return;
         }
         const { jsResult, meetWithErr } = JSON.parse(execResult);
