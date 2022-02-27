@@ -148,3 +148,178 @@ Buffer <>
 exports[`test/mock5.js TAP websocket general cases > pong empty msg 7 1`] = `
 Buffer <>
 `
+
+exports[`test/mock5.js TAP websocket general cases > triggerInfo 1`] = `
+Array [
+  Object {
+    "_stringOrBuffer": "String",
+    "currentMessage": null,
+    "lineageArg": null,
+    "params": Object {
+      "triggerInfo": "triggerInfo",
+    },
+    "query": Object {
+      "name": "xuxu",
+    },
+    "request": Object {
+      "complete": true,
+      "headers": Object {
+        "connection": "Upgrade",
+        "host": "localhost:3070",
+        "sec-websocket-extensions": "permessage-deflate; client_max_window_bits",
+        "sec-websocket-version": "13",
+        "upgrade": "websocket",
+      },
+      "httpVersion": "1.1",
+      "method": "GET",
+      "rawHeaders": Array [
+        "Sec-WebSocket-Version",
+        "13",
+        "Connection",
+        "Upgrade",
+        "Upgrade",
+        "websocket",
+        "Sec-WebSocket-Extensions",
+        "permessage-deflate; client_max_window_bits",
+        "Host",
+        "localhost:3070",
+      ],
+      "rawTrailers": Array [],
+      "trailers": Object {},
+      "url": "/triggerInfo?name=xuxu",
+    },
+    "triggerName": "WS-OPEN",
+  },
+  Object {
+    "_stringOrBuffer": "String",
+    "currentMessage": "1",
+    "currentMessageIsBinary": false,
+    "lineageArg": null,
+    "params": Object {
+      "triggerInfo": "triggerInfo",
+    },
+    "query": Object {
+      "name": "xuxu",
+    },
+    "request": Object {
+      "complete": true,
+      "headers": Object {
+        "connection": "Upgrade",
+        "host": "localhost:3070",
+        "sec-websocket-extensions": "permessage-deflate; client_max_window_bits",
+        "sec-websocket-version": "13",
+        "upgrade": "websocket",
+      },
+      "httpVersion": "1.1",
+      "method": "GET",
+      "rawHeaders": Array [
+        "Sec-WebSocket-Version",
+        "13",
+        "Connection",
+        "Upgrade",
+        "Upgrade",
+        "websocket",
+        "Sec-WebSocket-Extensions",
+        "permessage-deflate; client_max_window_bits",
+        "Host",
+        "localhost:3070",
+      ],
+      "rawTrailers": Array [],
+      "trailers": Object {},
+      "url": "/triggerInfo?name=xuxu",
+    },
+    "triggerName": "WS-MESSAGE",
+  },
+  Object {
+    "_stringOrBuffer": "Buffer",
+    "currentMessage": Object {
+      "data": Array [
+        98,
+        97,
+        100,
+        101,
+        103,
+        103,
+        103,
+      ],
+      "type": "Buffer",
+    },
+    "currentMessageIsBinary": true,
+    "lineageArg": null,
+    "params": Object {
+      "triggerInfo": "triggerInfo",
+    },
+    "query": Object {
+      "name": "xuxu",
+    },
+    "request": Object {
+      "complete": true,
+      "headers": Object {
+        "connection": "Upgrade",
+        "host": "localhost:3070",
+        "sec-websocket-extensions": "permessage-deflate; client_max_window_bits",
+        "sec-websocket-version": "13",
+        "upgrade": "websocket",
+      },
+      "httpVersion": "1.1",
+      "method": "GET",
+      "rawHeaders": Array [
+        "Sec-WebSocket-Version",
+        "13",
+        "Connection",
+        "Upgrade",
+        "Upgrade",
+        "websocket",
+        "Sec-WebSocket-Extensions",
+        "permessage-deflate; client_max_window_bits",
+        "Host",
+        "localhost:3070",
+      ],
+      "rawTrailers": Array [],
+      "trailers": Object {},
+      "url": "/triggerInfo?name=xuxu",
+    },
+    "triggerName": "WS-MESSAGE",
+  },
+  Object {
+    "_stringOrBuffer": "String",
+    "currentMessage": "string",
+    "currentMessageIsBinary": false,
+    "lineageArg": null,
+    "params": Object {
+      "triggerInfo": "triggerInfo",
+    },
+    "query": Object {
+      "name": "xuxu",
+    },
+    "request": Object {
+      "complete": true,
+      "headers": Object {
+        "connection": "Upgrade",
+        "host": "localhost:3070",
+        "sec-websocket-extensions": "permessage-deflate; client_max_window_bits",
+        "sec-websocket-version": "13",
+        "upgrade": "websocket",
+      },
+      "httpVersion": "1.1",
+      "method": "GET",
+      "rawHeaders": Array [
+        "Sec-WebSocket-Version",
+        "13",
+        "Connection",
+        "Upgrade",
+        "Upgrade",
+        "websocket",
+        "Sec-WebSocket-Extensions",
+        "permessage-deflate; client_max_window_bits",
+        "Host",
+        "localhost:3070",
+      ],
+      "rawTrailers": Array [],
+      "trailers": Object {},
+      "url": "/triggerInfo?name=xuxu",
+    },
+    "triggerName": "WS-MESSAGE",
+  },
+]
+`

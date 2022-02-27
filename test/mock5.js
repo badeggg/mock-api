@@ -392,6 +392,17 @@ tap.test('websocket general cases', async tap => {
                     };
                 `,
             },
+            '__triggerInfo__': {
+                'ws-response.js': `
+                    module.exports = triggerInfo => {
+                        triggerInfo._stringOrBuffer =
+                            triggerInfo.currentMessage instanceof Buffer
+                            ? 'Buffer'
+                            : 'String';
+                        return triggerInfo;
+                    };
+                `,
+            },
         },
     });
     let infoMsgs = [];
@@ -677,6 +688,29 @@ tap.test('websocket general cases', async tap => {
                     true, '1500ms delay pong');
                 tap.equal(Math.abs(obj['2000ms delay close'] - 2000 - obj['no delay']) < 100,
                     true, '2000ms delay close');
+                resolve();
+            });
+        }),
+        new Promise(resolve => {
+            const wsc = new WebSocket(mockingLocation + '/triggerInfo?name=xuxu');
+            let arr = [];
+            wsc.on('open', () => {
+                wsc.send(1);
+                wsc.send(Buffer.from('badeggg'));
+                wsc.send('string');
+            });
+            wsc.on('message', (msg) => {
+                const data = JSON.parse(msg.toString());
+                delete data.request.headers['sec-websocket-key'];
+                const indexSecWebSocketKey = data.request.rawHeaders
+                    .findIndex(item => item.toLowerCase() === 'sec-websocket-key');
+                data.request.rawHeaders.splice(indexSecWebSocketKey, 2);
+                arr.push(data);
+                if (arr.length >= 4)
+                    wsc.close();
+            });
+            wsc.on('close', () => {
+                tap.matchSnapshot(arr, 'triggerInfo');
                 resolve();
             });
         }),
