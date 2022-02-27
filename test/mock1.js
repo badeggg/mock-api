@@ -145,7 +145,7 @@ tap.test('general doubt cases as a whole', async tap => {
             },
             'delay': {
                 response: '["i am late"]',
-                map: 'GET -t 300',
+                map: 'GET -t 500',
             },
             response: '["fake service root"]',
             proxy404: `
@@ -238,12 +238,20 @@ tap.test('general doubt cases as a whole', async tap => {
         .then((resp) => {
             delayedResponse = resp;
         });
-    tap.equal(delayedResponse, null, 'delayed response not ok yet');
+    tap.resolveMatch(
+        new Promise(resolve => {
+            setTimeout(() => {
+                resolve(delayedResponse);
+            }, 450);
+        }),
+        null,
+        'delayed response not ok yet',
+    );
     tap.resolveMatch(
         new Promise(resolve => {
             setTimeout(() => {
                 resolve(delayedResponse.data[0]);
-            }, 600);
+            }, 1000);
         }),
         'i am late',
         'delayed response content',
