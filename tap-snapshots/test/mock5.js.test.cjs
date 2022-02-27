@@ -5,6 +5,10 @@
  * Make sure to inspect the output below.  Do not ignore changes!
  */
 'use strict'
+exports[`test/mock5.js TAP websocket general cases > ArrayBuffer response 1`] = `
+Buffer <0000 0000 0000 0000 0000  ..........>
+`
+
 exports[`test/mock5.js TAP websocket general cases > JS-SCRIPT-ERROR detail 1`] = `
 Failed to execute js script '/test/tap-testdir-mock5-websocket-general-cases/fake-services/badJs/ws-response.js'.
 TypeError: Assignment to constant variable.
@@ -18,6 +22,20 @@ TypeError: Assignment to constant variable.
     at Module.require (node:internal/modules/cjs/loader:1005:19)
     at require (node:internal/modules/cjs/helpers:102:18)
     at process.<anonymous> (/src/websocket/execJsFileHelperWs.js:16:1234)
+`
+
+exports[`test/mock5.js TAP websocket general cases > buffer response escape revocer 1`] = `
+Object {
+  "data": Array [
+    98,
+    117,
+    102,
+    102,
+    101,
+    114,
+  ],
+  "type": "Buffer",
+}
 `
 
 exports[`test/mock5.js TAP websocket general cases > isMetaBox 0 1`] = `

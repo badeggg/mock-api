@@ -315,6 +315,32 @@ tap.test('websocket general cases', async tap => {
                     module.exports = a;
                 `,
             },
+            'responseType': {
+                'ws-response.js': `
+                    let count = 0;
+                    module.exports = () => {
+                        switch (count++) {
+                            case 0:
+                                return 'string';
+                            case 1:
+                                return {
+                                    isMetaBox: true,
+                                    response: Buffer.from('buffer'),
+                                };
+                            case 2:
+                                return {
+                                    isMetaBox: true,
+                                    response: Buffer.from('buffer'),
+                                    responseEscapeBufferRecover: true,
+                                };
+                            case 3:
+                                return new ArrayBuffer(10);
+                            case 4:
+                                return 123;
+                        }
+                    };
+                `,
+            },
         },
     });
     let infoMsgs = [];
@@ -533,6 +559,40 @@ tap.test('websocket general cases', async tap => {
                 tap.equal(reason instanceof Buffer, true, 'reason is Buffer type');
                 wsc.close();
                 resolve();
+            });
+        }),
+        new Promise(resolve => {
+            const wsc = new WebSocket(mockingLocation + '/responseType');
+            let count = 0;
+            wsc.on('message', (msg, isBin) => {
+                if (count === 1 || count === 3) {
+                    tap.equal(isBin, true, 'response type binary');
+                } else {
+                    tap.equal(isBin, false, 'response type non-binary');
+                }
+                if (count === 0) {
+                    tap.equal(msg.toString(), 'string', 'string response');
+                }
+                if (count === 1) {
+                    tap.equal(msg.toString(), 'buffer', 'buffer response');
+                }
+                if (count === 2) {
+                    tap.matchSnapshot(JSON.parse(msg.toString()),
+                        'buffer response escape revocer');
+                }
+                if (count === 3) {
+                    tap.matchSnapshot(msg, 'ArrayBuffer response');
+                }
+                if (count === 4) {
+                    tap.equal(msg.toString(), '123', 'number response');
+                }
+                count++;
+                if (count <= 4) {
+                    wsc.send();
+                } else {
+                    wsc.close();
+                    resolve();
+                }
             });
         }),
     ]);
