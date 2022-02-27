@@ -4,6 +4,7 @@ const WebSocket = require('ws');
 const transWindowsPath = require('./testUtils/transWindowsPath.js');
 const removePathPrefix = require('./testUtils/removePathPrefix.js');
 const removeEscapeSGR = require('./testUtils/removeEscapeSGR.js');
+const obscureErrorStack = require('./testUtils/obscureErrorStack.js');
 
 tap.test('websocket general cases', async tap => {
     const fakeServicesDir = tap.testdir({
@@ -360,7 +361,7 @@ tap.test('websocket general cases', async tap => {
             warn: (msg) => warningMsgs.push('warning: '
                 + transWindowsPath(
                     removePathPrefix(
-                        msg,
+                        obscureErrorStack(msg),
                         pathUtil.resolve(fakeServicesDir, '../../')
                     )
                 )
@@ -368,7 +369,7 @@ tap.test('websocket general cases', async tap => {
             error: (msg) => warningMsgs.push('error: '
                 + transWindowsPath(
                     removePathPrefix(
-                        msg,
+                        obscureErrorStack(msg),
                         pathUtil.resolve(fakeServicesDir, '../../')
                     )
                 )
@@ -545,7 +546,7 @@ tap.test('websocket general cases', async tap => {
                 tap.matchSnapshot(
                     transWindowsPath(
                         removePathPrefix(
-                            msg.toString(),
+                            obscureErrorStack(msg.toString()),
                             pathUtil.resolve(fakeServicesDir, '../../')
                         )
                     ),
