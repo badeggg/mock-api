@@ -342,6 +342,56 @@ tap.test('websocket general cases', async tap => {
                     };
                 `,
             },
+            'actionDelay': {
+                'ws-response.js': `
+                    let count = 0;
+                    module.exports = () => {
+                        switch (count++) {
+                            case 0:
+                                return {
+                                    isMetaBox: true,
+                                    response: 'no delay',
+                                };
+                            case 1:
+                                return {
+                                    isMetaBox: true,
+                                    actionDelay: '1000ss',
+                                    response: 'bad delay',
+                                };
+                            case 2:
+                                return {
+                                    isMetaBox: true,
+                                    actionDelay: '500',
+                                    response: '500ms delay',
+                                };
+                            case 3:
+                                return {
+                                    isMetaBox: true,
+                                    action: 'ping',
+                                    actionDelay: '1000ms',
+                                    response: '1000ms delay ping',
+                                };
+                            case 4:
+                                return {
+                                    isMetaBox: true,
+                                    action: 'pong',
+                                    actionDelay: '1.5s',
+                                    response: '1500ms delay pong',
+                                };
+                            case 5:
+                                return {
+                                    isMetaBox: true,
+                                    action: 'close',
+                                    actionDelay: '2.s',
+                                    response: {
+                                        code: 3336,
+                                        reason: '2000ms delay close'
+                                    },
+                                };
+                        }
+                    };
+                `,
+            },
         },
     });
     let infoMsgs = [];
@@ -594,6 +644,40 @@ tap.test('websocket general cases', async tap => {
                     wsc.close();
                     resolve();
                 }
+            });
+        }),
+        new Promise(resolve => {
+            const wsc = new WebSocket(mockingLocation + '/actionDelay');
+            let obj = {};
+            wsc.on('open', () => {
+                wsc.send(1);
+                wsc.send(2);
+                wsc.send(3);
+                wsc.send(4);
+                wsc.send(5);
+            });
+            wsc.on('message', (msg) => {
+                obj[msg.toString()] = new Date().getTime();
+            });
+            wsc.on('ping', (msg) => {
+                obj[msg.toString()] = new Date().getTime();
+            });
+            wsc.on('pong', (msg) => {
+                obj[msg.toString()] = new Date().getTime();
+            });
+            wsc.on('close', (code, reason) => {
+                obj[reason.toString()] = new Date().getTime();
+                tap.equal(Math.abs(obj['bad delay'] - obj['no delay']) < 100,
+                    true, 'bad delay');
+                tap.equal(Math.abs(obj['500ms delay'] - 500 - obj['no delay']) < 100,
+                    true, '500ms delay');
+                tap.equal(Math.abs(obj['1000ms delay ping'] - 1000 - obj['no delay']) < 100,
+                    true, '1000ms delay ping');
+                tap.equal(Math.abs(obj['1500ms delay pong'] - 1500 - obj['no delay']) < 100,
+                    true, '1500ms delay pong');
+                tap.equal(Math.abs(obj['2000ms delay close'] - 2000 - obj['no delay']) < 100,
+                    true, '2000ms delay close');
+                resolve();
             });
         }),
     ]);

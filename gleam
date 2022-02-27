@@ -77,3 +77,4 @@ need a review of this list
 - edit github page: about, tags
 - check header overriding of express and custom
 - binary data of http
+- optimize ./response file recognition
