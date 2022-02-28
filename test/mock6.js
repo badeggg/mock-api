@@ -1,3 +1,4 @@
+const fs = require('fs');
 const pathUtil = require('path');
 const tap = require('tap');
 const WebSocket = require('ws');
@@ -174,7 +175,7 @@ tap.test('websocket self trigger cases', async tap => {
                     )
                 )
             ),
-            error: (msg) => warningMsgs.push('error: '
+            error: (msg) => errorMsgs.push('error: '
                 + transWindowsPath(
                     removePathPrefix(
                         obscureErrorStack(msg),
@@ -185,7 +186,7 @@ tap.test('websocket self trigger cases', async tap => {
         },
     });
 
-    const mockServer = await mock(3070);
+    const mockServer = await mock(3080);
     const mockingLocation = `ws://localhost:${mockServer.address().port}`;
 
     await Promise.all([
@@ -235,7 +236,7 @@ tap.test('websocket self trigger cases', async tap => {
                     true, 'bad self trigger delay');
                 tap.equal(
                     Math.abs(obj['delay 1000ms self triggered'] - 1000
-                        - obj['ws open response']) < 100,
+                        - obj['ws open response']) < 200,
                     true, 'delay 1000ms self triggered');
                 resolve();
             });
@@ -264,6 +265,125 @@ tap.test('websocket self trigger cases', async tap => {
             });
         }),
     ]);
+
+    tap.matchSnapshot(infoMsgs.sort(), 'log infos');
+    tap.matchSnapshot(warningMsgs.sort(), 'log warnings');
+    tap.matchSnapshot(errorMsgs.sort(), 'log errors');
+
+    mockServer.close();
+});
+
+tap.test('websocket proxy 404', async tap => {
+    const fakeServicesDir = tap.testdir({
+        'fake-services': {
+            'proxy404': `
+                ws wss://demo.piesocket.com
+            `,
+        },
+    });
+    let infoMsgs = [];
+    let warningMsgs = [];
+    let errorMsgs = [];
+    const mock = tap.mock('../src/mock.js', {
+        '../src/utils/getProjectRoot.js': () => fakeServicesDir,
+        '../src/utils/log.js': {
+            info: (msg) => infoMsgs.push('info: '
+                + transWindowsPath(
+                    removePathPrefix(
+                        removeEscapeSGR(msg),
+                        pathUtil.resolve(fakeServicesDir, '../../')
+                    )
+                )
+            ),
+            warn: (msg) => warningMsgs.push('warning: '
+                + transWindowsPath(
+                    removePathPrefix(
+                        obscureErrorStack(msg),
+                        pathUtil.resolve(fakeServicesDir, '../../')
+                    )
+                )
+            ),
+            error: (msg, msg1) => errorMsgs.push('error: '
+                + transWindowsPath(
+                    removePathPrefix(
+                        obscureErrorStack(`${msg.toString()}${msg1 ? ' ' + msg1.toString() : ''}`),
+                        pathUtil.resolve(fakeServicesDir, '../../')
+                    )
+                )
+            ),
+        },
+    });
+
+    const mockServer = await mock(3081);
+    const mockingLocation = `ws://localhost:${mockServer.address().port}`;
+    const proxy404FilePath = pathUtil.resolve(fakeServicesDir, './fake-services/proxy404');
+
+    await new Promise(resolve => {
+        const wsc = new WebSocket(mockingLocation + '/v3/channel_1?api_key=oCdCMcMPQpbvNjUIzqtvF1d2X2okWpDQj4AwARJuAgtjhzKxVEjQU6IdCjwm&notify_self');
+        let count = 0;
+        wsc.on('message', (msg) => {
+            if (count === 0) {
+                tap.equal(JSON.parse(msg.toString()).info, 'You are using a test api key',
+                    'demo.piesocket.com hello message');
+                count++;
+                wsc.send('1st message');
+                return;
+            }
+            if (count === 1) {
+                tap.equal(msg.toString(), '1st message',
+                    'demo.piesocket.com echo 1st message');
+                count++;
+                wsc.send('2nd message');
+                return;
+            }
+            if (count === 2) {
+                tap.equal(msg.toString(), '2nd message',
+                    'demo.piesocket.com echo 2nd message');
+                wsc.close();
+                resolve();
+                return;
+            }
+        });
+    }),
+
+    fs.writeFileSync(
+        proxy404FilePath,
+        `
+            wss://demo.piesocket.com
+        `,
+        'utf-8',
+    );
+    await new Promise(resolve => {
+        const wsc = new WebSocket(mockingLocation + '/v3/channel_1?api_key=oCdCMcMPQpbvNjUIzqtvF1d2X2okWpDQj4AwARJuAgtjhzKxVEjQU6IdCjwm&notify_self');
+        wsc.on('message', (msg) => {
+            tap.matchSnapshot(msg.toString(), 'NO-WS-PROXY-404-MATCH-FOUND message');
+        });
+        wsc.on('close', (code, reason) => {
+            tap.equal(code, 3996, 'NO-WS-PROXY-404-MATCH-FOUND close code');
+            tap.equal(reason.toString(), 'NO-WS-PROXY-404-MATCH-FOUND',
+                'NO-WS-PROXY-404-MATCH-FOUND close reason');
+            resolve();
+        });
+    }),
+
+    fs.writeFileSync(
+        proxy404FilePath,
+        `
+            ws wss://demopiesocket.com
+        `,
+        'utf-8',
+    );
+    await new Promise(resolve => {
+        const wsc = new WebSocket(mockingLocation + '/v3/channel_1?api_key=oCdCMcMPQpbvNjUIzqtvF1d2X2okWpDQj4AwARJuAgtjhzKxVEjQU6IdCjwm&notify_self');
+        wsc.on('error', (err) => {
+            tap.equal(err.code, 'ECONNRESET', 'proxy error');
+        });
+        wsc.on('close', (code, reason) => {
+            tap.equal(code, 1006, 'proxy error close code');
+            tap.equal(reason.toString(), '', 'proxy error close reason');
+            resolve();
+        });
+    }),
 
     tap.matchSnapshot(infoMsgs.sort(), 'log infos');
     tap.matchSnapshot(warningMsgs.sort(), 'log warnings');

@@ -438,7 +438,7 @@ tap.test('websocket general cases', async tap => {
                     )
                 )
             ),
-            error: (msg) => warningMsgs.push('error: '
+            error: (msg) => errorMsgs.push('error: '
                 + transWindowsPath(
                     removePathPrefix(
                         obscureErrorStack(msg),
@@ -693,11 +693,11 @@ tap.test('websocket general cases', async tap => {
                     true, 'bad delay');
                 tap.equal(Math.abs(obj['500ms delay'] - 500 - obj['no delay']) < 100,
                     true, '500ms delay');
-                tap.equal(Math.abs(obj['1000ms delay ping'] - 1000 - obj['no delay']) < 100,
+                tap.equal(Math.abs(obj['1000ms delay ping'] - 1000 - obj['no delay']) < 150,
                     true, '1000ms delay ping');
-                tap.equal(Math.abs(obj['1500ms delay pong'] - 1500 - obj['no delay']) < 100,
+                tap.equal(Math.abs(obj['1500ms delay pong'] - 1500 - obj['no delay']) < 200,
                     true, '1500ms delay pong');
-                tap.equal(Math.abs(obj['2000ms delay close'] - 2000 - obj['no delay']) < 100,
+                tap.equal(Math.abs(obj['2000ms delay close'] - 2000 - obj['no delay']) < 300,
                     true, '2000ms delay close');
                 resolve();
             });

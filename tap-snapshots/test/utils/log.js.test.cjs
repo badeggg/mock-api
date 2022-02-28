@@ -29,3 +29,12 @@ exports[`test/utils/log.js TAP > msgMain 5`] = `
 CRITICAL some critical message
 
 `
+
+exports[`test/utils/log.js TAP > msgMain 6`] = `
+ERROR some error Error: this is an error
+    at ...
+    at ...  code: 9999,
+  syscall: 'somesyscall'
+}
+
+`
