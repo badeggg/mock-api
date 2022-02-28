@@ -173,8 +173,7 @@ module.exports = (ws, req, wsResponseFilePath) => {
                             helperProcess.send(JSON.stringify(triggerInfo));
                     }, triggerDelay);
                 } else {
-                    if (!helperProcess.killed)
-                        helperProcess.send(JSON.stringify(triggerInfo));
+                    helperProcess.send(JSON.stringify(triggerInfo));
                 }
             }
             if (jsResult.selfTrigger) {

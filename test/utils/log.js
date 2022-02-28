@@ -16,7 +16,7 @@ log.critical('some critical message');
 
 const err = new Error('this is an error');
 err.code = 9999;
-err.syscall = 'somesyscall'
+err.syscall = 'somesyscall';
 log.error('some error', err);
 
 // resume console.log function
