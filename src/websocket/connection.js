@@ -50,8 +50,8 @@ module.exports = (ws, req, wsResponseFilePath) => {
     });
 
     ws.on('error', (err) => {
+        log.error(err);
         helperProcess.kill();
-        ws.close(3999, `SERVER-UNEXPECTED-CONDITION. ${err.code}`);
     });
 
     ws.on('message', (currentMessage, isBinary) => {
@@ -104,9 +104,10 @@ module.exports = (ws, req, wsResponseFilePath) => {
              *      } | [{}],
              * }
              */
-            if (
-                jsResult.action
-                && jsResult.action !== 'send'
+            if (!jsResult.action) {
+                action = 'SEND';
+            } else if (
+                jsResult.action !== 'send'
                 && jsResult.action !== 'ping'
                 && jsResult.action !== 'pong'
                 && jsResult.action !== 'close'
@@ -120,7 +121,7 @@ module.exports = (ws, req, wsResponseFilePath) => {
                     + 'Will use default action "SEND".');
                 action = 'SEND';
             } else {
-                action = jsResult.action || 'SEND';
+                action = jsResult.action.toUpperCase();
             }
 
             response = jsResult.response;
@@ -198,7 +199,7 @@ module.exports = (ws, req, wsResponseFilePath) => {
             }
         }
 
-        if (action.toUpperCase() === 'SEND') {
+        if (action === 'SEND') {
             if (response || insistSendEmpty) {
                 response = toTransable(response);
                 if (actionDelay) {
@@ -207,7 +208,8 @@ module.exports = (ws, req, wsResponseFilePath) => {
                     ws.send(response);
                 }
             }
-        } else if (action.toUpperCase() === 'PING') {
+        }
+        if (action === 'PING') {
             response = toTransable(response);
             if (response && Buffer.from(response).byteLength > MAX_PING_PONG_DATA_BYTE_LENGTH) {
                 log.warn('Ping data must not be greater than '
@@ -221,7 +223,8 @@ module.exports = (ws, req, wsResponseFilePath) => {
             } else {
                 ws.ping(response);
             }
-        } else if (action.toUpperCase() === 'PONG') {
+        }
+        if (action === 'PONG') {
             response = toTransable(response);
             if (response && Buffer.from(response).byteLength > MAX_PING_PONG_DATA_BYTE_LENGTH) {
                 log.warn('Pong data must not be greater than '
@@ -235,7 +238,8 @@ module.exports = (ws, req, wsResponseFilePath) => {
             } else {
                 ws.pong(response);
             }
-        } else if (action.toUpperCase() === 'CLOSE') {
+        }
+        if (action === 'CLOSE') {
             let code = response && response.code ? response.code : 1000;
             let reason = response && response.reason ? response.reason : '';
             reason = toTransable(reason);

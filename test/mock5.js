@@ -441,7 +441,7 @@ tap.test('websocket general cases', async tap => {
             error: (msg) => errorMsgs.push('error: '
                 + transWindowsPath(
                     removePathPrefix(
-                        obscureErrorStack(msg),
+                        obscureErrorStack(msg.toString()),
                         pathUtil.resolve(fakeServicesDir, '../../')
                     )
                 )
@@ -728,6 +728,16 @@ tap.test('websocket general cases', async tap => {
         new Promise(resolve => {
             const wsc = new WebSocket(mockingLocation + '/closeCodeBad');
             wsc.on('close', () => {
+                resolve();
+            });
+        }),
+        new Promise(resolve => {
+            const wsc = new WebSocket(mockingLocation);
+            wsc.on('open', () => {
+                wsc.send(Buffer.from('你好').slice(0,4), { binary: false });
+            });
+            wsc.on('close', (code) => {
+                tap.equal(code, 1007, 'WS_ERR_INVALID_UTF8');
                 resolve();
             });
         }),

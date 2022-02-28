@@ -63,6 +63,7 @@ exports[`test/mock5.js TAP websocket general cases > log errors 1`] = `
 Array [
   "error: Bad action property result 'senD' when trigger ./ws-response.js. Will use default action \\"SEND\\".",
   "error: Bad actionDelay time property result '1000ss' when trigger ./ws-response.js. Will not delay action.",
+  "error: Error: Invalid WebSocket frame: invalid UTF-8 sequence",
   String(
     error: Failed to execute js script '/test/tap-testdir-mock5-websocket-general-cases/fake-services/badJs/ws-response.js'.
     TypeError: Assignment to constant variable.
