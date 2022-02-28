@@ -5,6 +5,12 @@
  * Make sure to inspect the output below.  Do not ignore changes!
  */
 'use strict'
+exports[`test/mock6.js TAP websocket proxy 404 > NO-FAKE-SERVIVES-FOLDER message 1`] = `
+'fake-services' folder does not exist in your project.
+'/fake-services' does not exist.
+
+`
+
 exports[`test/mock6.js TAP websocket proxy 404 > NO-WS-PROXY-404-MATCH-FOUND message 1`] = `
 No ws proxy 404 match found.<br>
 You need a proper proxy404 file in fake-services folder.<br>
@@ -13,6 +19,11 @@ Refer https://github.com/badeggg/mock-api#proxy-404
 
 exports[`test/mock6.js TAP websocket proxy 404 > log errors 1`] = `
 Array [
+  String(
+    error: 'fake-services' folder does not exist in your project.
+    '/test/tap-testdir-mock6-websocket-proxy-404/fake-services' does not exist.
+    
+  ),
   String(
     error: Error: No ws proxy 404 match found.<br>
     You need a proper proxy404 file in fake-services folder.<br>
@@ -39,6 +50,7 @@ exports[`test/mock6.js TAP websocket self trigger cases > log errors 1`] = `
 Array [
   "error: Bad self triggerDelay time property '33ss' when trigger ./ws-response.js. Will not delay self triggering.",
   "error: Bad selfTrigger property result '1' when trigger ./ws-response.js Refer doc for details.",
+  "error: The connection is not ready or is closing or has been closed.",
 ]
 `
 

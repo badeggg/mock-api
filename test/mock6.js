@@ -121,6 +121,9 @@ tap.test('websocket self trigger cases', async tap => {
                                     {
                                         lineageArg: 'close',
                                     },
+                                    {
+                                        lineageArg: 'after close, will cause error log',
+                                    },
                                 ],
                             };
                         } else if (triggerInfo.triggerName === 'SELF-TRIGGER'
@@ -236,7 +239,7 @@ tap.test('websocket self trigger cases', async tap => {
                     true, 'bad self trigger delay');
                 tap.equal(
                     Math.abs(obj['delay 1000ms self triggered'] - 1000
-                        - obj['ws open response']) < 200,
+                        - obj['ws open response']) < 300,
                     true, 'delay 1000ms self triggered');
                 resolve();
             });
@@ -381,6 +384,34 @@ tap.test('websocket proxy 404', async tap => {
         wsc.on('close', (code, reason) => {
             tap.equal(code, 1006, 'proxy error close code');
             tap.equal(reason.toString(), '', 'proxy error close reason');
+            resolve();
+        });
+    }),
+
+    await new Promise(resolve => {
+        fs.rm(
+            pathUtil.resolve(fakeServicesDir, './fake-services'),
+            {
+                recursive: true,
+                force: true
+            },
+            resolve,
+        );
+    });
+    await new Promise(resolve => {
+        const wsc = new WebSocket(mockingLocation + '/v3/channel_1?api_key=oCdCMcMPQpbvNjUIzqtvF1d2X2okWpDQj4AwARJuAgtjhzKxVEjQU6IdCjwm&notify_self');
+        wsc.on('message', (msg) => {
+            tap.matchSnapshot(
+                transWindowsPath(
+                    removePathPrefix(msg.toString(), fakeServicesDir)
+                ),
+                'NO-FAKE-SERVIVES-FOLDER message'
+            );
+        });
+        wsc.on('close', (code, reason) => {
+            tap.equal(code, 3997, 'NO-FAKE-SERVIVES-FOLDER close code');
+            tap.equal(reason.toString(), 'NO-FAKE-SERVIVES-FOLDER',
+                'NO-FAKE-SERVIVES-FOLDER close reason');
             resolve();
         });
     }),
