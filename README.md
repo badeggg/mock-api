@@ -4,8 +4,8 @@
 [![Coverage Status](https://coveralls.io/repos/github/badeggg/mock-api/badge.svg?branch=master)](https://coveralls.io/github/badeggg/mock-api?branch=master)
 
 A **least dependent**, **localized**, **with version control** and **effect immediately** http
-api mock tool for front-end project, nodejs back-end project, or even general back-end project
-if you want.
+/ websocket api mock tool for front-end project, nodejs back-end project, or even general
+back-end project if you want.
 
 ## Table of Contents
 - [mock-api](#mock-api)
@@ -28,6 +28,7 @@ if you want.
       + [Set response file path](#set-response-file-path)
       + [Delay to respond](#delay-to-respond)
       + [Respond js result](#respond-js-result)
+  + [Websocket](#Websocket)
   + [Proxy 404](#Proxy-404)
   + [Disable part of the mocking](#Disable-part-of-the-mocking)
   + [Config file common convention](#config-file-common-convention)
@@ -52,18 +53,27 @@ if you want.
     + a new mocking api path
     + a response file amending
     + and even the proxy404 file
+- able to mock websocket
 
 [Back To Top](#mock-api)
 
 ## How is it working?
 The design is simple. 'mock-api' starts a service on local computer, respond to request
 according to mock configuration. Mock configuration should be placed on `fake-services` folder
-on project root directory. 'mock-api' will create a file named `.mockingLocation` on project
-root to indicate the mocking location.
+on project root directory.
 
-How to write a mock configuration is describe below.
+'mock-api' will create a file named `.mockingLocation` on project root to indicate the http
+mocking location(replace string 'http' with 'ws' to get websocket mocking location).
 
-How to use .mockingLocation file properly is describe below.
+'mock-api' exports a function which returns a promise that will resolve the
+mocking server. Mocking srever is an instance of
+[http.Server](https://nodejs.org/dist/latest-v16.x/docs/api/http.html#class-httpserver).
+`mockingServer.getHttpLocation()` to get http mocking location,
+`mockingServer.getWsLocation()` to get websocket mocking location.
+
+How to write a mock configuration is described below.
+
+How to use .mockingLocation file properly is described below.
 
 [Back To Top](#mock-api)
 
@@ -94,8 +104,18 @@ $ npm install @badeggg/mock-api
     ```
 4. Now you can start the mock server to check what you just configured.
     ```
+    # start by command
     $ npx mock
     >> Fri Oct 15 2021 17:32:31 GMT+0800 (China Standard Time) INFO  Mock-api listening on: 3000
+    ```
+    ```
+    // or start by js
+    const mock = require('@badeggg/mock-api');
+    mock().then(server => {
+        console.log('http mocking location: ', server.getHttpLocation()); // http mocking location:  http://localhost:3000
+        console.log('websocket mocking location: ', server.getWsLocation()); // websocket mocking location:  ws://localhost:3000
+        console.log('mocking on port: ', server.address().port); // mocking on port:  3000
+    });
     ```
     ```
     # in another shell
@@ -110,39 +130,49 @@ are passed to mock server when developing the project.
 If your project is general back-end project, a java project for example. You need install
 nodejs npm and do the similar things as a nodejs project. Welcome to javascript world ;-)
 
-I'll do a rather detailed description here with common front-end project. In a common front-end
+I'll do a rather detailed description here for common front-end projects. In a common front-end
 project, you need some coordination:
 
-- Add a script in package.json, such that start the mock service first and then start the well-known
-  webpack dev-server when run this script.
+- Add a script in package.json, such that start the mock service first and then start the
+  well-known webpack dev-server when run this script.
   + Of course the 'dev-server' part is dependent on your specific project.
-  + For example, if your project is constructed with vue-cli-service, `"serve-mock": "mock | vue-cli-service serve",`
-    should be added
+  + For example, if your project is constructed with vue-cli-service,
+    `"serve-mock": "mock | vue-cli-service serve",` should be added
 - Modify the original development start script, so that .mockingLocation file is removed first and
   then start the well-known webpack dev-server when run this non-mocking start development script.
   + Of course the 'dev-server' part is dependent on your specific project.
   + For example, if your project is constructed with vue-cli-service, `"serve": "rm -f .mockingLocation && vue-cli-service serve",`
     should be the modified version script.
-- Make sure the original dev-server api proxy is configured to mocking location when you are mocking.
-  + For example, if your project is constructed with vue-cli-service, part of the vue.config.js should looks
-    like:
+- Make sure the original dev-server api proxy is configured to mocking location when you are
+  mocking.
+  + For example, if your project is constructed with vue-cli-service, part of the vue.config.js
+    should looks like:
     ```
     let MOCKING_LOCATION = null;
+    let MOCKING_LOCATION_WS = null;
     if (fs.existsSync('./.mockingLocation')) {
         MOCKING_LOCATION = fs.readFileSync('./.mockingLocation', 'utf-8');
+        MOCKING_LOCATION_WS = MOCKING_LOCATION.replace('http', 'ws');
     }
 
     module.exports = {
         devServer: {
             proxy: {
                 '/api': MOCKING_LOCATION ? MOCKING_LOCATION : 'https://your.test.environment.com',
+                '/websocket': {
+                    target: MOCKING_LOCATION_WS ? MOCKING_LOCATION_WS : 'wss://your.test.environment.com',
+                    ws: true
+                },
             },
         },
     };
     ```
 
-To configure different response for different request on same api path, you will need set
-[the map file](#the-map-file).
+For http, to configure different response for different request on same api path, you will need
+set [the map file](#the-map-file).
+
+For websocket, you write a ws-response.js file in corresponding directory.
+Check [websocket](#Websocket).
 
 After proxy all api requests to mock server, you don't really need configure all of the
 api mocking. Check [proxy 404 feature](#Proxy-404).
@@ -155,7 +185,7 @@ api mocking. Check [proxy 404 feature](#Proxy-404).
 [Back To Top](#mock-api)
 
 ### The map file
-This file is used to configure how to response an api request with current path. We say
+This file is used to configure how to response a **http** api request with current path. We say
 'current path' means the directory where the map file is in and the api request path matchs.
 
 The map file is optional. If this map file does not exist, contents in './response' will
@@ -473,6 +503,11 @@ https://nodejs.org
 
 [Back To Top](#mock-api)
 
+### Websocket
+todo
+
+[Back To Top](#mock-api)
+
 ### Disable part of the mocking
 In some cases you may want to temporarily disable part of the mocking ---- try only two
 or three apis on test environment maybe while the other apis on test environment are not ok
@@ -535,6 +570,9 @@ config purpose.
 [Back To Top](#mock-api)
 
 ## Await features...
-- websocket
+- coordination with vue-cli-service
+- coordination with create-react-app
+- log file
+- more configurable
 
 [Back To Top](#mock-api)
