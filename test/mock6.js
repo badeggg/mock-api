@@ -386,18 +386,24 @@ tap.test('websocket proxy 404', async tap => {
             tap.equal(reason.toString(), '', 'proxy error close reason');
             resolve();
         });
-    }),
+    });
 
-    await new Promise(resolve => {
-        fs.rm(
+    if (fs.rmSync) {
+        fs.rmSync(
             pathUtil.resolve(fakeServicesDir, './fake-services'),
             {
                 recursive: true,
                 force: true
             },
-            resolve,
         );
-    });
+    } else {
+        fs.rmdirSync(
+            pathUtil.resolve(fakeServicesDir, './fake-services'),
+            {
+                recursive: true,
+            },
+        );
+    }
     await new Promise(resolve => {
         const wsc = new WebSocket(mockingLocation + '/v3/channel_1?api_key=oCdCMcMPQpbvNjUIzqtvF1d2X2okWpDQj4AwARJuAgtjhzKxVEjQU6IdCjwm&notify_self');
         wsc.on('message', (msg) => {
