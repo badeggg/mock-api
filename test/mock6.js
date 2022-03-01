@@ -235,7 +235,7 @@ tap.test('websocket self trigger cases', async tap => {
             });
             wsc.on('close', () => {
                 tap.equal(
-                    Math.abs(obj['no delay self triggered'] - obj['ws open response']) < 100,
+                    Math.abs(obj['no delay self triggered'] - obj['ws open response']) < 200,
                     true, 'bad self trigger delay');
                 tap.equal(
                     Math.abs(obj['delay 1000ms self triggered'] - 1000

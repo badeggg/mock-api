@@ -689,9 +689,9 @@ tap.test('websocket general cases', async tap => {
             });
             wsc.on('close', (code, reason) => {
                 obj[reason.toString()] = new Date().getTime();
-                tap.equal(Math.abs(obj['bad delay'] - obj['no delay']) < 100,
+                tap.equal(Math.abs(obj['bad delay'] - obj['no delay']) < 200,
                     true, 'bad delay');
-                tap.equal(Math.abs(obj['500ms delay'] - 500 - obj['no delay']) < 100,
+                tap.equal(Math.abs(obj['500ms delay'] - 500 - obj['no delay']) < 200,
                     true, '500ms delay');
                 tap.equal(Math.abs(obj['1000ms delay ping'] - 1000 - obj['no delay']) < 200,
                     true, '1000ms delay ping');
