@@ -61,5 +61,15 @@ module.exports = async (tryPort = 3000) => {
         }
         log.info(`Mock-api quit with code ${code}.`);
     });
+    server.getHttpLocation = () => {
+        if (!server.listening)
+            return null;
+        return `http://localhost:${server.address().port}`;
+    };
+    server.getWsLocation = () => {
+        if (!server.listening)
+            return null;
+        return `ws://localhost:${server.address().port}`;
+    };
     return server;
 };

@@ -57,6 +57,10 @@ tap.test('basic general function', async tap => {
         'mock function should return a nodejs http.Server with a port number');
     tap.equal(mockServer.address().port, 3000,
         'default tryPort is 3000');
+    tap.equal(mockServer.getHttpLocation(), 'http://localhost:3000',
+        'getHttpLocation');
+    tap.equal(mockServer.getWsLocation(), 'ws://localhost:3000',
+        'getWsLocation');
 
     const mockingLocationPath = pathUtil.resolve(fakeServicesDir, './.mockingLocation');
     tap.ok(fs.existsSync(mockingLocationPath),
@@ -80,6 +84,9 @@ tap.test('basic general function', async tap => {
     tap.matchSnapshot(warningMsgs, 'log warnings');
 
     mockServer.close();
+
+    tap.equal(mockServer.getHttpLocation(), null, 'getHttpLocation after closed');
+    tap.equal(mockServer.getWsLocation(), null, 'getWsLocation after closed');
 });
 
 tap.test('try next plus one port when current port is not available', async tap => {

@@ -29,7 +29,7 @@ tap.test('helperProcess killed when init', async tap => {
     });
 
     const mockServer = await mock(3090);
-    const mockingLocation = `ws://localhost:${mockServer.address().port}`;
+    const mockingLocation = mockServer.getWsLocation();
 
     await new Promise(resolve => {
         const wsc = new WebSocket(mockingLocation);

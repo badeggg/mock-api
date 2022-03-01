@@ -78,7 +78,7 @@ tap.test('response js result 3, buffer | log | metaBox', async tap => {
 
     const mockServer = await mock(3052);
 
-    const mockingLocation = `http://localhost:${mockServer.address().port}`;
+    const mockingLocation = mockServer.getHttpLocation();
 
     const optionsTemplate = {
         url: mockingLocation + '/fake-api-path',
