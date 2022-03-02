@@ -567,10 +567,12 @@ config purpose.
 ## Tips or Troubleshooting
 - **occasionally, npm script like `mock | node ./index.js` may not work, since
   `mock` is ready('.mockingLocation' file is set) before `node ./index.js` start
-  executing is not guaranteed. One of the solutions is start mock-api in another
+  executing is not guaranteed. One of the solutions is to start mock-api in another
   terminal tab and then start your project.** Separate starting also let you view mock-api logs
   in mock-api terminal tab, which is beneficial for debugging proxy problems related to
   mock-api.
+- `console.log` can be used to debug response.js / ws-response.js, but mock-api need be
+  started in a separated terminal tab to view the log.
 - a response header 'From-Mocking-Fake-Service' was added if the response is from mocking
 - touch an 'off' file in the very fake-services filder to turn off all mocking and use full
   real api services, remove it to back using mock.
