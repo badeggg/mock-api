@@ -358,19 +358,12 @@ tap.test('websocket proxy 404', async tap => {
                 tap.equal(JSON.parse(msg.toString()).info, 'You are using a test api key',
                     'demo.piesocket.com hello message');
                 count++;
-                wsc.send('1st message');
+                wsc.send('echo message');
                 return;
             }
             if (count === 1) {
-                tap.equal(msg.toString(), '1st message',
-                    'demo.piesocket.com echo 1st message');
-                count++;
-                wsc.send('2nd message');
-                return;
-            }
-            if (count === 2) {
-                tap.equal(msg.toString(), '2nd message',
-                    'demo.piesocket.com echo 2nd message');
+                tap.equal(msg.toString(), 'echo message',
+                    'demo.piesocket.com echo message');
                 wsc.close();
                 resolve();
                 return;
