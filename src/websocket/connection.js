@@ -37,10 +37,12 @@ module.exports = (ws, req, wsResponseFilePath) => {
     const initTriggerInfo = {
         triggerName: 'WS-OPEN',
         currentMessage: null,
+        currentMessageIsBinary: false,
         request: prunedReq,
         query: req.query,
         params: req.params,
         lineageArg: null,
+        lineageArgEscapeBufferRecover: false,
     };
     if (!helperProcess.killed)
         helperProcess.send(JSON.stringify(initTriggerInfo));
@@ -66,6 +68,7 @@ module.exports = (ws, req, wsResponseFilePath) => {
             query: req.query,
             params: req.params,
             lineageArg: null,
+            lineageArgEscapeBufferRecover: false,
         };
         if (!helperProcess.killed)
             helperProcess.send(JSON.stringify(triggerInfo));
@@ -151,11 +154,13 @@ module.exports = (ws, req, wsResponseFilePath) => {
                 const triggerInfo = {
                     triggerName: 'SELF-TRIGGER',
                     currentMessage: null,
+                    currentMessageIsBinary: false,
                     request: prunedReq,
                     query: req.query,
                     params: req.params,
                     lineageArg: selfTrigger.lineageArg,
-                    lineageArgEscapeBufferRecover: selfTrigger.lineageArgEscapeBufferRecover,
+                    lineageArgEscapeBufferRecover:
+                        Boolean(selfTrigger.lineageArgEscapeBufferRecover),
                 };
                 let triggerDelay = 0;
                 if (selfTrigger.triggerDelay) {
@@ -179,12 +184,16 @@ module.exports = (ws, req, wsResponseFilePath) => {
             if (jsResult.selfTrigger) {
                 if (_.isPlainObject(jsResult.selfTrigger)) {
                     handleSingleSelfTrigger(jsResult.selfTrigger);
-                } else if (_.isArray(jsResult.selfTrigger)) {
+                } else if (_.isArray(jsResult.selfTrigger)
+                    && _.every(jsResult.selfTrigger, _.isPlainObject)) {
                     jsResult.selfTrigger.forEach(handleSingleSelfTrigger);
                 } else {
-                    log.error(`Bad selfTrigger property result '${jsResult.selfTrigger}' `
+                    log.error(
+                        'Bad selfTrigger property result '
+                        + `'${JSON.stringify(jsResult.selfTrigger)}' `
                         + 'when trigger ./ws-response.js '
-                        + 'Refer doc for details.'); // todo
+                        + 'Refer doc for details.'
+                    ); // todo
                 }
             }
         } else {

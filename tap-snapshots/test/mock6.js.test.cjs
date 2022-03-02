@@ -49,7 +49,9 @@ Array []
 exports[`test/mock6.js TAP websocket self trigger cases > log errors 1`] = `
 Array [
   "error: Bad self triggerDelay time property '33ss' when trigger ./ws-response.js. Will not delay self triggering.",
+  "error: Bad selfTrigger property result '\\"1\\"' when trigger ./ws-response.js Refer doc for details.",
   "error: Bad selfTrigger property result '1' when trigger ./ws-response.js Refer doc for details.",
+  "error: Bad selfTrigger property result '[1]' when trigger ./ws-response.js Refer doc for details.",
   "error: The connection is not ready or is closing or has been closed.",
 ]
 `
@@ -68,12 +70,8 @@ exports[`test/mock6.js TAP websocket self trigger cases > self trigger received 
 Object {
   "lineageArg": Object {
     "data": Array [
-      98,
-      117,
-      102,
-      102,
-      101,
-      114,
+      21,
+      31,
     ],
     "type": "Buffer",
   },

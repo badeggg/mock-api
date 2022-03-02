@@ -51,8 +51,17 @@ process.on('message', triggerInfo => {
     }
 
     jsResult = normalizeBinObj(jsResult);
-    if (_.isPlainObject(jsResult) && jsResult.isMetaBox && jsResult.response) {
-        jsResult.response = normalizeBinObj(jsResult.response);
+    if (_.isPlainObject(jsResult) && jsResult.isMetaBox) {
+        if (jsResult.response)
+            jsResult.response = normalizeBinObj(jsResult.response);
+        if (_.isPlainObject(jsResult.selfTrigger) && jsResult.selfTrigger.lineageArg)
+            jsResult.selfTrigger.lineageArg = normalizeBinObj(jsResult.selfTrigger.lineageArg);
+        if (_.isArray(jsResult.selfTrigger)) {
+            jsResult.selfTrigger.forEach(tri => {
+                if (tri.lineageArg)
+                    tri.lineageArg = normalizeBinObj(tri.lineageArg);
+            });
+        }
     }
 
     const ret = JSON.stringify({

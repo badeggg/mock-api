@@ -414,6 +414,9 @@ tap.test('websocket general cases', async tap => {
                     };
                 `,
             },
+            'emptyFile': {
+                'ws-response.js': '',
+            },
         },
     });
     let infoMsgs = [];
@@ -738,6 +741,14 @@ tap.test('websocket general cases', async tap => {
             });
             wsc.on('close', (code) => {
                 tap.equal(code, 1007, 'WS_ERR_INVALID_UTF8');
+                resolve();
+            });
+        }),
+        new Promise(resolve => {
+            const wsc = new WebSocket(mockingLocation + '/emptyFile');
+            wsc.on('message', (msg) => {
+                tap.equal(msg.toString(), '{}', 'ws-response.js is an empty file');
+                wsc.close();
                 resolve();
             });
         }),

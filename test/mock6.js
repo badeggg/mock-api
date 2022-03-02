@@ -29,12 +29,12 @@ tap.test('websocket self trigger cases', async tap => {
                                     lineageArg: triggerInfo.lineageArg,
                                 },
                                 selfTrigger: {
-                                    lineageArg: Buffer.from('buffer'),
+                                    lineageArg: new Uint8Array([21,31]),
                                 },
                             };
                         } else if (triggerInfo.triggerName === 'SELF-TRIGGER'
                             && triggerInfo.lineageArg instanceof Buffer
-                            && triggerInfo.lineageArg.toString() === 'buffer') {
+                            && triggerInfo.lineageArg.toString() === '\x15\x1F') {
                             return {
                                 isMetaBox: true,
                                 response: {
@@ -116,7 +116,7 @@ tap.test('websocket self trigger cases', async tap => {
                                         lineageArg: 'self trigger array item1',
                                     },
                                     {
-                                        lineageArg: 'self trigger array item2',
+                                        lineageArg: new Uint32Array([21,31]),
                                     },
                                     {
                                         lineageArg: 'close',
@@ -142,11 +142,26 @@ tap.test('websocket self trigger cases', async tap => {
             'selfTriggerBad': {
                 'ws-response.js': `
                     module.exports = (triggerInfo) => {
-                        if (triggerInfo.triggerName === 'WS-MESSAGE') {
+                        if (triggerInfo.triggerName === 'WS-MESSAGE'
+                            && triggerInfo.currentMessage === '0') {
                             return {
                                 isMetaBox: true,
-                                response: 'ws-open',
+                                response: 'bad self trigger1',
                                 selfTrigger: 1,
+                            };
+                        } else if (triggerInfo.triggerName === 'WS-MESSAGE'
+                            && triggerInfo.currentMessage === '1') {
+                            return {
+                                isMetaBox: true,
+                                response: 'bad self trigger[1]',
+                                selfTrigger: [1],
+                            };
+                        } else if (triggerInfo.triggerName === 'WS-MESSAGE'
+                            && triggerInfo.currentMessage === '2') {
+                            return {
+                                isMetaBox: true,
+                                response: 'bad self trigger"1"',
+                                selfTrigger: "1",
                             };
                         } else if (triggerInfo.triggerName === 'SELF-TRIGGER'){
                             return 'will not be returned';
@@ -248,8 +263,13 @@ tap.test('websocket self trigger cases', async tap => {
             const wsc = new WebSocket(mockingLocation + '/selfTriggerArray');
             let count = 0;
             wsc.on('message', (msg) => {
-                tap.equal(msg.toString(), 'self trigger array item' + count
-                    , 'self trigger array item' + count);
+                if (count !== 2) {
+                    tap.equal(msg.toString(), 'self trigger array item' + count,
+                        'self trigger array item' + count);
+                } else {
+                    tap.equal(msg.toString(), '\x15\x00\x00\x00\x1F\x00\x00\x00',
+                        'normalizeBinObj for lineageArg');
+                }
                 count++;
             });
             wsc.on('close', () => {
@@ -258,12 +278,21 @@ tap.test('websocket self trigger cases', async tap => {
         }),
         new Promise(resolve => {
             const wsc = new WebSocket(mockingLocation + '/selfTriggerBad');
-            wsc.on('open', wsc.send);
+            wsc.on('open', () => {
+                wsc.send(0);
+                wsc.send(1);
+                wsc.send(2);
+            });
+            let arr = [];
             wsc.on('message', (msg) => {
-                tap.equal(msg.toString(), 'ws-open', 'self trigger bad');
-                setTimeout(() => wsc.close(), 500);
+                arr.push(msg.toString());
+                if (arr.length === 3)
+                    setTimeout(() => wsc.close(), 500);
             });
             wsc.on('close', () => {
+                tap.equal(arr[0], 'bad self trigger1', 'bad self trigger1');
+                tap.equal(arr[1], 'bad self trigger[1]', 'bad self trigger[1]');
+                tap.equal(arr[2], 'bad self trigger"1"', 'bad self trigger"1"');
                 resolve();
             });
         }),

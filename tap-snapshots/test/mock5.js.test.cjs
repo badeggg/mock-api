@@ -157,7 +157,9 @@ Array [
   Object {
     "_stringOrBuffer": "String",
     "currentMessage": null,
+    "currentMessageIsBinary": false,
     "lineageArg": null,
+    "lineageArgEscapeBufferRecover": false,
     "params": Object {
       "triggerInfo": "triggerInfo",
     },
@@ -198,6 +200,7 @@ Array [
     "currentMessage": "1",
     "currentMessageIsBinary": false,
     "lineageArg": null,
+    "lineageArgEscapeBufferRecover": false,
     "params": Object {
       "triggerInfo": "triggerInfo",
     },
@@ -249,6 +252,7 @@ Array [
     },
     "currentMessageIsBinary": true,
     "lineageArg": null,
+    "lineageArgEscapeBufferRecover": false,
     "params": Object {
       "triggerInfo": "triggerInfo",
     },
@@ -289,6 +293,7 @@ Array [
     "currentMessage": "string",
     "currentMessageIsBinary": false,
     "lineageArg": null,
+    "lineageArgEscapeBufferRecover": false,
     "params": Object {
       "triggerInfo": "triggerInfo",
     },
