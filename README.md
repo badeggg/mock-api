@@ -466,8 +466,8 @@ module.exports = echo;
 ### Proxy 404
 You may not want to mock all of the api requests.  When there is not a response configuration
 for the api request -- we say 404, which may caused by one of the following reasons:
-1) the correspondinng path does not exist
-2) the correspondinng path is [turned off](#Disable-part-of-the-mocking)
+1) the corresponding path does not exist
+2) the corresponding path is [turned off](#Disable-part-of-the-mocking)
 3) the map rules do not match for http
 4) 'ws-response.js' does not exist for websocket
 
@@ -514,14 +514,47 @@ ws wss://demo.piesocket.com
 [Back To Top](#mock-api)
 
 ### Websocket
-todo
+To configure a websocket mocking service, write a js file named `ws-response.js` in
+corresponding directory. `ws-response.js` exports websocket response or exports a function
+which returns websocket response. A simple example:
+```
+// in /your/project/root/fake-services/ws/path/ws-response.js
+module.exports = 'hi';
+```
+After above file is set, a websocket client connect to `/ws/path` will receive 'hi' when
+connection is open and when a message is sent to server ---- we say 'a trigger'.
+
+A fixed 'hi' message is a little bit boring and not useful. More common cases are
+`ws-response.js` exporting a function which generate response at will. The function receives
+one argument `triggerInfo`, which contains infomation you may need to generate response.
+`triggerInfo`:
+- `triggerName` { 'WS-OPEN' | 'WS-MESSAGE' | 'SELF-TRIGGER' }
+- `currentMessage` { null | String | Buffer }
+- `currentMessageIsBinary`  { Boolean }
+- `request` { http.IncomingMessage(pruned) }
+    The [client HTTP GET request](https://nodejs.org/dist/latest-v16.x/docs/api/http.html#class-httpincomingmessage)
+        ---- pruned to contains only properties:
+    + `complete`
+    + `headers`
+    + `httpVersion`
+    + `method`
+    + `rawHeaders`
+    + `rawTrailers`
+    + `trailers`
+    + `url`
+- `query` { Object }
+- `params` { Object }
+    Path params. Defining path params for websocket is identical with [defining path params for
+    http](#match-request-method)
+- `lineageArg` Type 
+- `lineageArgEscapeBufferRecover` { Boolean }
 
 [Back To Top](#mock-api)
 
 ### Disable part of the mocking
-In some cases you may want to temporarily disable part of the mocking ---- try only two
-or three apis on test environment maybe while the other apis on test environment are not ok
-yet for example. Create a file named 'off' or 'OFF' on some sub folder of fake-services, the
+In some cases you may want to temporarily disable part of the mocking ---- e.g. try only two
+or three apis on test environment while the other apis on test environment are not ok
+yet. Create a file named 'off' or 'OFF' on some sub folder of fake-services, the
 folders that containing 'off' file and all of the sub folders will be considered 404, therefore
 the corresponding request will be proxied as 'proxy404' config. For example:
 ```
@@ -529,7 +562,8 @@ $ cd /your/project/root/fake-services/some/mock/path
 $ touch off
 ```
 After the above commands execution, any request whose path has prefix of `/some/mock/path`
-will be considered as a non-mocking-match request and will be proxied as 'proxy404' file config.
+will be considered as a no-mocking-configuration request and will be proxied as 'proxy404'
+file config.
 
 Notice that an 'off' file in the very fake-services folder will disable all the mockings. This
 is convenient when you want to use full real api services then use mocking services, back and
