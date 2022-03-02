@@ -29,6 +29,8 @@ back-end project if you want.
       + [Delay to respond](#delay-to-respond)
       + [Respond js result](#respond-js-result)
   + [Websocket](#Websocket)
+    + [Generate websocket response]
+    + [Self trigger]
   + [Proxy 404](#Proxy-404)
   + [Disable part of the mocking](#Disable-part-of-the-mocking)
   + [Config file common convention](#config-file-common-convention)
@@ -524,6 +526,7 @@ module.exports = 'hi';
 After above file is set, a websocket client connect to `/ws/path` will receive 'hi' when
 connection is open and when a message is sent to server ---- we say 'a trigger'.
 
+#### Generate websocket response
 A fixed 'hi' message is a little bit boring and not useful. More common cases are
 `ws-response.js` exporting a function which generate response at will. The function receives
 one argument `triggerInfo`, which contains infomation you may need to generate response.
@@ -532,7 +535,7 @@ one argument `triggerInfo`, which contains infomation you may need to generate r
 - `currentMessage` { null | String | Buffer }
 - `currentMessageIsBinary`  { Boolean }
 - `request` { http.IncomingMessage(pruned) }
-    The [client HTTP GET request](https://nodejs.org/dist/latest-v16.x/docs/api/http.html#class-httpincomingmessage)
+    <br>The [client HTTP GET request](https://nodejs.org/dist/latest-v16.x/docs/api/http.html#class-httpincomingmessage)
         ---- pruned to contains only properties:
     + `complete`
     + `headers`
@@ -544,10 +547,14 @@ one argument `triggerInfo`, which contains infomation you may need to generate r
     + `url`
 - `query` { Object }
 - `params` { Object }
-    Path params. Defining path params for websocket is identical with [defining path params for
+    <br>Path params. Defining path params for websocket is identical with [defining path params for
     http](#match-request-method)
-- `lineageArg` Type 
+- `lineageArg`
+    <br>Infomation that a self trigger want pass to triggering. Type is dependent on self
+    trigger specification.  Check [self trigger](#self-trigger).
 - `lineageArgEscapeBufferRecover` { Boolean }
+
+#### Self trigger
 
 [Back To Top](#mock-api)
 
