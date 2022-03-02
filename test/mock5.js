@@ -361,15 +361,15 @@ tap.test('websocket general cases', async tap => {
                             case 2:
                                 return {
                                     isMetaBox: true,
-                                    actionDelay: '500',
-                                    response: '500ms delay',
+                                    actionDelay: '1000',
+                                    response: '1000ms delay',
                                 };
                             case 3:
                                 return {
                                     isMetaBox: true,
                                     action: 'ping',
-                                    actionDelay: '1000ms',
-                                    response: '1000ms delay ping',
+                                    actionDelay: '1200ms',
+                                    response: '1200ms delay ping',
                                 };
                             case 4:
                                 return {
@@ -694,10 +694,10 @@ tap.test('websocket general cases', async tap => {
                 obj[reason.toString()] = new Date().getTime();
                 tap.equal(Math.abs(obj['bad delay'] - obj['no delay']) < 200,
                     true, 'bad delay');
-                tap.equal(Math.abs(obj['500ms delay'] - 500 - obj['no delay']) < 200,
-                    true, '500ms delay');
-                tap.equal(Math.abs(obj['1000ms delay ping'] - 1000 - obj['no delay']) < 200,
-                    true, '1000ms delay ping');
+                tap.equal(Math.abs(obj['1000ms delay'] - 1000 - obj['no delay']) < 300,
+                    true, '1000ms delay');
+                tap.equal(Math.abs(obj['1200ms delay ping'] - 1200 - obj['no delay']) < 300,
+                    true, '1200ms delay ping');
                 tap.equal(Math.abs(obj['1500ms delay pong'] - 1500 - obj['no delay']) < 300,
                     true, '1500ms delay pong');
                 tap.equal(Math.abs(obj['2000ms delay close'] - 2000 - obj['no delay']) < 400,
