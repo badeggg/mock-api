@@ -570,12 +570,16 @@ Returned value of the exporting function can be any type.
 [Back To Top](#mock-api)
 
 #### Base design of websocket mocking
-Websocket mocking use the same port as http mocking. `ws-response.js` is executed in a
-child process ---- so as the specified 'http-response.js' for http connections. We do this
-1) to avoid any potential disturbing to 'mock-api' main process 2) and to make sure every
-chang of the file will take effect immediately. Every new websocket connection starts a new
+Websocket mocking use the same port as http mocking.
+
+`ws-response.js` is executed in a child process ---- so as the specified 'http-response.js'
+for http connections. We do this
+1) to avoid any potential disturbing to 'mock-api' main process
+2) to make sure every change of the file will take effect immediately.
+
+Every new websocket connection starts a new
 child process to execute `ws-response.js`, and the child process live until connection down.
-So changing of `ws-response.js` does not effect until next connection. And you may save some
+So change of `ws-response.js` does not effect until next connection. And you may save some
 information for use during a connection life.
 
 [Back To Top](#mock-api)
