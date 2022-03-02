@@ -561,7 +561,13 @@ need to generate response.
 [Back To Top](#mock-api)
 
 ##### Returned value
-Returned value of the exporting function can be any type.
+Returned value of the exporting function is either a direct response or a meta box which
+surround the response. A meta box is used to specify a flexible response behavior.
+
+Rules of a direct response:
+- A falss response will
+
+A fixed exporting result apply to the rules of returned value of function.
 
 [Back To Top](#mock-api)
 
