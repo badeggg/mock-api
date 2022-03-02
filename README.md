@@ -191,7 +191,7 @@ matchs.
 
 The map file is optional. If this map file does not exist, contents in './response' will
 be sent to client.  Lines starting with '#' will be ignored, any content after '#' will
-also be ignored. Each line is a map rule, each map rule is space-separated.
+also be ignored. Each line is a map rule, elements in map rule are space-separated.
 Check [config file common convention](#config-file-common-convention). 'Mock-api' will
 try to find a matching rule from the first line to the end line. A found matching rule
 will block any further search. If no matching rule is found, the default response file
@@ -464,42 +464,51 @@ module.exports = echo;
 <hr>
 
 ### Proxy 404
-You may not want to mock all of the api requests.
-When there is not a match rule for the api request -- we say 404 either because the
-correspondinng path does not exist or the map rules do not match, 'mock-api'
-will proxy the request to the location specified by
+You may not want to mock all of the api requests.  When there is not a response configuration
+for the api request -- we say 404, which may caused by one of the following reasons:
+1) the correspondinng path does not exist
+2) the correspondinng path is [turned off](#Disable-part-of-the-mocking)
+3) the map rules do not match for http
+4) 'ws-response.js' does not exist for websocket
+
+'Mock-api' will proxy the request to the location specified by
 **/your/project/root/fake-services/proxy404**. e.g.:
 ```
 $ echo 'https://nodejs.org' > /your/project/root/fake-services/proxy404
 ```
-After the above command execution, all non-mocking-match requests will be proxied to
+After the above command execution, all no-mocking-configuration requests will be proxied to
 https://nodejs.org.
 
-In some cases, a single proxy 404 can not satisfy your requirement. You may configure multiple
-proxy 404 destinations in `proxy404` file.
+In some cases, a single proxy 404 rule can not satisfy your requirement. You may configure
+multiple proxy 404 destinations in `proxy404` file.
 
 In proxy404 file, lines starting with '#' will be ignored, any content after '#' will also be
-ignored.  Each line is a proxy404 rule, each proxy404 rule is space-separated.
-Check [config file common convention](#config-file-common-convention). The first element in a
-rule is regarded as a regular expression to match the request path, the second element is the
-corresponding destination, any other elements are ignored. If a proxy404 rule has only one
-element, the regular expression to match is implicitly set `.*`, that means any path, and the
-one only element is the destination. Configuration lines are order sensitive. 'Mock-api' will
-try to find a matching rule from the first line to the end line. A found matching rule will
-block any further search. If no matching rule is found, 404 is then responded.
+ignored.  Each line is a proxy404 rule, elements in proxy404 rule are space-separated.
+Check [config file common convention](#config-file-common-convention).
+
+Syntax of the proxy 404 rule is: `[http | ws | HTTP | WS] [match regexp] destination`
+
+If `[http | ws | HTTP | WS]` is not set in a rule, it is regarded as an http rule. If
+`match regexp` is not set in a rule, the regular expression is implicitly set to `.*`, that
+means any path. The destination is a rule must be a valid url(`new URL('destination')` is used
+to validate).
+
+Configuration lines are order sensitive. 'Mock-api' will try to find a matching rule from the
+first line to the end line. A found matching rule will block any further search. If no
+matching rule is found, 404 is then responded.
 
 e.g.:
 ```
 # Contents of /your/project/root/fake-services/proxy404.
 #
 # Configuration in this file will have the effect:
-# 1) any non-mocking-match request whose path has 'baidu' text will be proxyed to https://baidu.com;
-# 2) any non-mocking-match request whose path has 'bing' text will be proxyed to https://bing.com;
-# 3) the rest non-mocking-match request will be proxied to https://bing.com;
+# 1) any no-mocking-configuration request whose path has 'baidu' text will be proxyed to https://baidu.com;
+# 2) any no-mocking-configuration request whose path has 'bing' text will be proxyed to https://bing.com;
+# 3) any no-mocking-configuration websocket request will be proxied to wss://demo.piesocket.com;
 
 baidu https://baidu.com
 bing https://bing.com
-https://nodejs.org
+ws wss://demo.piesocket.com
 ```
 
 [Back To Top](#mock-api)
@@ -535,7 +544,7 @@ convention:
 - any content after #(pound sign) in a line is comment, which will be ignored
 - a backslash in the last character of a line will cause the next
   line(if any) concated to current line.
-- items in a config unit(a line) is separated by one or more white
+- elements in a config unit(a line) is separated by one or more white
   space character(s), including space, tab, form feed, line feed,
   and other Unicode spaces
 - 'pair chars' can help to set special characters in an item. Supported pair chars includes:
@@ -550,7 +559,7 @@ convention:
   'half pair char" in another pair chars' is "ignored
   ```
 
-The items in a config unit may have different meaning for different
+The elements in a config unit may have different meaning for different
 config purpose.
 
 [Back To Top](#mock-api)
