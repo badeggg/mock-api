@@ -4,15 +4,14 @@
  * A helper to execute the specified js script which supposed to generate the **websocket**
  * response content. The js script should export the desired response content or a function
  * which returns the response content. If the export is a function, it will receive an
- * argument. Argument is websocket response trigger information, which is an object contains
- * { triggerName, currentMessage, request, query, params, lineageArg }.
+ * argument ---- triggerInfo. Check https://github.com/badeggg/mock-api#argument-triggerinfo.
  *
  * The reasons that we need this helper are 1) we do not want any cache for the js script
  * so that every change in it will take effect immediately, and 2) we do not want 'outer'
  * js code bother mock-api self.
  *
  * @zhaoxuxu @2021-2-14 write
- * @zhaoxuxu @2022-2-24 update
+ * @zhaoxuxu @2022-3-2  update
  */
 
 const _ = require('lodash');

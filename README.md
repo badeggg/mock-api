@@ -30,7 +30,7 @@ back-end project if you want.
       + [Respond js result](#respond-js-result)
   + [Websocket](#Websocket)
     + [Generate websocket response](#generate-websocket-response)
-        + [Argument `triggerInfo`]
+        + [Argument `triggerInfo`](#argument-triggerinfo)
     + [Self trigger](#self-trigger)
   + [Proxy 404](#Proxy-404)
   + [Disable part of the mocking](#Disable-part-of-the-mocking)
@@ -532,8 +532,8 @@ A fixed 'hi' message is a little bit boring and not useful. More common cases ar
 `ws-response.js` exporting a function which generate response at will.
 
 ##### Argument `triggerInfo`
-The function receives
-one argument `triggerInfo`, which contains infomation you may need to generate response.
+The exporting function receives one argument `triggerInfo`, which contains infomation you may
+need to generate response.
 `triggerInfo`:
 - `triggerName` { 'WS-OPEN' | 'WS-MESSAGE' | 'SELF-TRIGGER' }
 - `currentMessage` { null | String | Buffer }
@@ -560,7 +560,23 @@ one argument `triggerInfo`, which contains infomation you may need to generate r
 
 [Back To Top](#mock-api)
 
+##### Returned value
+Returned value of the exporting function can be any type.
+
+[Back To Top](#mock-api)
+
 #### Self trigger
+
+[Back To Top](#mock-api)
+
+#### Base design of websocket mocking
+Websocket mocking use the same port as http mocking. `ws-response.js` is executed in a
+child process ---- so as the specified 'http-response.js' for http connections. We do this
+1) to avoid any potential disturbing to 'mock-api' main process 2) and to make sure every
+chang of the file will take effect immediately. Every new websocket connection starts a new
+child process to execute `ws-response.js`, and the child process live until connection down.
+So changing of `ws-response.js` does not effect until next connection. And you may save some
+information for use during a connection life.
 
 [Back To Top](#mock-api)
 
@@ -624,7 +640,7 @@ config purpose.
 - touch an 'off' file in the very fake-services filder to turn off all mocking and use full
   real api services, remove it to back using mock.
   Check [disable part of the mocking](#Disable-part-of-the-mocking)
-- a very long config line can be seperated to multiple lines with a trailing backslash(\\)
+- a very long config line can be separated to multiple lines with a trailing backslash(\\)
 
 [Back To Top](#mock-api)
 
