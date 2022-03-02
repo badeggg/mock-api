@@ -29,8 +29,8 @@ back-end project if you want.
       + [Delay to respond](#delay-to-respond)
       + [Respond js result](#respond-js-result)
   + [Websocket](#Websocket)
-    + [Generate websocket response]
-    + [Self trigger]
+    + [Generate websocket response](#generate-websocket-response)
+    + [Self trigger](#self-trigger)
   + [Proxy 404](#Proxy-404)
   + [Disable part of the mocking](#Disable-part-of-the-mocking)
   + [Config file common convention](#config-file-common-convention)
@@ -553,6 +553,8 @@ one argument `triggerInfo`, which contains infomation you may need to generate r
     <br>Infomation that a self trigger want pass to triggering. Type is dependent on self
     trigger specification.  Check [self trigger](#self-trigger).
 - `lineageArgEscapeBufferRecover` { Boolean }
+
+[Back To Top](#mock-api)
 
 #### Self trigger
 
