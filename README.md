@@ -30,6 +30,7 @@ back-end project if you want.
       + [Respond js result](#respond-js-result)
   + [Websocket](#Websocket)
     + [Generate websocket response](#generate-websocket-response)
+        + [Argument `triggerInfo`]
     + [Self trigger](#self-trigger)
   + [Proxy 404](#Proxy-404)
   + [Disable part of the mocking](#Disable-part-of-the-mocking)
@@ -528,7 +529,10 @@ connection is open and when a message is sent to server ---- we say 'a trigger'.
 
 #### Generate websocket response
 A fixed 'hi' message is a little bit boring and not useful. More common cases are
-`ws-response.js` exporting a function which generate response at will. The function receives
+`ws-response.js` exporting a function which generate response at will.
+
+##### Argument `triggerInfo`
+The function receives
 one argument `triggerInfo`, which contains infomation you may need to generate response.
 `triggerInfo`:
 - `triggerName` { 'WS-OPEN' | 'WS-MESSAGE' | 'SELF-TRIGGER' }
