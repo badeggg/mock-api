@@ -62,10 +62,10 @@ The design is simple. 'mock-api' starts a service on local computer, respond to 
 according to mock configuration. Mock configuration should be placed on `fake-services` folder
 on project root directory.
 
-'mock-api' will create a file named `.mockingLocation` on project root to indicate the http
+'Mock-api' will create a file named `.mockingLocation` on project root to indicate the http
 mocking location(replace string 'http' with 'ws' to get websocket mocking location).
 
-'mock-api' exports a function which returns a promise that will resolve the
+'Mock-api' exports a function which returns a promise that will resolve the
 mocking server. Mocking srever is an instance of
 [http.Server](https://nodejs.org/dist/latest-v16.x/docs/api/http.html#class-httpserver).
 `mockingServer.getHttpLocation()` to get http mocking location,
@@ -185,8 +185,9 @@ api mocking. Check [proxy 404 feature](#Proxy-404).
 [Back To Top](#mock-api)
 
 ### The map file
-This file is used to configure how to response a **http** api request with current path. We say
-'current path' means the directory where the map file is in and the api request path matchs.
+The map file is used to configure how to respond an **http** api request with current path.
+We say 'current path' means the directory where the map file is in and the api request path
+matchs.
 
 The map file is optional. If this map file does not exist, contents in './response' will
 be sent to client.  Lines starting with '#' will be ignored, any content after '#' will
