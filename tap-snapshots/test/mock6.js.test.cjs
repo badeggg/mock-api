@@ -52,7 +52,6 @@ Array [
   "error: Bad selfTrigger property result '\\"1\\"' when trigger ./ws-response.js Refer doc for details.",
   "error: Bad selfTrigger property result '1' when trigger ./ws-response.js Refer doc for details.",
   "error: Bad selfTrigger property result '[1]' when trigger ./ws-response.js Refer doc for details.",
-  "error: The connection is not ready or is closing or has been closed.",
 ]
 `
 

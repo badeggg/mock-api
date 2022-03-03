@@ -166,3 +166,74 @@ tap.test('helperProcess killed when self trigger', async tap => {
 
     mockServer.close();
 });
+
+tap.test('helperProcess send message when websocket is not ok', async tap => {
+    const fakeServicesDir = tap.testdir({
+        'fake-services': {
+            'ws-response.js': `
+                module.exports = (triggerInfo) => {
+                    if (triggerInfo.triggerName === 'WS-OPEN') {
+                        return {
+                            isMetaBox: true,
+                            selfTrigger: [
+                                {
+                                    lineageArg: 'close',
+                                },
+                                {
+                                    triggerDelay: 1000,
+                                    lineageArg: 'after close, will cause error log',
+                                },
+                            ],
+                        };
+                    } else if (triggerInfo.triggerName === 'SELF-TRIGGER'
+                        && triggerInfo.lineageArg === 'close') {
+                        return {
+                            isMetaBox: true,
+                            action: 'close',
+                        };
+                    } else if (triggerInfo.triggerName === 'SELF-TRIGGER'
+                        && triggerInfo.lineageArg.startsWith('after close')) {
+                        return {};
+                    }
+                };
+            `,
+        },
+    });
+    let errorMsgs = [];
+    let hijackedHelperProcess;
+    const mock = tap.mock('../src/mock.js', {
+        '../src/utils/getProjectRoot.js': () => fakeServicesDir,
+        '../src/utils/log.js': {
+            info: () => {},
+            warn: () => {},
+            error: (msg) => errorMsgs.push('error: ' + msg),
+        },
+        'child_process': {
+            ...child_process,
+            fork: function () {
+                hijackedHelperProcess = child_process.fork(...arguments);
+                hijackedHelperProcess.originalKill =
+                    hijackedHelperProcess.kill.bind(hijackedHelperProcess);
+                hijackedHelperProcess.kill = () => {};
+                return hijackedHelperProcess;
+            },
+        },
+    });
+
+    const mockServer = await mock(3093);
+    const mockingLocation = `ws://localhost:${mockServer.address().port}`;
+
+    await new Promise(resolve => {
+        const wsc = new WebSocket(mockingLocation);
+        wsc.on('close', (msg) => {
+            setTimeout(() => {
+                hijackedHelperProcess.originalKill();
+                resolve();
+            }, 3000);
+        });
+    });
+
+    tap.matchSnapshot(errorMsgs.sort(), 'log errors');
+
+    mockServer.close();
+});

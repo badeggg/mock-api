@@ -121,9 +121,6 @@ tap.test('websocket self trigger cases', async tap => {
                                     {
                                         lineageArg: 'close',
                                     },
-                                    {
-                                        lineageArg: 'after close, will cause error log',
-                                    },
                                 ],
                             };
                         } else if (triggerInfo.triggerName === 'SELF-TRIGGER'
