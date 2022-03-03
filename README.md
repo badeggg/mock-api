@@ -525,7 +525,11 @@ which returns websocket response. A simple example:
 module.exports = 'hi';
 ```
 After above file is set, a websocket client connect to `/ws/path` will receive 'hi' when
-connection is open and when a message is sent to server ---- we say 'a trigger'.
+connection is open and when a message is sent to server ---- we say 'a trigger'. There are
+three types of trigger:
+- `WS-OPEN`, when websocket is opened
+- `WS-MESSAGE`, when a new message is received
+- [`SELF-TRIGGER`](#self-trigger), defined by a previous response meta box
 
 #### Generate websocket response
 A fixed 'hi' message is a little bit boring and not useful. More common cases are
@@ -565,7 +569,8 @@ Returned value of the exporting function is either a direct response or a meta b
 surround the response. A meta box is used to specify a flexible response behavior.
 
 Rules of a direct response:
-- A falss response will
+- All response
+- A false response will
 
 A fixed exporting result apply to the rules of returned value of function.
 
