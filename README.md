@@ -569,7 +569,7 @@ need to generate response.
 Returned value of the exporting function is either a direct response or a meta box which
 surround the response. A meta box is used to specify a flexible response behavior.
 
-Rules of a direct response:
+Rules of a direct response: <a name="Rules-of-a-direct-response"></a>
 - By default, [`send`](https://github.com/websockets/ws/blob/master/doc/ws.md#websocketsenddata-options-callback)
   action is used for all responses.
 - A false response will not be sent by default ---- Boolean(response) to validate. Set
