@@ -540,7 +540,8 @@ The exporting function receives one argument `triggerInfo`, which contains infom
 need to generate response.
 `triggerInfo`:
 - `triggerName` { 'WS-OPEN' | 'WS-MESSAGE' | 'SELF-TRIGGER' }
-- `currentMessage` { null | String | Buffer }
+- `currentMessage` { null | String | Buffer } <br>
+    Message received from client.
 - `currentMessageIsBinary`  { Boolean }
 - `request` { http.IncomingMessage(pruned) } <br>
     The [client HTTP GET request](https://nodejs.org/dist/latest-v16.x/docs/api/http.html#class-httpincomingmessage)
@@ -556,7 +557,7 @@ need to generate response.
 - `query` { Object }
 - `params` { Object } <br>
     Path params. Defining path params for websocket is identical with [defining path params for
-    http](#match-request-method)
+    http](#match-request-method).
 - `lineageArg` <br>
     Infomation that a self trigger want pass to triggering. Type is dependent on self
     trigger specification.  Check [self trigger](#self-trigger).
@@ -625,6 +626,8 @@ value. An self trigger object may have properties:
     ```
 - `lineageArg` <br>
     Optional. Infomation that a self trigger want pass to triggering.
+    Any binary type object (Buffer, ArrayBuffer, TypedArray, DataView) is normalized to 'Buffer'
+    type. [Code detail](https://github.com/badeggg/mock-api/blob/master/src/utils/normalizeBinObj.js).
 - `lineageArgEscapeBufferRecover` <br>
     Usually you just leave it alone.<br>
     Check [base design of websocket mocking](#base-design-of-websocket-mocking)
