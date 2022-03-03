@@ -578,7 +578,7 @@ Rules of a direct response:
   type. [Code detail](https://github.com/badeggg/mock-api/blob/master/src/utils/normalizeBinObj.js).
 
 Rules of a surrounding meta box:
-- A meta box must be an object with `isMetaBox` property set
+- A meta box must be an object with `isMetaBox` property set.
 - Properties of a meta box:
     + `isMetaBox` { Boolean } <br>
         Must be set true to define a meta box.
@@ -586,7 +586,7 @@ Rules of a surrounding meta box:
         Response to websocket client. Rules of a direct response apply to this property
         when action is 'SEND'. When action is 'PING' or 'PONG', response is
         [ping data](https://github.com/websockets/ws/blob/master/doc/ws.md#websocketpingdata-mask-callback)
-        or [pong data](https://github.com/websockets/ws/blob/master/doc/ws.md#websocketpongdata-mask-callback)
+        or [pong data](https://github.com/websockets/ws/blob/master/doc/ws.md#websocketpongdata-mask-callback).
         When action is 'CLOSE', response should be empty or an object with `code` and `reason`
         properties which to be used with [close](https://github.com/websockets/ws/blob/master/doc/ws.md#websocketclosecode-reason).
     + `responseEscapeBufferRecover` { Boolean } <br>
@@ -596,7 +596,7 @@ Rules of a surrounding meta box:
     + `insistSendEmpty`: { Boolean } <br>
         Usually you just leave it alone.<br>
         Recall that a false response is not sent to client by default. You may set
-        `insistSendEmpty` change that behavior.
+        `insistSendEmpty` to change that behavior.
     + `actionDelay`: { Number | String }
         Delay to act. Default is 0. e.g.:
         ```
@@ -616,7 +616,7 @@ The rules of returned value of function apply to fixed exporting result.
 #### Self trigger
 `ws-response.js` can be triggered by self. This is useful when you want specify autonomous
 response to client. To do so, set returned `metabox.selfTrigger` property with an object
-value. An self trigger object may have properties:
+value. A self trigger object may have properties:
 - `triggerDelay` { Number | String } <br>
     Optional. e.g.:
     ```
@@ -632,6 +632,12 @@ value. An self trigger object may have properties:
     Usually you just leave it alone.<br>
     Check [base design of websocket mocking](#base-design-of-websocket-mocking)
     for details.
+
+If you just want a self trigger with no property decoration, set `selfTrigger` with `{}`. A
+value like `true` or `1` will not work.
+
+If you want multiple self trigger in a single returned meta box, set `selfTrigger` with an
+array of trigger object.
 
 [Back To Top](#mock-api)
 
