@@ -569,12 +569,12 @@ Returned value of the exporting function is either a direct response or a meta b
 surround the response. A meta box is used to specify a flexible response behavior.
 
 Rules of a direct response:
-- By default, [`send`](#https://github.com/websockets/ws/blob/master/doc/ws.md#websocketsenddata-options-callback)
+- By default, [`send`](https://github.com/websockets/ws/blob/master/doc/ws.md#websocketsenddata-options-callback)
   action is used for all responses.
 - A false response will not be sent by default ---- Boolean(response) to validate. Set
   `metabox.insistSendEmpty` to send false response.
 - Any binary type object (Buffer, ArrayBuffer, TypedArray, DataView) is normalized to 'Buffer'
-  type. [Code detail](#https://github.com/badeggg/mock-api/blob/master/src/utils/normalizeBinObj.js).
+  type. [Code detail](https://github.com/badeggg/mock-api/blob/master/src/utils/normalizeBinObj.js).
 
 Rules of a surrounding meta box:
 - A meta box must be an object with `isMetaBox` property set
