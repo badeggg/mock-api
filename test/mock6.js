@@ -78,15 +78,15 @@ tap.test('websocket self trigger cases', async tap => {
                                 isMetaBox: true,
                                 response: 'no delay self triggered',
                                 selfTrigger: {
-                                    triggerDelay: 1000,
-                                    lineageArg: 'delay 1000ms trigger',
+                                    triggerDelay: 2000,
+                                    lineageArg: 'delay 2000ms trigger',
                                 },
                             };
                         } else if (triggerInfo.triggerName === 'SELF-TRIGGER'
-                            && triggerInfo.lineageArg === 'delay 1000ms trigger') {
+                            && triggerInfo.lineageArg === 'delay 2000ms trigger') {
                             return {
                                 isMetaBox: true,
-                                response: 'delay 1000ms self triggered',
+                                response: 'delay 2000ms self triggered',
                                 selfTrigger: {
                                     lineageArg: 'close',
                                 },
@@ -253,9 +253,9 @@ tap.test('websocket self trigger cases', async tap => {
                     Math.abs(obj['no delay self triggered'] - obj['ws open response']) < 200,
                     true, 'bad self trigger delay');
                 tap.equal(
-                    Math.abs(obj['delay 1000ms self triggered'] - 1000
-                        - obj['ws open response']) < 300,
-                    true, 'delay 1000ms self triggered');
+                    Math.abs(obj['delay 2000ms self triggered'] - 2000
+                        - obj['ws open response']) < 500,
+                    true, 'delay 2000ms self triggered');
                 resolve();
             });
         }),

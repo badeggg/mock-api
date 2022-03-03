@@ -361,31 +361,31 @@ tap.test('websocket general cases', async tap => {
                             case 2:
                                 return {
                                     isMetaBox: true,
-                                    actionDelay: '1000',
-                                    response: '1000ms delay',
+                                    actionDelay: '2000',
+                                    response: '2000ms delay',
                                 };
                             case 3:
                                 return {
                                     isMetaBox: true,
                                     action: 'ping',
-                                    actionDelay: '1200ms',
-                                    response: '1200ms delay ping',
+                                    actionDelay: '2200ms',
+                                    response: '2200ms delay ping',
                                 };
                             case 4:
                                 return {
                                     isMetaBox: true,
                                     action: 'pong',
-                                    actionDelay: '1.5s',
-                                    response: '1500ms delay pong',
+                                    actionDelay: '2.5s',
+                                    response: '2500ms delay pong',
                                 };
                             case 5:
                                 return {
                                     isMetaBox: true,
                                     action: 'close',
-                                    actionDelay: '2.s',
+                                    actionDelay: '3.s',
                                     response: {
                                         code: 3336,
-                                        reason: '2000ms delay close'
+                                        reason: '3000ms delay close'
                                     },
                                 };
                         }
@@ -694,14 +694,14 @@ tap.test('websocket general cases', async tap => {
                 obj[reason.toString()] = new Date().getTime();
                 tap.equal(Math.abs(obj['bad delay'] - obj['no delay']) < 200,
                     true, 'bad delay');
-                tap.equal(Math.abs(obj['1000ms delay'] - 1000 - obj['no delay']) < 300,
-                    true, '1000ms delay');
-                tap.equal(Math.abs(obj['1200ms delay ping'] - 1200 - obj['no delay']) < 300,
-                    true, '1200ms delay ping');
-                tap.equal(Math.abs(obj['1500ms delay pong'] - 1500 - obj['no delay']) < 300,
-                    true, '1500ms delay pong');
-                tap.equal(Math.abs(obj['2000ms delay close'] - 2000 - obj['no delay']) < 400,
-                    true, '2000ms delay close');
+                tap.equal(Math.abs(obj['2000ms delay'] - 2000 - obj['no delay']) < 500,
+                    true, '2000ms delay');
+                tap.equal(Math.abs(obj['2200ms delay ping'] - 2200 - obj['no delay']) < 500,
+                    true, '2200ms delay ping');
+                tap.equal(Math.abs(obj['2500ms delay pong'] - 2500 - obj['no delay']) < 500,
+                    true, '2500ms delay pong');
+                tap.equal(Math.abs(obj['3000ms delay close'] - 3000 - obj['no delay']) < 500,
+                    true, '3000ms delay close');
                 resolve();
             });
         }),

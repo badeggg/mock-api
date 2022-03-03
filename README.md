@@ -542,8 +542,8 @@ need to generate response.
 - `triggerName` { 'WS-OPEN' | 'WS-MESSAGE' | 'SELF-TRIGGER' }
 - `currentMessage` { null | String | Buffer }
 - `currentMessageIsBinary`  { Boolean }
-- `request` { http.IncomingMessage(pruned) }
-    <br>The [client HTTP GET request](https://nodejs.org/dist/latest-v16.x/docs/api/http.html#class-httpincomingmessage)
+- `request` { http.IncomingMessage(pruned) } <br>
+    The [client HTTP GET request](https://nodejs.org/dist/latest-v16.x/docs/api/http.html#class-httpincomingmessage)
         ---- pruned to contains only properties:
     + `complete`
     + `headers`
@@ -554,11 +554,11 @@ need to generate response.
     + `trailers`
     + `url`
 - `query` { Object }
-- `params` { Object }
-    <br>Path params. Defining path params for websocket is identical with [defining path params for
+- `params` { Object } <br>
+    Path params. Defining path params for websocket is identical with [defining path params for
     http](#match-request-method)
-- `lineageArg`
-    <br>Infomation that a self trigger want pass to triggering. Type is dependent on self
+- `lineageArg` <br>
+    Infomation that a self trigger want pass to triggering. Type is dependent on self
     trigger specification.  Check [self trigger](#self-trigger).
 - `lineageArgEscapeBufferRecover` { Boolean }
 
@@ -579,18 +579,35 @@ Rules of a direct response:
 Rules of a surrounding meta box:
 - A meta box must be an object with `isMetaBox` property set
 - Properties of a meta box:
-    + `isMetaBox` { Boolean }
-    + `response`
-        <br>Response to websocket client. Rules of a direct response apply to this property
+    + `isMetaBox` { Boolean } <br>
+        Must be set true to define a meta box.
+    + `response` <br>
+        Response to websocket client. Rules of a direct response apply to this property
         when action is 'SEND'. When action is 'PING' or 'PONG', response is
         [ping data](https://github.com/websockets/ws/blob/master/doc/ws.md#websocketpingdata-mask-callback)
         or [pong data](https://github.com/websockets/ws/blob/master/doc/ws.md#websocketpongdata-mask-callback)
-    + `responseEscapeBufferRecover` { Boolean }
-        <br>There is a JSON.stringify / JSON.parse phase when passing response back to main process from
-        executing 'ws-response.js' child process.
-    + `insistSendEmpty`: false,
-    + `actionDelay`: 500,
-    + `action`: 'SEND', // 'SEND' | 'PING' | 'PONG' | 'CLOSE'
+        When action is 'CLOSE', response should be empty or an object with `code` and `reason`
+        properties which to be used with [close](https://github.com/websockets/ws/blob/master/doc/ws.md#websocketclosecode-reason).
+    + `responseEscapeBufferRecover` { Boolean } <br>
+        Usually you just leave it alone.<br>
+        There is a JSON.stringify / JSON.parse phase when passing response back to main
+        process from executing 'ws-response.js' child process. A 'Buffer' type value is
+        turned to an object like `{ type: 'Buffer', data: [ 1, 2, 3 ] }` after this phase.
+        'Mock-api' automatically recover it to a Buffer. If you fortunately want the response
+        is an object like that, you need set `responseEscapeBufferRecover` true.
+    + `insistSendEmpty`: { Boolean } <br>
+        Usually you just leave it alone.<br>
+        Recall that a false response is not sent to client by default. You may set
+        `insistSendEmpty` change that behavior.
+    + `actionDelay`: { Number | String }
+        Delay to act. Default is 0. e.g.:
+        ```
+        500      // 500 ms delay
+        '1000ms' // 1000 ms delay
+        '1.5s'   // 1.5s delay
+        ```
+    + `action` { 'SEND' | 'PING' | 'PONG' | 'CLOSE' | 'send' | 'ping' | 'pong' | 'close' } <br>
+        Response action. Default is 'SEND'.
     + selfTrigger: {
     +     triggerDelay: 500,
     +     lineageArg: 'what ws-response.js want to heritage',
