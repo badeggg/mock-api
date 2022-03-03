@@ -569,10 +569,35 @@ Returned value of the exporting function is either a direct response or a meta b
 surround the response. A meta box is used to specify a flexible response behavior.
 
 Rules of a direct response:
-- All response
-- A false response will
+- By default, [`send`](#https://github.com/websockets/ws/blob/master/doc/ws.md#websocketsenddata-options-callback)
+  action is used for all responses.
+- A false response will not be sent by default ---- Boolean(response) to validate. Set
+  `metabox.insistSendEmpty` to send false response.
+- Any binary type object (Buffer, ArrayBuffer, TypedArray, DataView) is normalized to 'Buffer'
+  type. [Code detail](#https://github.com/badeggg/mock-api/blob/master/src/utils/normalizeBinObj.js).
 
-A fixed exporting result apply to the rules of returned value of function.
+Rules of a surrounding meta box:
+- A meta box must be an object with `isMetaBox` property set
+- Properties of a meta box:
+    + `isMetaBox` { Boolean }
+    + `response`
+        <br>Response to websocket client. Rules of a direct response apply to this property
+        when action is 'SEND'. When action is 'PING' or 'PONG', response is
+        [ping data](https://github.com/websockets/ws/blob/master/doc/ws.md#websocketpingdata-mask-callback)
+        or [pong data](https://github.com/websockets/ws/blob/master/doc/ws.md#websocketpongdata-mask-callback)
+    + `responseEscapeBufferRecover` { Boolean }
+        <br>There is a JSON.stringify / JSON.parse phase when passing response back to main process from
+        executing 'ws-response.js' child process.
+    + `insistSendEmpty`: false,
+    + `actionDelay`: 500,
+    + `action`: 'SEND', // 'SEND' | 'PING' | 'PONG' | 'CLOSE'
+    + selfTrigger: {
+    +     triggerDelay: 500,
+    +     lineageArg: 'what ws-response.js want to heritage',
+    +     lineageArgEscapeBufferRecover: false,
+    + } | [{}],
+
+The rules of returned value of function apply to fixed exporting result.
 
 [Back To Top](#mock-api)
 

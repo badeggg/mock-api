@@ -95,11 +95,11 @@ module.exports = (ws, req, wsResponseFilePath) => {
              * A meta box js result:
              * {
              *      isMetaBox: true,
-             *      responseEscapeBufferRecover: true,
              *      response: 'response content',
+             *      responseEscapeBufferRecover: true,
              *      insistSendEmpty: false,
-             *      actionDelay: 500,
              *      action: 'SEND', // 'SEND' | 'PING' | 'PONG' | 'CLOSE'
+             *      actionDelay: 500,
              *      selfTrigger: {
              *          triggerDelay: 500,
              *          lineageArg: 'what ws-response.js want to heritage',
