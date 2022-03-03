@@ -420,7 +420,8 @@ For example:
 **-r, --res-js-result**<br>
 
 Whether evaluate the response js file and respond the result. The specifed response file path
-must have '.js' extension and export a function, an object, an array or a js primitive value.
+must have '.js' extension and export a function, an plain object, an array, a js primitive
+value or a binary type object (Buffer, ArrayBuffer, TypedArray, DataView).
 
 This feature is useful when you 1) need mock a big json response and are tired of json syntax
 fixing line by line, e.g. ' --> "; 2) need some simple logic to generate response by request
