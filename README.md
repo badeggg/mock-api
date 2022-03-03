@@ -590,11 +590,8 @@ Rules of a surrounding meta box:
         properties which to be used with [close](https://github.com/websockets/ws/blob/master/doc/ws.md#websocketclosecode-reason).
     + `responseEscapeBufferRecover` { Boolean } <br>
         Usually you just leave it alone.<br>
-        There is a JSON.stringify / JSON.parse phase when passing response back to main
-        process from executing 'ws-response.js' child process. A 'Buffer' type value is
-        turned to an object like `{ type: 'Buffer', data: [ 1, 2, 3 ] }` after this phase.
-        'Mock-api' automatically recover it to a Buffer. If you fortunately want the response
-        is an object like that, you need set `responseEscapeBufferRecover` true.
+        Check [base design of websocket mocking](#base-design-of-websocket-mocking)
+        for details.
     + `insistSendEmpty`: { Boolean } <br>
         Usually you just leave it alone.<br>
         Recall that a false response is not sent to client by default. You may set
@@ -608,17 +605,30 @@ Rules of a surrounding meta box:
         ```
     + `action` { 'SEND' | 'PING' | 'PONG' | 'CLOSE' | 'send' | 'ping' | 'pong' | 'close' } <br>
         Response action. Default is 'SEND'.
-    + selfTrigger: {
-    +     triggerDelay: 500,
-    +     lineageArg: 'what ws-response.js want to heritage',
-    +     lineageArgEscapeBufferRecover: false,
-    + } | [{}],
+    + `selfTrigger` { Object | Object[] } <br>
+        Check [self trigger](#self-trigger).
 
 The rules of returned value of function apply to fixed exporting result.
 
 [Back To Top](#mock-api)
 
 #### Self trigger
+`ws-response.js` can be triggered by self. This is useful when you want specify autonomous
+response to client. To do so, set returned `metabox.selfTrigger` property with an object
+value. An self trigger object may have properties:
+- `triggerDelay` { Number | String } <br>
+    Optional. e.g.:
+    ```
+    500      // 500 ms delay
+    '1000ms' // 1000 ms delay
+    '1.5s'   // 1.5s delay
+    ```
+- `lineageArg` <br>
+    Optional. Infomation that a self trigger want pass to triggering.
+- `lineageArgEscapeBufferRecover` <br>
+    Usually you just leave it alone.<br>
+    Check [base design of websocket mocking](#base-design-of-websocket-mocking)
+    for details.
 
 [Back To Top](#mock-api)
 
@@ -634,6 +644,15 @@ Every new websocket connection starts a new
 child process to execute `ws-response.js`, and the child process live until connection down.
 So change of `ws-response.js` does not effect until next connection. And you may save some
 information for use during a connection life.
+
+There is a JSON.stringify / JSON.parse phase when passing `ws-response.js` result back to main
+process from child process. A 'Buffer' type value is turned to an object like
+`{ type: 'Buffer', data: [ 1, 2, 3 ] }` after this phase. 'Mock-api' automatically recover it
+to a Buffer. This effect `response`, `metabox.response`, `metabox.selfTrigger.lineageArg`
+and `metabox.selfTrigger[index].lineageArg`. If you fortunately want these properties be
+object like `{ type: 'Buffer', data: [ 1, 2, 3 ] }`, you need set
+`metabox.responseEscapeBufferRecover`, `metabox.selfTrigger.lineageArgEscapeBufferRecover` or
+`metabox.selfTrigger[index].lineageArgEscapeBufferRecover` to true.
 
 [Back To Top](#mock-api)
 
