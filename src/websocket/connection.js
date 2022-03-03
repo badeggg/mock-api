@@ -93,19 +93,7 @@ module.exports = (ws, req, wsResponseFilePath) => {
         } else if (_.isPlainObject(jsResult) && jsResult.isMetaBox) {
             /**
              * A meta box js result:
-             * {
-             *      isMetaBox: true,
-             *      response: 'response content',
-             *      responseEscapeBufferRecover: true,
-             *      insistSendEmpty: false,
-             *      action: 'SEND', // 'SEND' | 'PING' | 'PONG' | 'CLOSE'
-             *      actionDelay: 500,
-             *      selfTrigger: {
-             *          triggerDelay: 500,
-             *          lineageArg: 'what ws-response.js want to heritage',
-             *          lineageArgEscapeBufferRecover: false,
-             *      } | [{}],
-             * }
+             * https://github.com/badeggg/mock-api#Rules-of-a-surrounding-meta-box
              */
             if (!jsResult.action) {
                 action = 'SEND';

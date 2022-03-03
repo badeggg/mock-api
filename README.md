@@ -577,7 +577,7 @@ Rules of a direct response: <a name="Rules-of-a-direct-response"></a>
 - Any binary type object (Buffer, ArrayBuffer, TypedArray, DataView) is normalized to 'Buffer'
   type. [Code detail](https://github.com/badeggg/mock-api/blob/master/src/utils/normalizeBinObj.js).
 
-Rules of a surrounding meta box:
+Rules of a surrounding meta box: <a name="Rules-of-a-surrounding-meta-box"></a>
 - A meta box must be an object with `isMetaBox` property set.
 - Properties of a meta box:
     + `isMetaBox` { Boolean } <br>
@@ -591,7 +591,7 @@ Rules of a surrounding meta box:
         properties which to be used with [close](https://github.com/websockets/ws/blob/master/doc/ws.md#websocketclosecode-reason).
     + `responseEscapeBufferRecover` { Boolean } <br>
         Usually you just leave it alone.<br>
-        Check [base design of websocket mocking](#base-design-of-websocket-mocking)
+        Check [base design of websocket mocking](#websocket-buffer-recover)
         for details.
     + `insistSendEmpty`: { Boolean } <br>
         Usually you just leave it alone.<br>
@@ -630,7 +630,7 @@ value. A self trigger object may have properties:
     type. [Code detail](https://github.com/badeggg/mock-api/blob/master/src/utils/normalizeBinObj.js).
 - `lineageArgEscapeBufferRecover` <br>
     Usually you just leave it alone.<br>
-    Check [base design of websocket mocking](#base-design-of-websocket-mocking)
+    Check [base design of websocket mocking](#websocket-buffer-recover)
     for details.
 
 If you just want a self trigger with no property decoration, set `selfTrigger` with `{}`. A
@@ -654,6 +654,7 @@ child process to execute `ws-response.js`, and the child process live until conn
 So change of `ws-response.js` does not effect until next connection. And you may save some
 information for use during a connection life.
 
+<a name="websocket-buffer-recover"></a>
 There is a JSON.stringify / JSON.parse phase when passing `ws-response.js` result back to main
 process from child process. A 'Buffer' type value is turned to an object like
 `{ type: 'Buffer', data: [ 1, 2, 3 ] }` after this phase. 'Mock-api' automatically recover it
