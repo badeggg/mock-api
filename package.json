@@ -1,6 +1,6 @@
 {
     "name": "@badeggg/mock-api",
-    "version": "1.4.0",
+    "version": "1.4.1",
     "description": "mock api",
     "main": "./src/mock.js",
     "bin": {
@@ -25,7 +25,8 @@
     },
     "keywords": [
         "mock api",
-        "mock http api"
+        "mock http",
+        "mock websocket"
     ],
     "dependencies": {
         "chalk": "^2.4.2",
