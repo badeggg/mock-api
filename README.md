@@ -57,6 +57,7 @@ back-end project if you want.
   + almost all config can take effect immediately, e.g.
     + a new mocking api path
     + a response file amending
+    + a `ws-response.js` file change
     + and even the proxy404 file
 - able to mock websocket
 
@@ -445,11 +446,20 @@ If the file does not export a function, the exported value will be responded.
 Notice that, if this option is not set, file content will be responded no matter the file has
 '.js' extension or not.
 
+If the executed result is a binary type object, it is normalized to 'Buffer'
+type before express send. [Code detail](https://github.com/badeggg/mock-api/blob/master/src/utils/normalizeBinObj.js).
+
+There is [buffer recover issue](#websocket-helper-process) too in executing `response.js` like
+in executing `ws-response.js`. To escape buffer recover, surround the result in a meta box
+and set `metaBox.responseEscapeBufferRecover` to true.
+
 For example:
 ```
 # map rule line
 -r ./response-big-json.js
 --res-js-result ./response-simple-logic.js
+--res-js-result ./response-binary.js
+--res-js-result ./response-escape-buffer-recover.js
 
 # in ./response-big-json.js
 module.exports = {
@@ -463,6 +473,18 @@ const echo = function(req) {
   return req;
 };
 module.exports = echo;
+
+# in ./response-binary.js
+module.exports = () => {
+  return Buffer.from([1,2,3]); // client will receiver <Buffer 01 02 03>
+};
+
+# in ./response-escape-buffer-recover.js
+module.exports = {
+    isMetaBox: true,
+    response: Buffer.from([1,2,3]), // client will receiver {"type":"Buffer","data":[1,2,3]}
+    responseEscapeBufferRecover: true,
+};
 ```
 
 [Back To Top](#mock-api)
@@ -576,7 +598,7 @@ Rules of a direct response: <a name="Rules-of-a-direct-response"></a>
 - By default, [`send`](https://github.com/websockets/ws/blob/master/doc/ws.md#websocketsenddata-options-callback)
   action is used for all responses.
 - A false response will not be sent by default ---- Boolean(response) to validate. Set
-  `metabox.insistSendEmpty` to send false response.
+  `metaBox.insistSendEmpty` to send false response.
 - Any binary type object (Buffer, ArrayBuffer, TypedArray, DataView) is normalized to 'Buffer'
   type. [Code detail](https://github.com/badeggg/mock-api/blob/master/src/utils/normalizeBinObj.js).
 
@@ -618,7 +640,7 @@ The rules of returned value of function apply to fixed exporting result.
 
 #### Self trigger
 `ws-response.js` can be triggered by self. This is useful when you want specify autonomous
-response to client. To do so, set returned `metabox.selfTrigger` property with an object
+response to client. To do so, set returned `metaBox.selfTrigger` property with an object
 value. A self trigger object may have properties:
 - `triggerDelay` { Number | String } <br>
     Optional. e.g.:
@@ -647,6 +669,7 @@ array of trigger object.
 #### Base design of websocket mocking
 Websocket mocking use the same port as http mocking.
 
+<a name="websocket-helper-process"></a>
 `ws-response.js` is executed in a child process ---- so as the specified 'http-response.js'
 for http connections. We do this
 1) to avoid any potential disturbing to 'mock-api' main process
@@ -661,11 +684,11 @@ information for use during a connection life.
 There is a JSON.stringify / JSON.parse phase when passing `ws-response.js` result back to main
 process from child process. A 'Buffer' type value is turned to an object like
 `{ type: 'Buffer', data: [ 1, 2, 3 ] }` after this phase. 'Mock-api' automatically recover it
-to a Buffer. This effect `response`, `metabox.response`, `metabox.selfTrigger.lineageArg`
-and `metabox.selfTrigger[index].lineageArg`. If you fortunately want these properties be
+to a Buffer. This effect `response`, `metaBox.response`, `metaBox.selfTrigger.lineageArg`
+and `metaBox.selfTrigger[index].lineageArg`. If you fortunately want these properties be
 object like `{ type: 'Buffer', data: [ 1, 2, 3 ] }`, you need set
-`metabox.responseEscapeBufferRecover`, `metabox.selfTrigger.lineageArgEscapeBufferRecover` or
-`metabox.selfTrigger[index].lineageArgEscapeBufferRecover` to true.
+`metaBox.responseEscapeBufferRecover`, `metaBox.selfTrigger.lineageArgEscapeBufferRecover` or
+`metaBox.selfTrigger[index].lineageArgEscapeBufferRecover` to true.
 
 [Back To Top](#mock-api)
 
